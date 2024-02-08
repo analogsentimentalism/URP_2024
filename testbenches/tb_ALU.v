@@ -1,4 +1,6 @@
 `timescale 1ns/100ps
 
-module ALU ();
+module tb_ALU;
+ALU u_ALU ();
+
 endmodule
