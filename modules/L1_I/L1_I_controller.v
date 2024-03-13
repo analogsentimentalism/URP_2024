@@ -209,7 +209,7 @@ always@(posedge clk or !nrst)
         TAG_ARR_62[0]    =   1'b0;
         TAG_ARR_63[0]    =   1'b0;
     }
-    else if((read_C_L1 == 1) && (tag == )
+    else if(read_C_L1 == 1)
     {
         case(index)
             0 : 
