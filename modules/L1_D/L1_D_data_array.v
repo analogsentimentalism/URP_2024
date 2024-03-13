@@ -15,7 +15,7 @@ always @(posedge clk, posedge nrst) begin
     if(!nrst) begin
         for (int i=0; i<64; i=i+1) 
             for (int j=0; j<512; j=j+1)
-                L1_data [i][j]<= 1'b0; //배열 안돼??
+                L1_data [i][j]<= 1'b0; //배열 안돼???
     end
     else 
 
