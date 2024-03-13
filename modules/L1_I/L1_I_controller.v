@@ -2,7 +2,9 @@
 module L1_D_controller (
     input clk,
     input nrst,
-    input tag[51:0], index[5:0], read_C_L1, flush,
+    input tag[51:0], 
+    input index[5:0], 
+    input read_C_L1, flush,
     input ready_L2_L1,
     output stall, refill, update, read_L1_L2, write_L1_L2
 )
@@ -301,8 +303,7 @@ begin
         TAG_ARR_63[53]    <=   1'b1;
     end
     else if(read_C_L1 == 1)
-    begin
-        
+    begin        
         case(index)
             0 : begin TAG_ARR_0[51:0] <= (if miss == 0) ? TAG_ARR_0[51:0] : tag;     
             1 : begin TAG_ARR_1[51:0] <= (if miss == 0) ? TAG_ARR_1[51:0] : tag;   
