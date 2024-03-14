@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module tb_L1_l_controller;
+module tb_L1_I_controller;
 
     // clock
     reg clk;
@@ -21,7 +21,7 @@ module tb_L1_l_controller;
 
 
     //module
-    L1_l_controller_module L1_l_controller(
+    L1_I_controller L1_I_controller(
         .clk(clk),
         .nrst(nrst),
         .tag(tag),
