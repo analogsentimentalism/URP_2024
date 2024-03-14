@@ -8,6 +8,7 @@ module L1_D_controller (
     input ready_L2_L1,
     output stall, refill, update, read_L1_L2, write_L1_L2
 );
+
 // define TAG_ARR
 reg [53:0] TAG_ARR_0;
 reg [53:0] TAG_ARR_1;
