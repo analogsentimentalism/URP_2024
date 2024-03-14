@@ -1,5 +1,5 @@
 
-module L1_D_controller (
+module L1_I_controller (
     input clk,
     input nrst,
     input [51:0] tag, 
