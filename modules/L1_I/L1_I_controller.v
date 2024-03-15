@@ -472,7 +472,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         read_L1_L2_reg <= 1'b0;
-    else if (miss == 0)
+    else if (miss == 1)
         read_L1_L2_reg <= 1'b1;
     else
         read_L1_L2_reg <= read_L1_L2_reg;
