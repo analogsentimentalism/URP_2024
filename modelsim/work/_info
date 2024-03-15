@@ -1,0 +1,43 @@
+m255
+K3
+13
+cModel Technology
+dD:\modeltech_10.1c\examples
+vL1_I_controller
+V@=EIRC^0Y?S0jLZ[iMghV0
+r1
+!s85 0
+31
+IQ^5oo>b3Oh8dhCKhJcMYT1
+Z0 dD:\yoojin_private\Oddments\Shared\URP_2024_1\modelsim
+w1710509751
+8D:/yoojin_private/Oddments/Shared/URP_2024_1/modules/L1_I/L1_I_controller.v
+FD:/yoojin_private/Oddments/Shared/URP_2024_1/modules/L1_I/L1_I_controller.v
+L0 2
+Z1 OE;L;10.1c;51
+Z2 o-work work -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
+n@l1_@i_controller
+!s100 3Y>Z44>amS;lcaR]maKEO2
+!s90 -reportprogress|300|-work|work|-vopt|D:/yoojin_private/Oddments/Shared/URP_2024_1/modules/L1_I/L1_I_controller.v|
+!i10b 1
+!s108 1710512579.392000
+!s107 D:/yoojin_private/Oddments/Shared/URP_2024_1/modules/L1_I/L1_I_controller.v|
+vtb_L1_D_controller
+VCeTmYdZ1R_He`N:o1kF^Q3
+r1
+31
+ITdPPm?on>i3Mi1ajdZ=?a3
+Z3 dD:\yoojin_private\Oddments\Shared\URP_2024_1\modelsim
+w1710512565
+8D:/yoojin_private/Oddments/Shared/URP_2024_1/testbenches/L1 D/tb_L1_D_controller.v
+FD:/yoojin_private/Oddments/Shared/URP_2024_1/testbenches/L1 D/tb_L1_D_controller.v
+L0 2
+R1
+R2
+ntb_@l1_@d_controller
+!s85 0
+!s90 -reportprogress|300|-work|work|-vopt|D:/yoojin_private/Oddments/Shared/URP_2024_1/testbenches/L1 D/tb_L1_D_controller.v|
+!s100 W5Ud`CdgFcn0c6[2Rn2?W2
+!s108 1710512579.309000
+!s107 D:/yoojin_private/Oddments/Shared/URP_2024_1/testbenches/L1 D/tb_L1_D_controller.v|
+!i10b 1
