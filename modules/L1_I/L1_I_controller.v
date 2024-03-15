@@ -110,6 +110,8 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         miss <= 1'b0;
+    else if(ready_L2_L1 == 1'b1)
+        miss <= 1'b0;
     else if (read_C_L1 == 1'b1)
     begin
         case(index)
@@ -179,8 +181,7 @@ begin
             default : miss <= ( (TAG_ARR_63[53] == 1'b1)&&(tag == TAG_ARR_63[51:0])) ? 1'b0 : 1'b1;
         endcase 
     end  
-    else if(ready_L2_L1 == 1'b1)
-        miss <= 1'b0;
+
     else
         miss <= miss;          
 end
