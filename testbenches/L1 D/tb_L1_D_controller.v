@@ -1,4 +1,4 @@
-`timescale 1ns/1ns
+`timescale 1ns/100ps
 module tb_L1_D_controller ();
 
 reg					clk;
@@ -35,11 +35,16 @@ L1_I_controller u_L1_D_controller (
     .ready_L2_L1	(ready_L2_L1)
 );
 
+// Signals for Testbench
+
+reg		[63:0]		address_array	[0:9999];
+integer	i;
+
 always begin
 	#1	clk		= ~clk;
 end
 
-initial begin
+initial begin: init
 	clk			= 1'b0;
 	nrst		= 1'b0;
 	address		= 64'b0;
@@ -47,34 +52,57 @@ initial begin
 	write_C_L1	= 1'b0;
 	flush		= 1'b0;
 	ready_L2_L1	= 1'b0;
-end
 
-integer	i;
+	for(i = 0; i<1000; i = i + 1) begin
+		address_array[i]	= $urandom << 32 | $urandom;
+	end
+end
 
 initial begin: test
 
 // 0. Init
-// 0-499는 
+	$display("Init start");
 	#5	nrst	= 1'b1;
 	#5	nrst	= 1'b0;
-	
-    nrst		= 1'b1;
 
+	nrst		= 1'b1;
 	read_C_L1	= 1'b1;
-    for(i = 0; i<10000; i = i + 1) begin
-			address		= $urandom << 32 | $urandom;
-			$display("Address %h", address);
-			ready_L2_L1	= 5000 > i;
-			#1;
-			ready_L2_L1	= 1'b0;
-			#4;
+
+	for(i = 0; i<10; i = i + 1) begin
+		address		= address_array[i];
+		$display("%4d: Address %h", i, address);
+		#1;
+		ready_L2_L1	= 1'b1;
+		#1;
+		ready_L2_L1	= 1'b0;
 	end
+
+	#100
 
 // 1. Data Read
 
+	$display("Read, Hit");
 // 1-1. Hit
+	for(i = 0; i<10; i = i + 1) begin
+		address		= address_array[i];
+		$display("%4d: Address %h", i, address);
+		ready_L2_L1	= 1'b1;
+		#1;
+		ready_L2_L1	= 1'b0;
+		#2;
+	end
+
+	#100
 
 // 1-2. Miss - (Memory) Hit
+	for(i = 10; i<20; i = i + 1) begin
+		address		= address_array[i];
+		$display("Address %h", address);
+		ready_L2_L1	= 1'b1;
+		#1;
+		ready_L2_L1	= 1'b0;
+		#2;
+	end
 
 // 1-3. Miss - (Memory) Miss
 
@@ -89,7 +117,7 @@ initial begin: test
 // 4. Reset
 
 
-    
+	$stop;
 end
 
 endmodule
