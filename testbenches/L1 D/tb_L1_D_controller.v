@@ -36,7 +36,7 @@ L1_I_controller u_L1_D_controller (
 );
 
 always begin
-#1	clk		= ~clk;
+	#1	clk		= ~clk;
 end
 
 initial begin
@@ -62,10 +62,12 @@ initial begin: test
 
 	read_C_L1	= 1'b1;
     for(i = 0; i<10000; i = i + 1) begin
-			$display("Current %0d ", i);
 			address		= $urandom << 32 | $urandom;
+			$display("Address %h", address);
 			ready_L2_L1	= 5000 > i;
 			#1;
+			ready_L2_L1	= 1'b0;
+			#4;
 	end
 
 // 1. Data Read
