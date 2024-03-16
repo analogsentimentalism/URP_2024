@@ -1,4 +1,4 @@
-`timescale 1ns/100ps
+`timescale 1ns/1ns
 module tb_L1_D_controller ();
 
 reg					clk;
@@ -38,10 +38,10 @@ L1_I_controller u_L1_D_controller (
 // Signals for Testbench
 
 reg		[63:0]		address_array	[0:9999];
-integer	i;
+integer	i, j, EXIT;
 
 always begin
-	#1	clk		= ~clk;
+#1	clk			= ~clk;
 end
 
 initial begin: init
@@ -62,49 +62,62 @@ initial begin: test
 
 // 0. Init
 	$display("Init start");
-	#5	nrst	= 1'b1;
-	#5	nrst	= 1'b0;
-
 	nrst		= 1'b1;
+#10	nrst		= 1'b0;
+
+#10	nrst		= 1'b1;
 	read_C_L1	= 1'b1;
 
 	for(i = 0; i<10; i = i + 1) begin
 		address		= address_array[i];
 		$display("%4d: Address %h", i, address);
-		#1;
-		ready_L2_L1	= 1'b1;
-		#1;
-		ready_L2_L1	= 1'b0;
+
+	#2	ready_L2_L1	= 1'b1;
+	#2	ready_L2_L1	= 1'b0;
+	#6;
 	end
 
-	#100
+#100;
 
 // 1. Data Read
 
-	$display("Read, Hit");
+	$display("%4d: Read, Hit", $time);
 // 1-1. Hit
 	for(i = 0; i<10; i = i + 1) begin
 		address		= address_array[i];
-		$display("%4d: Address %h", i, address);
-		ready_L2_L1	= 1'b1;
-		#1;
-		ready_L2_L1	= 1'b0;
-		#2;
+		$display("%4d: Address %h", $time, address);
+	#10;
 	end
 
-	#100
+#100;
 
 // 1-2. Miss - (Memory) Hit
+	$display("%4d: Read, Miss - Hit", $time);
 	for(i = 10; i<20; i = i + 1) begin
 		address		= address_array[i];
-		$display("Address %h", address);
+		$display("%4d: Address %h", $time, address);
+	#2	
 		ready_L2_L1	= 1'b1;
-		#1;
+	#2
 		ready_L2_L1	= 1'b0;
-		#2;
+	#6;
 	end
 
+#100;
+
 // 1-3. Miss - (Memory) Miss
+	$display("%4d: Read, Miss - Miss", $time);
+	for(i = 20; i<30; i = i + 1) begin
+		address		= address_array[i];
+		$display("%4d: Address %h", $time, address);
+		#10
+		ready_L2_L1	= 1'b1;
+		#2
+		ready_L2_L1	= 1'b0;
+		#8;
+	end
+
+#100;
 
 // 2. Data Write
 
@@ -113,9 +126,29 @@ initial begin: test
 // 2-2. Write back
 
 // 3. Flushed
+	$display("%4d: FLUSH", $time);
+	flush	= 1'b1;
+
+#100;
 
 // 4. Reset
+	$display("%4d: FLUSH", $time);
+	nrst	= 1'b0;
 
+#100;
+
+// 5. Cache Replacement
+	nrst		= 1'b1;
+	flush		= 1'b0;
+	read_C_L1	= 1'b1;
+	for(i = 0; i<100; i = i + 1) begin
+		address		= address_array[i];
+		$display("%4d: Address %h", i, address);
+
+	#2	ready_L2_L1	= 1'b1;
+	#2	ready_L2_L1	= 1'b0;
+	#6;
+	end
 
 	$stop;
 end
