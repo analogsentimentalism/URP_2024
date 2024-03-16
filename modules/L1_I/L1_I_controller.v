@@ -467,6 +467,8 @@ begin
         refill_reg <= 1'b0;
     else if(ready_L2_L1)
         refill_reg <= 1'b1;
+    else if(refill_reg == 1'b1)
+        refill_reg <= 1'b0;
     else
         refill_reg <= refill_reg;
 end
@@ -477,6 +479,8 @@ begin
         read_L1_L2_reg <= 1'b0;
     else if (miss == 1)
         read_L1_L2_reg <= 1'b1;
+    else if (ready_L2_L1 == 1'b1)
+        read_L1_L2_reg <= 1'b0; 
     else
         read_L1_L2_reg <= read_L1_L2_reg;
 end
