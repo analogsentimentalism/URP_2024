@@ -6,6 +6,7 @@ module L1_I_controller (
     input [5:0] index, 
     input read_C_L1, flush,
     input ready_L2_L1,
+    input write_C_L1,
     output stall, refill, update, read_L1_L2, write_L1_L2
 );
 
