@@ -320,75 +320,76 @@ begin
         TAG_ARR_60[53]    <=   1'b0;
         TAG_ARR_61[53]    <=   1'b0;
         TAG_ARR_62[53]    <=   1'b0;
-        TAG_ARR_63[53]    <=   1'b1;
+        TAG_ARR_63[53]    <=   1'b0;
+
     end
     else if(read_C_L1_reg == 1'b1)
     begin        
         case(index)
-            0 : begin TAG_ARR_0[51:0] <= ( miss == 1'b1) ? TAG_ARR_0[51:0] : tag;        TAG_ARR_0[53] <= ( miss == 1'b1) ? TAG_ARR_0[53] : 1'b1 ; end  
-            1 : begin TAG_ARR_1[51:0] <= ( miss == 1'b1) ? TAG_ARR_1[51:0] : tag;        TAG_ARR_1[53] <= ( miss == 1'b1) ? TAG_ARR_1[53] : 1'b1 ; end 
-            2 : begin TAG_ARR_2[51:0] <= ( miss == 1'b1) ? TAG_ARR_2[51:0] : tag;        TAG_ARR_2[53] <= ( miss == 1'b1) ? TAG_ARR_2[53] : 1'b1 ; end
-            3 : begin TAG_ARR_3[51:0] <= ( miss == 1'b1) ? TAG_ARR_3[51:0] : tag;        TAG_ARR_3[53] <= ( miss == 1'b1) ? TAG_ARR_3[53] : 1'b1 ; end
-            4 : begin TAG_ARR_4[51:0] <= ( miss == 1'b1) ? TAG_ARR_4[51:0] : tag;        TAG_ARR_4[53] <= ( miss == 1'b1) ? TAG_ARR_4[53] : 1'b1 ; end
-            5 : begin TAG_ARR_5[51:0] <= ( miss == 1'b1) ? TAG_ARR_5[51:0] : tag;        TAG_ARR_5[53] <= ( miss == 1'b1) ? TAG_ARR_5[53] : 1'b1 ; end
-            6 : begin TAG_ARR_6[51:0] <= ( miss == 1'b1) ? TAG_ARR_6[51:0] : tag;        TAG_ARR_6[53] <= ( miss == 1'b1) ? TAG_ARR_6[53] : 1'b1 ; end
-            7 : begin TAG_ARR_7[51:0] <= ( miss == 1'b1) ? TAG_ARR_7[51:0] : tag;        TAG_ARR_7[53] <= ( miss == 1'b1) ? TAG_ARR_7[53] : 1'b1 ; end
-            8 : begin TAG_ARR_8[51:0] <= ( miss == 1'b1) ? TAG_ARR_8[51:0] : tag;        TAG_ARR_8[53] <= ( miss == 1'b1) ? TAG_ARR_8[53] : 1'b1 ; end
-            9 : begin TAG_ARR_9[51:0] <= ( miss == 1'b1) ? TAG_ARR_9[51:0] : tag;        TAG_ARR_9[53] <= ( miss == 1'b1) ? TAG_ARR_9[53] : 1'b1 ; end
-            10 : begin TAG_ARR_10[51:0] <= ( miss == 1'b1) ? TAG_ARR_10[51:0] : tag;     TAG_ARR_10[53] <= ( miss == 1'b1) ? TAG_ARR_10[53] : 1'b1 ; end
-            12 : begin TAG_ARR_11[51:0] <= ( miss == 1'b1) ? TAG_ARR_11[51:0] : tag;     TAG_ARR_11[53] <= ( miss == 1'b1) ? TAG_ARR_11[53] : 1'b1 ; end 
-            12 : begin TAG_ARR_12[51:0] <= ( miss == 1'b1) ? TAG_ARR_12[51:0] : tag;     TAG_ARR_12[53] <= ( miss == 1'b1) ? TAG_ARR_12[53] : 1'b1 ; end
-            13 : begin TAG_ARR_13[51:0] <= ( miss == 1'b1) ? TAG_ARR_13[51:0] : tag;     TAG_ARR_13[53] <= ( miss == 1'b1) ? TAG_ARR_13[53] : 1'b1 ; end
-            14 : begin TAG_ARR_14[51:0] <= ( miss == 1'b1) ? TAG_ARR_14[51:0] : tag;     TAG_ARR_14[53] <= ( miss == 1'b1) ? TAG_ARR_14[53] : 1'b1 ; end
-            15 : begin TAG_ARR_15[51:0] <= ( miss == 1'b1) ? TAG_ARR_15[51:0] : tag;     TAG_ARR_15[53] <= ( miss == 1'b1) ? TAG_ARR_15[53] : 1'b1 ; end
-            16 : begin TAG_ARR_16[51:0] <= ( miss == 1'b1) ? TAG_ARR_16[51:0] : tag;     TAG_ARR_16[53] <= ( miss == 1'b1) ? TAG_ARR_16[53] : 1'b1 ; end
-            17 : begin TAG_ARR_17[51:0] <= ( miss == 1'b1) ? TAG_ARR_17[51:0] : tag;     TAG_ARR_17[53] <= ( miss == 1'b1) ? TAG_ARR_17[53] : 1'b1 ; end
-            18 : begin TAG_ARR_18[51:0] <= ( miss == 1'b1) ? TAG_ARR_18[51:0] : tag;     TAG_ARR_18[53] <= ( miss == 1'b1) ? TAG_ARR_18[53] : 1'b1 ; end
-            19 : begin TAG_ARR_19[51:0] <= ( miss == 1'b1) ? TAG_ARR_19[51:0] : tag;     TAG_ARR_19[53] <= ( miss == 1'b1) ? TAG_ARR_19[53] : 1'b1 ; end
-            20 : begin TAG_ARR_20[51:0] <= ( miss == 1'b1) ? TAG_ARR_20[51:0] : tag;     TAG_ARR_20[53] <= ( miss == 1'b1) ? TAG_ARR_20[53] : 1'b1 ; end
-            21 : begin TAG_ARR_21[51:0] <= ( miss == 1'b1) ? TAG_ARR_21[51:0] : tag;     TAG_ARR_21[53] <= ( miss == 1'b1) ? TAG_ARR_21[53] : 1'b1 ; end
-            22 : begin TAG_ARR_22[51:0] <= ( miss == 1'b1) ? TAG_ARR_22[51:0] : tag;     TAG_ARR_22[53] <= ( miss == 1'b1) ? TAG_ARR_22[53] : 1'b1 ; end
-            23 : begin TAG_ARR_23[51:0] <= ( miss == 1'b1) ? TAG_ARR_23[51:0] : tag;     TAG_ARR_23[53] <= ( miss == 1'b1) ? TAG_ARR_23[53] : 1'b1 ; end
-            24 : begin TAG_ARR_24[51:0] <= ( miss == 1'b1) ? TAG_ARR_24[51:0] : tag;     TAG_ARR_24[53] <= ( miss == 1'b1) ? TAG_ARR_24[53] : 1'b1 ; end
-            25 : begin TAG_ARR_25[51:0] <= ( miss == 1'b1) ? TAG_ARR_25[51:0] : tag;     TAG_ARR_25[53] <= ( miss == 1'b1) ? TAG_ARR_25[53] : 1'b1 ; end
-            26 : begin TAG_ARR_26[51:0] <= ( miss == 1'b1) ? TAG_ARR_26[51:0] : tag;     TAG_ARR_26[53] <= ( miss == 1'b1) ? TAG_ARR_26[53] : 1'b1 ; end
-            27 : begin TAG_ARR_27[51:0] <= ( miss == 1'b1) ? TAG_ARR_27[51:0] : tag;     TAG_ARR_27[53] <= ( miss == 1'b1) ? TAG_ARR_27[53] : 1'b1 ; end
-            28 : begin TAG_ARR_28[51:0] <= ( miss == 1'b1) ? TAG_ARR_28[51:0] : tag;     TAG_ARR_28[53] <= ( miss == 1'b1) ? TAG_ARR_28[53] : 1'b1 ; end
-            29 : begin TAG_ARR_29[51:0] <= ( miss == 1'b1) ? TAG_ARR_29[51:0] : tag;     TAG_ARR_29[53] <= ( miss == 1'b1) ? TAG_ARR_29[53] : 1'b1 ; end
-            30 : begin TAG_ARR_30[51:0] <= ( miss == 1'b1) ? TAG_ARR_30[51:0] : tag;     TAG_ARR_30[53] <= ( miss == 1'b1) ? TAG_ARR_30[53] : 1'b1 ; end
-            31 : begin TAG_ARR_31[51:0] <= ( miss == 1'b1) ? TAG_ARR_31[51:0] : tag;     TAG_ARR_31[53] <= ( miss == 1'b1) ? TAG_ARR_31[53] : 1'b1 ; end
-            32 : begin TAG_ARR_32[51:0] <= ( miss == 1'b1) ? TAG_ARR_32[51:0] : tag;     TAG_ARR_32[53] <= ( miss == 1'b1) ? TAG_ARR_32[53] : 1'b1 ; end
-            33 : begin TAG_ARR_33[51:0] <= ( miss == 1'b1) ? TAG_ARR_33[51:0] : tag;     TAG_ARR_33[53] <= ( miss == 1'b1) ? TAG_ARR_33[53] : 1'b1 ; end
-            34 : begin TAG_ARR_34[51:0] <= ( miss == 1'b1) ? TAG_ARR_34[51:0] : tag;     TAG_ARR_34[53] <= ( miss == 1'b1) ? TAG_ARR_34[53] : 1'b1 ; end
-            35 : begin TAG_ARR_35[51:0] <= ( miss == 1'b1) ? TAG_ARR_35[51:0] : tag;     TAG_ARR_35[53] <= ( miss == 1'b1) ? TAG_ARR_35[53] : 1'b1 ; end
-            36 : begin TAG_ARR_36[51:0] <= ( miss == 1'b1) ? TAG_ARR_36[51:0] : tag;     TAG_ARR_36[53] <= ( miss == 1'b1) ? TAG_ARR_36[53] : 1'b1 ; end
-            37 : begin TAG_ARR_37[51:0] <= ( miss == 1'b1) ? TAG_ARR_37[51:0] : tag;     TAG_ARR_37[53] <= ( miss == 1'b1) ? TAG_ARR_37[53] : 1'b1 ; end
-            38 : begin TAG_ARR_38[51:0] <= ( miss == 1'b1) ? TAG_ARR_38[51:0] : tag;     TAG_ARR_38[53] <= ( miss == 1'b1) ? TAG_ARR_38[53] : 1'b1 ; end
-            39 : begin TAG_ARR_39[51:0] <= ( miss == 1'b1) ? TAG_ARR_39[51:0] : tag;     TAG_ARR_39[53] <= ( miss == 1'b1) ? TAG_ARR_39[53] : 1'b1 ; end
-            40 : begin TAG_ARR_40[51:0] <= ( miss == 1'b1) ? TAG_ARR_40[51:0] : tag;     TAG_ARR_40[53] <= ( miss == 1'b1) ? TAG_ARR_40[53] : 1'b1 ; end
-            41 : begin TAG_ARR_41[51:0] <= ( miss == 1'b1) ? TAG_ARR_41[51:0] : tag;     TAG_ARR_41[53] <= ( miss == 1'b1) ? TAG_ARR_41[53] : 1'b1 ; end
-            42 : begin TAG_ARR_42[51:0] <= ( miss == 1'b1) ? TAG_ARR_42[51:0] : tag;     TAG_ARR_42[53] <= ( miss == 1'b1) ? TAG_ARR_42[53] : 1'b1 ; end
-            43 : begin TAG_ARR_43[51:0] <= ( miss == 1'b1) ? TAG_ARR_43[51:0] : tag;     TAG_ARR_43[53] <= ( miss == 1'b1) ? TAG_ARR_43[53] : 1'b1 ; end
-            44 : begin TAG_ARR_44[51:0] <= ( miss == 1'b1) ? TAG_ARR_44[51:0] : tag;     TAG_ARR_44[53] <= ( miss == 1'b1) ? TAG_ARR_44[53] : 1'b1 ; end
-            45 : begin TAG_ARR_45[51:0] <= ( miss == 1'b1) ? TAG_ARR_45[51:0] : tag;     TAG_ARR_45[53] <= ( miss == 1'b1) ? TAG_ARR_45[53] : 1'b1 ; end
-            46 : begin TAG_ARR_46[51:0] <= ( miss == 1'b1) ? TAG_ARR_46[51:0] : tag;     TAG_ARR_46[53] <= ( miss == 1'b1) ? TAG_ARR_46[53] : 1'b1 ; end
-            47 : begin TAG_ARR_47[51:0] <= ( miss == 1'b1) ? TAG_ARR_47[51:0] : tag;     TAG_ARR_47[53] <= ( miss == 1'b1) ? TAG_ARR_47[53] : 1'b1 ; end
-            48 : begin TAG_ARR_48[51:0] <= ( miss == 1'b1) ? TAG_ARR_48[51:0] : tag;     TAG_ARR_48[53] <= ( miss == 1'b1) ? TAG_ARR_48[53] : 1'b1 ; end
-            49 : begin TAG_ARR_49[51:0] <= ( miss == 1'b1) ? TAG_ARR_49[51:0] : tag;     TAG_ARR_49[53] <= ( miss == 1'b1) ? TAG_ARR_49[53] : 1'b1 ; end
-            50 : begin TAG_ARR_50[51:0] <= ( miss == 1'b1) ? TAG_ARR_50[51:0] : tag;     TAG_ARR_50[53] <= ( miss == 1'b1) ? TAG_ARR_50[53] : 1'b1 ; end
-            51 : begin TAG_ARR_51[51:0] <= ( miss == 1'b1) ? TAG_ARR_51[51:0] : tag;     TAG_ARR_51[53] <= ( miss == 1'b1) ? TAG_ARR_51[53] : 1'b1 ; end
-            52 : begin TAG_ARR_52[51:0] <= ( miss == 1'b1) ? TAG_ARR_52[51:0] : tag;     TAG_ARR_52[53] <= ( miss == 1'b1) ? TAG_ARR_52[53] : 1'b1 ; end
-            53 : begin TAG_ARR_53[51:0] <= ( miss == 1'b1) ? TAG_ARR_53[51:0] : tag;     TAG_ARR_53[53] <= ( miss == 1'b1) ? TAG_ARR_53[53] : 1'b1 ; end
-            54 : begin TAG_ARR_54[51:0] <= ( miss == 1'b1) ? TAG_ARR_54[51:0] : tag;     TAG_ARR_54[53] <= ( miss == 1'b1) ? TAG_ARR_54[53] : 1'b1 ; end
-            55 : begin TAG_ARR_55[51:0] <= ( miss == 1'b1) ? TAG_ARR_55[51:0] : tag;     TAG_ARR_55[53] <= ( miss == 1'b1) ? TAG_ARR_55[53] : 1'b1 ; end
-            56 : begin TAG_ARR_56[51:0] <= ( miss == 1'b1) ? TAG_ARR_56[51:0] : tag;     TAG_ARR_56[53] <= ( miss == 1'b1) ? TAG_ARR_56[53] : 1'b1 ; end
-            57 : begin TAG_ARR_57[51:0] <= ( miss == 1'b1) ? TAG_ARR_57[51:0] : tag;     TAG_ARR_57[53] <= ( miss == 1'b1) ? TAG_ARR_57[53] : 1'b1 ; end
-            58 : begin TAG_ARR_58[51:0] <= ( miss == 1'b1) ? TAG_ARR_58[51:0] : tag;     TAG_ARR_58[53] <= ( miss == 1'b1) ? TAG_ARR_58[53] : 1'b1 ; end
-            59 : begin TAG_ARR_59[51:0] <= ( miss == 1'b1) ? TAG_ARR_59[51:0] : tag;     TAG_ARR_59[53] <= ( miss == 1'b1) ? TAG_ARR_59[53] : 1'b1 ; end
-            60 : begin TAG_ARR_60[51:0] <= ( miss == 1'b1) ? TAG_ARR_60[51:0] : tag;     TAG_ARR_60[53] <= ( miss == 1'b1) ? TAG_ARR_60[53] : 1'b1 ; end
-            61 : begin TAG_ARR_61[51:0] <= ( miss == 1'b1) ? TAG_ARR_61[51:0] : tag;     TAG_ARR_61[53] <= ( miss == 1'b1) ? TAG_ARR_61[53] : 1'b1 ; end
-            62 : begin TAG_ARR_62[51:0] <= ( miss == 1'b1) ? TAG_ARR_62[51:0] : tag;     TAG_ARR_62[53] <= ( miss == 1'b1) ? TAG_ARR_62[53] : 1'b1 ; end
-            63 : begin TAG_ARR_63[51:0] <= ( miss == 1'b1) ? TAG_ARR_63[51:0] : tag;     TAG_ARR_63[53] <= ( miss == 1'b1) ? TAG_ARR_63[53] : 1'b1 ; end
+            0 : begin TAG_ARR_0[51:0] <= ( miss == 1'b1) ? TAG_ARR_0[51:0] : tag;        TAG_ARR_0[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_0[53] : 1'b1 ; end  
+            1 : begin TAG_ARR_1[51:0] <= ( miss == 1'b1) ? TAG_ARR_1[51:0] : tag;        TAG_ARR_1[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_1[53] : 1'b1 ; end 
+            2 : begin TAG_ARR_2[51:0] <= ( miss == 1'b1) ? TAG_ARR_2[51:0] : tag;        TAG_ARR_2[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_2[53] : 1'b1 ; end
+            3 : begin TAG_ARR_3[51:0] <= ( miss == 1'b1) ? TAG_ARR_3[51:0] : tag;        TAG_ARR_3[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_3[53] : 1'b1 ; end
+            4 : begin TAG_ARR_4[51:0] <= ( miss == 1'b1) ? TAG_ARR_4[51:0] : tag;        TAG_ARR_4[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_4[53] : 1'b1 ; end
+            5 : begin TAG_ARR_5[51:0] <= ( miss == 1'b1) ? TAG_ARR_5[51:0] : tag;        TAG_ARR_5[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_5[53] : 1'b1 ; end
+            6 : begin TAG_ARR_6[51:0] <= ( miss == 1'b1) ? TAG_ARR_6[51:0] : tag;        TAG_ARR_6[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_6[53] : 1'b1 ; end
+            7 : begin TAG_ARR_7[51:0] <= ( miss == 1'b1) ? TAG_ARR_7[51:0] : tag;        TAG_ARR_7[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_7[53] : 1'b1 ; end
+            8 : begin TAG_ARR_8[51:0] <= ( miss == 1'b1) ? TAG_ARR_8[51:0] : tag;        TAG_ARR_8[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_8[53] : 1'b1 ; end
+            9 : begin TAG_ARR_9[51:0] <= ( miss == 1'b1) ? TAG_ARR_9[51:0] : tag;        TAG_ARR_9[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_9[53] : 1'b1 ; end
+            10 : begin TAG_ARR_10[51:0] <= ( miss == 1'b1) ? TAG_ARR_10[51:0] : tag;     TAG_ARR_10[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_10[53] : 1'b1 ; end
+            12 : begin TAG_ARR_11[51:0] <= ( miss == 1'b1) ? TAG_ARR_11[51:0] : tag;     TAG_ARR_11[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_11[53] : 1'b1 ; end 
+            12 : begin TAG_ARR_12[51:0] <= ( miss == 1'b1) ? TAG_ARR_12[51:0] : tag;     TAG_ARR_12[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_12[53] : 1'b1 ; end
+            13 : begin TAG_ARR_13[51:0] <= ( miss == 1'b1) ? TAG_ARR_13[51:0] : tag;     TAG_ARR_13[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_13[53] : 1'b1 ; end
+            14 : begin TAG_ARR_14[51:0] <= ( miss == 1'b1) ? TAG_ARR_14[51:0] : tag;     TAG_ARR_14[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_14[53] : 1'b1 ; end
+            15 : begin TAG_ARR_15[51:0] <= ( miss == 1'b1) ? TAG_ARR_15[51:0] : tag;     TAG_ARR_15[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_15[53] : 1'b1 ; end
+            16 : begin TAG_ARR_16[51:0] <= ( miss == 1'b1) ? TAG_ARR_16[51:0] : tag;     TAG_ARR_16[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_16[53] : 1'b1 ; end
+            17 : begin TAG_ARR_17[51:0] <= ( miss == 1'b1) ? TAG_ARR_17[51:0] : tag;     TAG_ARR_17[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_17[53] : 1'b1 ; end
+            18 : begin TAG_ARR_18[51:0] <= ( miss == 1'b1) ? TAG_ARR_18[51:0] : tag;     TAG_ARR_18[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_18[53] : 1'b1 ; end
+            19 : begin TAG_ARR_19[51:0] <= ( miss == 1'b1) ? TAG_ARR_19[51:0] : tag;     TAG_ARR_19[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_19[53] : 1'b1 ; end
+            20 : begin TAG_ARR_20[51:0] <= ( miss == 1'b1) ? TAG_ARR_20[51:0] : tag;     TAG_ARR_20[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_20[53] : 1'b1 ; end
+            21 : begin TAG_ARR_21[51:0] <= ( miss == 1'b1) ? TAG_ARR_21[51:0] : tag;     TAG_ARR_21[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_21[53] : 1'b1 ; end
+            22 : begin TAG_ARR_22[51:0] <= ( miss == 1'b1) ? TAG_ARR_22[51:0] : tag;     TAG_ARR_22[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_22[53] : 1'b1 ; end
+            23 : begin TAG_ARR_23[51:0] <= ( miss == 1'b1) ? TAG_ARR_23[51:0] : tag;     TAG_ARR_23[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_23[53] : 1'b1 ; end
+            24 : begin TAG_ARR_24[51:0] <= ( miss == 1'b1) ? TAG_ARR_24[51:0] : tag;     TAG_ARR_24[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_24[53] : 1'b1 ; end
+            25 : begin TAG_ARR_25[51:0] <= ( miss == 1'b1) ? TAG_ARR_25[51:0] : tag;     TAG_ARR_25[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_25[53] : 1'b1 ; end
+            26 : begin TAG_ARR_26[51:0] <= ( miss == 1'b1) ? TAG_ARR_26[51:0] : tag;     TAG_ARR_26[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_26[53] : 1'b1 ; end
+            27 : begin TAG_ARR_27[51:0] <= ( miss == 1'b1) ? TAG_ARR_27[51:0] : tag;     TAG_ARR_27[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_27[53] : 1'b1 ; end
+            28 : begin TAG_ARR_28[51:0] <= ( miss == 1'b1) ? TAG_ARR_28[51:0] : tag;     TAG_ARR_28[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_28[53] : 1'b1 ; end
+            29 : begin TAG_ARR_29[51:0] <= ( miss == 1'b1) ? TAG_ARR_29[51:0] : tag;     TAG_ARR_29[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_29[53] : 1'b1 ; end
+            30 : begin TAG_ARR_30[51:0] <= ( miss == 1'b1) ? TAG_ARR_30[51:0] : tag;     TAG_ARR_30[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_30[53] : 1'b1 ; end
+            31 : begin TAG_ARR_31[51:0] <= ( miss == 1'b1) ? TAG_ARR_31[51:0] : tag;     TAG_ARR_31[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_31[53] : 1'b1 ; end
+            32 : begin TAG_ARR_32[51:0] <= ( miss == 1'b1) ? TAG_ARR_32[51:0] : tag;     TAG_ARR_32[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_32[53] : 1'b1 ; end
+            33 : begin TAG_ARR_33[51:0] <= ( miss == 1'b1) ? TAG_ARR_33[51:0] : tag;     TAG_ARR_33[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_33[53] : 1'b1 ; end
+            34 : begin TAG_ARR_34[51:0] <= ( miss == 1'b1) ? TAG_ARR_34[51:0] : tag;     TAG_ARR_34[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_34[53] : 1'b1 ; end
+            35 : begin TAG_ARR_35[51:0] <= ( miss == 1'b1) ? TAG_ARR_35[51:0] : tag;     TAG_ARR_35[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_35[53] : 1'b1 ; end
+            36 : begin TAG_ARR_36[51:0] <= ( miss == 1'b1) ? TAG_ARR_36[51:0] : tag;     TAG_ARR_36[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_36[53] : 1'b1 ; end
+            37 : begin TAG_ARR_37[51:0] <= ( miss == 1'b1) ? TAG_ARR_37[51:0] : tag;     TAG_ARR_37[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_37[53] : 1'b1 ; end
+            38 : begin TAG_ARR_38[51:0] <= ( miss == 1'b1) ? TAG_ARR_38[51:0] : tag;     TAG_ARR_38[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_38[53] : 1'b1 ; end
+            39 : begin TAG_ARR_39[51:0] <= ( miss == 1'b1) ? TAG_ARR_39[51:0] : tag;     TAG_ARR_39[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_39[53] : 1'b1 ; end
+            40 : begin TAG_ARR_40[51:0] <= ( miss == 1'b1) ? TAG_ARR_40[51:0] : tag;     TAG_ARR_40[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_40[53] : 1'b1 ; end
+            41 : begin TAG_ARR_41[51:0] <= ( miss == 1'b1) ? TAG_ARR_41[51:0] : tag;     TAG_ARR_41[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_41[53] : 1'b1 ; end
+            42 : begin TAG_ARR_42[51:0] <= ( miss == 1'b1) ? TAG_ARR_42[51:0] : tag;     TAG_ARR_42[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_42[53] : 1'b1 ; end
+            43 : begin TAG_ARR_43[51:0] <= ( miss == 1'b1) ? TAG_ARR_43[51:0] : tag;     TAG_ARR_43[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_43[53] : 1'b1 ; end
+            44 : begin TAG_ARR_44[51:0] <= ( miss == 1'b1) ? TAG_ARR_44[51:0] : tag;     TAG_ARR_44[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_44[53] : 1'b1 ; end
+            45 : begin TAG_ARR_45[51:0] <= ( miss == 1'b1) ? TAG_ARR_45[51:0] : tag;     TAG_ARR_45[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_45[53] : 1'b1 ; end
+            46 : begin TAG_ARR_46[51:0] <= ( miss == 1'b1) ? TAG_ARR_46[51:0] : tag;     TAG_ARR_46[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_46[53] : 1'b1 ; end
+            47 : begin TAG_ARR_47[51:0] <= ( miss == 1'b1) ? TAG_ARR_47[51:0] : tag;     TAG_ARR_47[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_47[53] : 1'b1 ; end
+            48 : begin TAG_ARR_48[51:0] <= ( miss == 1'b1) ? TAG_ARR_48[51:0] : tag;     TAG_ARR_48[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_48[53] : 1'b1 ; end
+            49 : begin TAG_ARR_49[51:0] <= ( miss == 1'b1) ? TAG_ARR_49[51:0] : tag;     TAG_ARR_49[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_49[53] : 1'b1 ; end
+            50 : begin TAG_ARR_50[51:0] <= ( miss == 1'b1) ? TAG_ARR_50[51:0] : tag;     TAG_ARR_50[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_50[53] : 1'b1 ; end
+            51 : begin TAG_ARR_51[51:0] <= ( miss == 1'b1) ? TAG_ARR_51[51:0] : tag;     TAG_ARR_51[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_51[53] : 1'b1 ; end
+            52 : begin TAG_ARR_52[51:0] <= ( miss == 1'b1) ? TAG_ARR_52[51:0] : tag;     TAG_ARR_52[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_52[53] : 1'b1 ; end
+            53 : begin TAG_ARR_53[51:0] <= ( miss == 1'b1) ? TAG_ARR_53[51:0] : tag;     TAG_ARR_53[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_53[53] : 1'b1 ; end
+            54 : begin TAG_ARR_54[51:0] <= ( miss == 1'b1) ? TAG_ARR_54[51:0] : tag;     TAG_ARR_54[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_54[53] : 1'b1 ; end
+            55 : begin TAG_ARR_55[51:0] <= ( miss == 1'b1) ? TAG_ARR_55[51:0] : tag;     TAG_ARR_55[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_55[53] : 1'b1 ; end
+            56 : begin TAG_ARR_56[51:0] <= ( miss == 1'b1) ? TAG_ARR_56[51:0] : tag;     TAG_ARR_56[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_56[53] : 1'b1 ; end
+            57 : begin TAG_ARR_57[51:0] <= ( miss == 1'b1) ? TAG_ARR_57[51:0] : tag;     TAG_ARR_57[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_57[53] : 1'b1 ; end
+            58 : begin TAG_ARR_58[51:0] <= ( miss == 1'b1) ? TAG_ARR_58[51:0] : tag;     TAG_ARR_58[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_58[53] : 1'b1 ; end
+            59 : begin TAG_ARR_59[51:0] <= ( miss == 1'b1) ? TAG_ARR_59[51:0] : tag;     TAG_ARR_59[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_59[53] : 1'b1 ; end
+            60 : begin TAG_ARR_60[51:0] <= ( miss == 1'b1) ? TAG_ARR_60[51:0] : tag;     TAG_ARR_60[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_60[53] : 1'b1 ; end
+            61 : begin TAG_ARR_61[51:0] <= ( miss == 1'b1) ? TAG_ARR_61[51:0] : tag;     TAG_ARR_61[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_61[53] : 1'b1 ; end
+            62 : begin TAG_ARR_62[51:0] <= ( miss == 1'b1) ? TAG_ARR_62[51:0] : tag;     TAG_ARR_62[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_62[53] : 1'b1 ; end
+            63 : begin TAG_ARR_63[51:0] <= ( miss == 1'b1) ? TAG_ARR_63[51:0] : tag;     TAG_ARR_63[53] <= ( ready_L2_L1 == 1'b0) ? TAG_ARR_63[53] : 1'b1 ; end
         endcase   
     end
     else
