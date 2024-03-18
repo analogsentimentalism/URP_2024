@@ -18,11 +18,23 @@ reg read_C_L1_reg;
 reg stall_reg;
 reg refill_reg;
 reg read_L1_L2_reg;
+reg [1:0] stall_fin;
+
 genvar i;
 assign stall = stall_reg;
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
-
+always@(posedge clk or negedge nrst)
+begin
+    if(!nrst)
+        stall_fin <= 2'b00;
+    else if(miss == 1)
+        stall_fin <= 2'b10;
+    else if(stall_fin != 2'b0)
+        stall_fin <= stall_fin -1'b1;
+    else
+        stall_fin <= stall_fin;
+end 
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
@@ -37,7 +49,7 @@ begin
         stall_reg <= 1'b0;
     else if(miss == 1'b1)
         stall_reg <= 1'b1;
-    else if(stall_reg == 1'b1)
+    else if((stall_reg == 1'b1)&&(refill_reg!=1'b1))
         stall_reg <= 1'b0;
     else if(read_C_L1 == 1'b1)
         stall_reg <= 1'b1;
@@ -50,7 +62,7 @@ begin
         miss <= 1'b0;
     else if(ready_L2_L1 == 1'b1)
         miss <= 1'b0;
-    else if (read_C_L1 == 1'b1)
+    else if ((read_C_L1 == 1'b1)&&(refill_reg==1'b0))
     begin
         miss <= ((TAG_ARR[index][53] == 1'b1) && (tag == TAG_ARR[index][51:0])) ? 1'b0 : 1'b1; 
     end  
