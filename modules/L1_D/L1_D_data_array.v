@@ -9,7 +9,7 @@ input [511:0] data_L2_L1;   //L2에서 들어오는 데이터
 
 
 output reg [31:0] read_data_L1_C_reg; //
-output reg stall_L1; //여기가 맞나?
+
 
 
 

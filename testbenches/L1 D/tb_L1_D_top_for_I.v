@@ -49,18 +49,20 @@ always begin
 end
 
 initial begin: init
-	clk			= 1'b0;
-	nrst		= 1'b0;
-	address		= 64'b0;
-	read_C_L1	= 1'b0;
-	write_C_L1	= 1'b0;
-	flush		= 1'b0;
-	ready_L2_L1	= 1'b0;
+	clk				= 1'b0;
+	nrst			= 1'b0;
+	address			= 64'b0;
+	read_C_L1		= 1'b0;
+	write_C_L1		= 1'b0;
+	flush			= 1'b0;
+	ready_L2_L1		= 1'b0;
+	write_data		= 32'b0;
+	read_data_L2_L1	= 512'b0;
 
 	for(i = 0; i<1000; i = i + 1) begin
-		address_array[i]			= $urandom << 32 | $urandom;
+		address_array[i]	= $urandom << 32 | $urandom;
 		for(j = 0; j<16; j = j + 1) begin
-			read_data_L2_L1_array[i][(j+1)*32:j*32]	= $urandom;
+			read_data_L2_L1_array	[i][j*32+:32]	= $urandom;
 		end
 	end
 end
@@ -77,8 +79,9 @@ initial begin: test
 
 	for(i = 0; i<10; i = i + 1) begin
 		address			= address_array[i];
-		read_data_L2_L1	=
+	#2	read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", i, address);
+		$display("%4d: Data %h", $time, read_data_L2_L1);
 
 		ready_L2_L1	= 1'b1;
 	#2	ready_L2_L1	= 1'b0;
@@ -103,8 +106,9 @@ initial begin: test
 	$display("%4d: Read, Miss - Hit", $time);
 	for(i = 10; i<20; i = i + 1) begin
 		address		= address_array[i];
+	#2	read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", $time, address);
-	#2	
+		$display("%4d: Data %h", $time, read_data_L2_L1);
 		ready_L2_L1	= 1'b1;
 	#2
 		ready_L2_L1	= 1'b0;
@@ -117,12 +121,13 @@ initial begin: test
 	$display("%4d: Read, Miss - Miss", $time);
 	for(i = 20; i<30; i = i + 1) begin
 		address		= address_array[i];
+	#10	read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", $time, address);
-		#10
+		$display("%4d: Data %h", $time, read_data_L2_L1);
 		ready_L2_L1	= 1'b1;
-		#2
+	#2
 		ready_L2_L1	= 1'b0;
-		#8;
+	#8;
 	end
 
 #100;
@@ -150,10 +155,12 @@ initial begin: test
 	flush		= 1'b0;
 	read_C_L1	= 1'b1;
 	for(i = 0; i<100; i = i + 1) begin
-		address		= address_array[i];
+		address			= address_array[i];
+	#2	
+		read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", i, address);
-
-	#2	ready_L2_L1	= 1'b1;
+		$display("%4d: Data %h", $time, read_data_L2_L1);
+		ready_L2_L1	= 1'b1;
 	#2	ready_L2_L1	= 1'b0;
 	#6;
 	end

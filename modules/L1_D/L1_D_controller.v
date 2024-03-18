@@ -107,9 +107,9 @@ begin
         stall_reg <= 1'b0;
     else if(miss == 1'b1)
         stall_reg <= 1'b1;
-    else if(stall_reg == 1'b1)
+    else if(stall_reg == 1'b1)  // 한 주기동안만 1 유지 
         stall_reg <= 1'b0;
-    else if(read_C_L1 == 1'b1)
+    else if(read_C_L1 == 1'b1)   // 읽기 신호 1이어도 한 주기동안 1유지 
         stall_reg <= 1'b1;
     else stall_reg <= stall_reg;
 end
@@ -120,9 +120,9 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         miss <= 1'b0;
-    else if(ready_L2_L1 == 1'b1)
+    else if(ready_L2_L1 == 1'b1)   // L2 캐시에서 L1 캐시로 데이터를 보낼 준비가 되었다면 miss를 0으로 바꿈
         miss <= 1'b0;
-    else if (read_C_L1 == 1'b1)
+    else if (read_C_L1 == 1'b1) 
     begin
         case(index)
             0 :  miss <= ( (TAG_ARR_0[53] == 1'b1)&&(tag == TAG_ARR_0[51:0])) ? 1'b0 : 1'b1;  
@@ -195,10 +195,13 @@ begin
     else
         miss <= miss;          
 end
-always@(posedge clk or negedge nrst)    //tag
+
+
+// Tag
+always@(posedge clk or negedge nrst)    
 begin
     if (!nrst)
-    begin           // reset
+    begin           
         TAG_ARR_0   <= 54'h0;
         TAG_ARR_1   <= 54'h0;
         TAG_ARR_2   <= 54'h0;
@@ -264,8 +267,8 @@ begin
         TAG_ARR_62  <= 54'h0;
         TAG_ARR_63  <= 54'h0;
     end
-    else if (flush == 1'b1)
-    begin           // flush
+    else if (flush == 1'b1)             // Flush
+    begin           
         TAG_ARR_0[53]    <=   1'b0; 
         TAG_ARR_1[53]    <=   1'b0; 
         TAG_ARR_2[53]    <=   1'b0; 
@@ -334,7 +337,7 @@ begin
     end
     else if(read_C_L1_reg == 1'b1)
     begin        
-        case(index)
+        case(index) 
             0 : begin TAG_ARR_0[51:0] <= ( miss == 1'b1) ? TAG_ARR_0[51:0] : tag;        TAG_ARR_0[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_0[53] : 1'b1 ; end  
             1 : begin TAG_ARR_1[51:0] <= ( miss == 1'b1) ? TAG_ARR_1[51:0] : tag;        TAG_ARR_1[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_1[53] : 1'b1 ; end 
             2 : begin TAG_ARR_2[51:0] <= ( miss == 1'b1) ? TAG_ARR_2[51:0] : tag;        TAG_ARR_2[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_2[53] : 1'b1 ; end
@@ -470,6 +473,9 @@ begin
     end
 end  
 
+
+
+// Refill
 always@(posedge clk or negedge nrst)
 begin
     if (!nrst)
@@ -482,6 +488,9 @@ begin
         refill_reg <= refill_reg;
 end
 
+
+
+// Read_L1_L2
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
