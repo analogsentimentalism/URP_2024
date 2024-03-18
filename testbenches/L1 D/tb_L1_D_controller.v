@@ -16,7 +16,7 @@ wire				update;
 wire				read_L1_L2;
 wire				write_L1_L2;
 
-L1_I_controller u_L1_D_controller (
+L1_D_controller u_L1_D_controller (
     .clk			(clk),
     .nrst			(nrst),
 
