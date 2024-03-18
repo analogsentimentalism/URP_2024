@@ -79,7 +79,7 @@ initial begin: test
 
 	for(i = 0; i<10; i = i + 1) begin
 		address			= address_array[i];
-		read_data_L2_L1	= read_data_L2_L1_array[i];
+	#2	read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", i, address);
 		$display("%4d: Data %h", $time, read_data_L2_L1);
 
@@ -96,9 +96,7 @@ initial begin: test
 // 1-1. Hit
 	for(i = 0; i<10; i = i + 1) begin
 		address		= address_array[i];
-		read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", $time, address);
-		$display("%4d: Data %h", $time, read_data_L2_L1);
 	#10;
 	end
 
@@ -108,10 +106,9 @@ initial begin: test
 	$display("%4d: Read, Miss - Hit", $time);
 	for(i = 10; i<20; i = i + 1) begin
 		address		= address_array[i];
-		read_data_L2_L1	= read_data_L2_L1_array[i];
+	#2	read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", $time, address);
 		$display("%4d: Data %h", $time, read_data_L2_L1);
-	#2	
 		ready_L2_L1	= 1'b1;
 	#2
 		ready_L2_L1	= 1'b0;
@@ -124,14 +121,13 @@ initial begin: test
 	$display("%4d: Read, Miss - Miss", $time);
 	for(i = 20; i<30; i = i + 1) begin
 		address		= address_array[i];
-		read_data_L2_L1	= read_data_L2_L1_array[i];
+	#10	read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", $time, address);
 		$display("%4d: Data %h", $time, read_data_L2_L1);
-		#10
 		ready_L2_L1	= 1'b1;
-		#2
+	#2
 		ready_L2_L1	= 1'b0;
-		#8;
+	#8;
 	end
 
 #100;
@@ -159,10 +155,12 @@ initial begin: test
 	flush		= 1'b0;
 	read_C_L1	= 1'b1;
 	for(i = 0; i<100; i = i + 1) begin
-		address		= address_array[i];
+		address			= address_array[i];
+	#2	
+		read_data_L2_L1	= read_data_L2_L1_array[i];
 		$display("%4d: Address %h", i, address);
-
-	#2	ready_L2_L1	= 1'b1;
+		$display("%4d: Data %h", $time, read_data_L2_L1);
+		ready_L2_L1	= 1'b1;
 	#2	ready_L2_L1	= 1'b0;
 	#6;
 	end
