@@ -23,7 +23,7 @@ L1_I_controller u_L1_D_controller (
     .tag			(address[63:12]),
     .index			(address[11:6]),
     .read_C_L1		(read_C_L1),
-    // .write_C_L1		(write_C_L1),
+    .write_C_L1		(write_C_L1),
     .flush			(flush),
     .stall			(stall),
 
@@ -72,7 +72,7 @@ initial begin: test
 		address		= address_array[i];
 		$display("%4d: Address %h", i, address);
 
-	#2	ready_L2_L1	= 1'b1;
+		ready_L2_L1	= 1'b1;
 	#2	ready_L2_L1	= 1'b0;
 	#6;
 	end
