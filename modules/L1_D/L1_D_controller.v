@@ -107,9 +107,9 @@ begin
         stall_reg <= 1'b0;
     else if(miss == 1'b1)
         stall_reg <= 1'b1;
-    else if(stall_reg == 1'b1)  // 한 주기동안만 1 유지 
+    else if(stall_reg == 1'b1)         // 한 주기동안만 1 유지 
         stall_reg <= 1'b0;
-    else if(read_C_L1 == 1'b1)   // 읽기 신호 1이어도 한 주기동안 1유지 
+    else if(read_C_L1 == 1'b1)        // 읽기 신호 1이면 한 주기동안 1유지 
         stall_reg <= 1'b1;
     else stall_reg <= stall_reg;
 end
