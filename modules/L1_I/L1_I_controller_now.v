@@ -1,4 +1,5 @@
 
+
 module L1_I_controller (
     input clk,
     input nrst,
@@ -30,12 +31,13 @@ reg read_C_L1_reg;
 reg refill_reg;
 reg update_reg;
 reg read_L1_L2_reg;
+reg write_L1_L2_reg;
 genvar i;
 
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
-
-assign stall = (state == IDLE) ? 1'b0 : 1'b1;
+assign write_L1_L2 = write_L1_L2_reg;
+assign stall = (state == S_IDLE) ? 1'b0 : 1'b1;
 // FSM
 always@(posedge clk or negedge nrst)
 begin
@@ -70,6 +72,7 @@ begin
             hit <= 1'b1;
         else
             hit <= 1'b0;
+    end
     else
         hit <= 1'b0;
 end
@@ -117,7 +120,7 @@ generate
         begin
             if(!nrst)
                 TAG_ARR[i] <= 20'h0;
-            else if((state == S_ALLOCATE)&& ready_L2_L1)
+            else if((state == S_ALLOCATE)&& ready_L2_L1 && (index == i))
                 TAG_ARR[i] <= tag;
             else
                 TAG_ARR[i] <= TAG_ARR[i];
@@ -160,11 +163,11 @@ end
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
-        write_L1_L2 <= 1'b0;
+        write_L1_L2_reg <= 1'b0;
     else if (state == S_WRITE_BACK)
-        write_L1_L2 <= 1'b1;
+        write_L1_L2_reg <= 1'b1;
     else   
-        write_L1_L2 <= 1'b0;
+        write_L1_L2_reg <= 1'b0;
 end
 
 
