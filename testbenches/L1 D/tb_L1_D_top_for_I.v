@@ -60,7 +60,7 @@ initial begin: init
 	read_data_L2_L1	= 512'b0;
 
 	for(i = 0; i<1000; i = i + 1) begin
-		address_array[i]	= $urandom << 32 | $urandom;
+		address_array[i]	= $urandom << 32 | ($urandom & 32'hFFFF_FFFC);
 		for(j = 0; j<16; j = j + 1) begin
 			read_data_L2_L1_array	[i][j*32+:32]	= $urandom;
 		end
