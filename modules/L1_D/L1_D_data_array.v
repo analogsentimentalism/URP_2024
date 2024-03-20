@@ -1,6 +1,6 @@
 module L1_D_data_array(
 
-input [511:0] write_data;
+input [31:0] write_data;
 input [5:0] index; 
 input [5:0] offset;
 input clk, nrst;
