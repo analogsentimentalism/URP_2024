@@ -98,8 +98,10 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         dirty <= 64'h0;
-    else if((state == S_COMPARE) && hit)
+    else if((state == S_COMPARE) && hit && write_C_L1)
         dirty[index] <= 1'b1;
+    else if((state == S_ALLOCATE) && ready_L2_L1)
+        dirty[index] <= 1'b0;
     else
         dirty <= dirty;
 end
