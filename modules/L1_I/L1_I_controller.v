@@ -77,6 +77,7 @@ begin
         stall_reg <= 1'b1;
     else stall_reg <= stall_reg;
 end
+
 // miss
 always@(posedge clk or negedge nrst)
 begin
