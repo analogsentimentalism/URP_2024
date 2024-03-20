@@ -70,15 +70,15 @@ initial begin: test
 
 #10	nrst		<=	1'b1;
 	read_C_L1	<=	1'b1;
-#4;
+
 	for(i = 0; i<10; i = i + 1) begin
 		address		<= address_array[i];
 
 		$display("%4d: Address %h", i, address);
 
-	#2	ready_L2_L1	<=	1'b1;
+	#8	ready_L2_L1	<=	1'b1;
 	#2	ready_L2_L1	<=	1'b0;
-	#6;
+	#4;
 	end
 
 	read_C_L1	<=	1'b0;
@@ -91,7 +91,7 @@ initial begin: test
 	test_state	=	3'd1;
 
 	read_C_L1	<=	1'b1;
-#4;
+
 	for(i = 0; i<10; i = i + 1) begin
 		address		<=	address_array[i];
 
@@ -107,16 +107,16 @@ initial begin: test
 	test_state	=	3'd2;
 
 	read_C_L1	<=	1'b1;
-#4;
+
 	for(i = 10; i<20; i = i + 1) begin
 		address		<=	address_array[i];
 
 		$display("%4d: Address %h", $time, address);
-	#2	
+	#8	
 		ready_L2_L1	<=	1'b1;
 	#2
 		ready_L2_L1	<=	1'b0;
-	#6;
+	#4;
 	end
 
 	read_C_L1	<=	1'b0;
@@ -127,16 +127,16 @@ initial begin: test
 	test_state	=	3'd3;
 
 	read_C_L1	<=	1'b1;
-#4;
+
 	for(i = 20; i<30; i = i + 1) begin
 		address		<=	address_array[i];
 
 		$display("%4d: Address %h", $time, address);
-		#10
+	#20
 		ready_L2_L1	<=	1'b1;
-		#2
+	#2
 		ready_L2_L1	<=	1'b0;
-		#8;
+	#8;
 	end
 
 	read_C_L1	<=	1'b0;
