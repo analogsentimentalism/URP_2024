@@ -37,7 +37,7 @@ genvar i;
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
-assign stall = (state == S_IDLE) ? 1'b0 : 1'b1;
+assign stall = state != S_IDLE;
 // FSM
 always@(posedge clk or negedge nrst)
 begin
@@ -51,7 +51,7 @@ always@(*)
 begin
     case(state)
         S_IDLE          :       next_state      <=      ((read_C_L1)||(write_C_L1)) ?   S_COMPARE     :    S_IDLE;
-        S_COMPARE       :       next_state      <=      (hit && valid[index])       ?   S_IDLE        :    
+        S_COMPARE       :       next_state      <=      hit                         ?   S_IDLE        :    
                                                         (!miss)                     ?   S_COMPARE     :    
                                                         (write_C_L1 && dirty[index])?   S_WRITE_BACK  :    S_ALLOCATE; 
         S_ALLOCATE      :       next_state      <=      ready_L2_L1                 ?   S_COMPARE     :    S_ALLOCATE;    
@@ -98,7 +98,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         dirty <= 64'h0;
-    else if((state == S_COMPARE) && hit && valid[index])
+    else if((state == S_COMPARE) && hit)
         dirty[index] <= 1'b1;
     else
         dirty <= dirty;
@@ -107,6 +107,8 @@ end
 always@(posedge clk or negedge nrst)
 begin
     if (!nrst)
+        valid <= 64'h0;
+    else if ((state == S_IDLE) && flush)
         valid <= 64'h0;
     else if ((state == S_ALLOCATE) && ready_L2_L1)
         valid[index] <= 1'b1;
@@ -153,7 +155,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         read_L1_L2_reg <= 1'b0;
-    else if((state == S_ALLOCATE) && read_C_L1)
+    else if(state == S_ALLOCATE)
         read_L1_L2_reg <= 1'b1;
     else
         read_C_L1_reg <= 1'b0;
