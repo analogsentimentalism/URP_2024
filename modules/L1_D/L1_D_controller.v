@@ -1,7 +1,7 @@
 module L1_D_controller (
     input clk,
     input nrst,
-    input [51:0] tag, 
+    input [19:0] tag, 
     input [5:0] index, 
     input read_C_L1, flush,
     input ready_L2_L1,
@@ -10,72 +10,17 @@ module L1_D_controller (
     output stall, refill, update, read_L1_L2, write_L1_L2
 );
 
+parameter   S_IDLE          =   2'b00;
+parameter   S_COMPARE       =   2'b01;
+parameter   S_WRITE_BACK    =   2'b10;
+parameter   S_ALLOCATE      =   2'b11;
 
 
-reg [53:0] TAG_ARR_0;
-reg [53:0] TAG_ARR_1;
-reg [53:0] TAG_ARR_2;
-reg [53:0] TAG_ARR_3;
-reg [53:0] TAG_ARR_4;
-reg [53:0] TAG_ARR_5;
-reg [53:0] TAG_ARR_6;
-reg [53:0] TAG_ARR_7;
-reg [53:0] TAG_ARR_8;
-reg [53:0] TAG_ARR_9;
-reg [53:0] TAG_ARR_10;
-reg [53:0] TAG_ARR_11;
-reg [53:0] TAG_ARR_12;
-reg [53:0] TAG_ARR_13;
-reg [53:0] TAG_ARR_14;
-reg [53:0] TAG_ARR_15;
-reg [53:0] TAG_ARR_16;
-reg [53:0] TAG_ARR_17;
-reg [53:0] TAG_ARR_18;
-reg [53:0] TAG_ARR_19;
-reg [53:0] TAG_ARR_20;
-reg [53:0] TAG_ARR_21;
-reg [53:0] TAG_ARR_22;
-reg [53:0] TAG_ARR_23;
-reg [53:0] TAG_ARR_24;
-reg [53:0] TAG_ARR_25;
-reg [53:0] TAG_ARR_26;
-reg [53:0] TAG_ARR_27;
-reg [53:0] TAG_ARR_28;
-reg [53:0] TAG_ARR_29;
-reg [53:0] TAG_ARR_30;
-reg [53:0] TAG_ARR_31;
-reg [53:0] TAG_ARR_32;
-reg [53:0] TAG_ARR_33;
-reg [53:0] TAG_ARR_34;
-reg [53:0] TAG_ARR_35;
-reg [53:0] TAG_ARR_36;
-reg [53:0] TAG_ARR_37;
-reg [53:0] TAG_ARR_38;
-reg [53:0] TAG_ARR_39;
-reg [53:0] TAG_ARR_40;
-reg [53:0] TAG_ARR_41;
-reg [53:0] TAG_ARR_42;
-reg [53:0] TAG_ARR_43;
-reg [53:0] TAG_ARR_44;
-reg [53:0] TAG_ARR_45;
-reg [53:0] TAG_ARR_46;
-reg [53:0] TAG_ARR_47;
-reg [53:0] TAG_ARR_48;
-reg [53:0] TAG_ARR_49;
-reg [53:0] TAG_ARR_50;
-reg [53:0] TAG_ARR_51;
-reg [53:0] TAG_ARR_52;
-reg [53:0] TAG_ARR_53;
-reg [53:0] TAG_ARR_54;
-reg [53:0] TAG_ARR_55;
-reg [53:0] TAG_ARR_56;
-reg [53:0] TAG_ARR_57;
-reg [53:0] TAG_ARR_58;
-reg [53:0] TAG_ARR_59;
-reg [53:0] TAG_ARR_60;
-reg [53:0] TAG_ARR_61;
-reg [53:0] TAG_ARR_62;
-reg [53:0] TAG_ARR_63;
+reg [19:0] TAG_ARR [63:0]
+reg [63:0] valid;
+reg [63:0] dirty;
+reg [1:0] state, next_state;
+
 reg miss;
 reg hit;
 reg read_C_L1_reg;

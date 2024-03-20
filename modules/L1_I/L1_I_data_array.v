@@ -98,7 +98,7 @@ generate
         else if ((refill == 1'b1) && (index == i))
             DATA_ARR[i] <= read_data_L2_L1;
         else if ((update == 1'b1 && (index == i)))
-            DATA_ARR[i];
+            DATA_ARR[i] <= write_data;
         
         else
             DATA_ARR[i] <= DATA_ARR[i];
