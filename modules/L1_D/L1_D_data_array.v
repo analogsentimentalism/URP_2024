@@ -1,18 +1,17 @@
 module L1_D_data_array(
 
-input [511:0] write_data;
+input [31:0] write_data;
 input [5:0] index; 
 input [5:0] offset;
 input clk, nrst;
 input update, refill;
 input [511:0] read_data_L2_L1;   // 우리가 필요한 데이터가 포함된 블록 (L2에서 들어오는)
-output reg [31:0] read_data_L1_C; // 우리가 필요한 데이터 부분
+output reg [31:0] read_data_L1_C;     // 우리가 필요한 데이터 부분.. 1 word씩 읽어오는 거 맞나?
 )
 
 reg [511:0] DATA_ARR [63:0];
-reg [31:0] read_data_L1_C;
-assign read_data_L1_C= read_data_L1_C_reg;
 
+assign read_data_L1_C= read_data_L1_C_reg;
 genvar i;
 
 
@@ -101,10 +100,10 @@ generate
             DATA_ARR[i] <= 512'h0;
         
         else if (refill && (index == i))
-            DATA_ARR[i] <= read_data_L2_L1;
+            DATA_ARR[i] <= read_data_L2_L1;    //블록 단위 교체
         else if (update && (index == i))
-            DATA_ARR[i] <= write_data;
-        
+            //DATA_ARR[i] <= write_data;         얘가 헷갈림. write_data가 32bit이고 해당 데이터 어레이의 해당 부분만 갱신?
+            DATA_ARR[i][{offset[5:2], 5'h00000} +:32] <= write_data;
         else
             DATA_ARR[i] <= DATA_ARR[i];
         end
