@@ -21,6 +21,7 @@ parameter   S_ALLOCATE      =   2'b11;
 reg [19:0] TAG_ARR [63:0];
 reg [63:0] valid;
 reg [63:0] dirty;
+reg [63:0] lru;
 
 reg [1:0] state, next_state;
 
@@ -32,6 +33,7 @@ reg update_reg;
 reg read_L1_L2_reg;
 reg write_L1_L2_reg;
 genvar i;
+integer j;
 
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
@@ -144,6 +146,7 @@ endgenerate
 
 
 
+//refill
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
@@ -156,6 +159,7 @@ end
 
 
 
+//update
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
@@ -190,6 +194,18 @@ begin
         write_L1_L2_reg <= 1'b1;
     else   
         write_L1_L2_reg <= 1'b0;
+end
+
+
+// Least Recently Used
+always @(posedge clk or negedge nrst)
+begin 
+    if ((state== S_COMPARE) && hit)  // read write 둘다 사용됐다고 봐야겠지?
+        lru[index] <= 1'b1;
+    else if((state== S_ALLOCATE) && ready_L2_L1) 
+        lru[index] <= 1'b0;
+    else 
+        lru <= lru;     // !nrst, flush 포함 모든 경우
 end
 
 
