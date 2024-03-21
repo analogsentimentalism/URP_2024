@@ -53,7 +53,7 @@ begin
         S_IDLE          :       next_state      <=      ((read_C_L1)||(write_C_L1)) ?   S_COMPARE     :    S_IDLE;
         S_COMPARE       :       next_state      <=      hit                         ?   S_IDLE        :    
                                                         (!miss)                     ?   S_COMPARE     :    
-                                                        (write_C_L1 && dirty[index])?   S_WRITE_BACK  :    S_ALLOCATE; 
+                                                        (dirty[index])?   S_WRITE_BACK  :    S_ALLOCATE; 
         S_ALLOCATE      :       next_state      <=      ready_L2_L1                 ?   S_COMPARE     :    S_ALLOCATE;    
         S_WRITE_BACK    :       next_state      <=      ready_L2_L1                 ?   S_ALLOCATE    :    S_WRITE_BACK;
     endcase
