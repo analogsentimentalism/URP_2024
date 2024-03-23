@@ -34,6 +34,7 @@ reg read_L1_L2_reg;
 reg write_L1_L2_reg;
 genvar i;
 
+assign update = update_reg;
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
