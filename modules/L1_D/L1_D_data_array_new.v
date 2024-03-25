@@ -8,7 +8,7 @@ input update, refill;
 input [511:0] read_data_L2_L1;   // 우리가 필요한 데이터가 포함된 블록 (L2에서 들어오는)
 
 output reg [31:0] read_data_L1_C;     // 우리가 필요한 데이터 부분(코어로 주는).. 1 word씩 읽어오는 거 맞나?
-// output reg [511:0] replace_data_L1_L2      L1에서 L2로 교체되는 데이터
+output reg [511:0] replace_data_L1_L2      //L1에서 L2로 교체되는 데이터: 아얘 블록 단위로 교체, 얘는 무슨 신호에 나가야 하는 거지?
 )
 
 reg [511:0] DATA_ARR [63:0];
@@ -105,7 +105,6 @@ generate
         else if (refill && (index == i))   // read L2 hit --> 교체
             DATA_ARR[i] <= read_data_L2_L1;    //블록 단위 교체
         else if (update && (index == i))   // write hit
-            //DATA_ARR[i] <= write_data;         얘가 헷갈림. write_data가 32bit이고 해당 데이터 어레이의 해당 부분만 갱신?
             DATA_ARR[i][{offset[5:2], 5'h00000} +:32] <= write_data;
         else
             DATA_ARR[i] <= DATA_ARR[i];
