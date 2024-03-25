@@ -39,6 +39,7 @@ assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
 assign stall = (state != S_IDLE);
+assign update = update_reg;
 
 
 // FSM
