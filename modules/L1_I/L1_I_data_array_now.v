@@ -28,7 +28,7 @@ generate
         else if ((refill == 1'b1) && (index_C_L1 == i))
             DATA_ARR[i] <= read_data_L2_L1;
         else if ((update == 1'b1 && (index_C_L1 == i)))
-            DATA_ARR[i] <= write_data_C_L!; 
+            DATA_ARR[i] <= write_data_C_L1; 
         else
             DATA_ARR[i] <= DATA_ARR[i];
         end
