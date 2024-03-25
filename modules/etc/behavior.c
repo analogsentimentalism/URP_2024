@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 //#define filename "trace1.din"
-#define filename "data.txt"
+#define filename "address.txt"
 
 
 struct i_cache {	/* 인스트럭션 캐시 구조체 */
