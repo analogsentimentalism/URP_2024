@@ -7,7 +7,7 @@ input clk, nrst;
 input update, refill;
 input [511:0] read_data_L2_L1;   // 우리가 필요한 데이터가 포함된 블록 (L2에서 들어오는)
 
-output reg [31:0] read_data_L1_C;     // 우리가 필요한 데이터 부분(코어로 주는).. 1 word씩 읽어오는 거 맞나?
+output reg [31:0] read_data_L1_C;     // 우리가 필요한 데이터 부분(코어로 주는).. 1 word씩 읽어오는 거 맞나? 
 )
 
 reg [511:0] DATA_ARR [63:0];

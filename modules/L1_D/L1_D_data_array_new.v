@@ -8,7 +8,7 @@ input update, refill;
 input [511:0] read_data_L2_L1;   // 우리가 필요한 데이터가 포함된 블록 (L2에서 들어오는)
 
 output reg [31:0] read_data_L1_C;     // 우리가 필요한 데이터 부분(코어로 주는).. 1 word씩 읽어오는 거 맞나?
-output reg [511:0] replace_data_L1_L2      //L1에서 L2로 교체되는 데이터: 아얘 블록 단위로 교체, 얘는 무슨 신호에 나가야 하는 거지?
+output reg [511:0] replace_data_L1_L2      //L1에서 L2로 교체되는 데이터: 아얘 블록 단위로 교체, 얘는 무슨 신호에 나가야 하는 거지? write, miss, update?
 )
 
 reg [511:0] DATA_ARR [63:0];
