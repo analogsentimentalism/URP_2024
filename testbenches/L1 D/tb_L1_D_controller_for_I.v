@@ -9,31 +9,36 @@ reg					read_C_L1;
 reg					write_C_L1;
 reg					flush;
 reg					ready_L2_L1;
-reg					write_L1_L2_done;
 
 wire				stall;
 wire				refill;
 wire				update;
 wire				read_L1_L2;
 wire				write_L1_L2;
+wire	[5:0]		index_L1_L2;
+wire	[19:0]		tag_L1_L2;
+wire	[19:0]		write_tag_L1_L2;
 
 L1_I_controller u_L1_D_controller (
     .clk				(clk),
     .nrst				(nrst),
 
-    .tag				(address[31:12]),
-    .index				(address[11:6]),
+    .tag_C_L1			(address[31:12]),
+    .index_C_L1			(address[11:6]),
     .read_C_L1			(read_C_L1),
     .flush				(flush),
     .ready_L2_L1		(ready_L2_L1),
     .write_C_L1			(write_C_L1),
-	.write_L1_L2_done	(write_L1_L2_done),
 
     .stall				(stall),
 	.refill				(refill),
 	.update				(update),
     .read_L1_L2			(read_L1_L2),
-    .write_L1_L2		(write_L1_L2)
+    .write_L1_L2		(write_L1_L2),
+
+	.index_L1_L2		(index_L1_L2),
+	.tag_L1_L2			(tag_L1_L2),
+	.write_tag_L1_L2	(write_tag_L1_L2)
 );
 
 // Signals for Testbench
@@ -58,13 +63,13 @@ initial begin: init
 	flush		=	1'b0;
 	ready_L2_L1	=	1'b0;
 
-	for(i = 0; i<30; i = i + 1) begin
+	for(i = 0; i<30; i = i + 1) begin	// random addresses
 		address_array[i]	=	$urandom & 32'hFFFF_F03C | {i[5:0], 6'b000000};
-		$display("%2d\t:\t%8h", i, address_array[i]);
+		$display("%2dth address:\t%8h", i, address_array[i]);
 	end
-	for(i = 0; i<30; i = i + 1) begin
+	for(i = 0; i<30; i = i + 1) begin	// random addresses with same index
 		address_array[i + 30]	=	$urandom & 32'hFFFF_F03C | {address_array[i][11:6], 6'b000000};
-		$display("%2d\t:\t%8h", i + 30, address_array[i + 30]);
+		$display("%2dth address\t:\t%8h", i + 30, address_array[i + 30]);
 	end
 end
 
@@ -74,27 +79,31 @@ initial begin: test
 	$display("Cache Init (Write) start");
 
 	nrst		=	1'b1;
-#10	nrst		=	1'b0;
+	repeat(5)	@(posedge	clk);
+	nrst		=	1'b0;
 
-#10	nrst		=	1'b1;
+	repeat(5)	@(posedge	clk);
+	nrst		=	1'b1;
 	write_C_L1	=	1'b1;	// Initial reset
 
 	for(i = 0; i<10; i = i + 1) begin
 		address		= address_array[i];
 
-		$display("%4d: Address %h", i, address);
+		$display("%6d: Read Address %h", i, address);
 
-	#8	ready_L2_L1	=	1'b1;
-	#2	ready_L2_L1	=	1'b0;
+		repeat(4)	@(posedge	clk);
+		ready_L2_L1	=	1'b1;
+		@(posedge	clk);
+		ready_L2_L1	=	1'b0;
 		
 		while(stall) #2;
 	end
 
 	write_C_L1	=	1'b0;
-#100;
+	repeat(50)	@(posedge	clk);
 
 	// 1. Read: Hit
-	$display("%4d: Read-Hit", $time);
+	$display("%6d: Read-Hit", $time);
 	test_state	=	3'd1;
 
 	read_C_L1	=	1'b1;
@@ -102,16 +111,16 @@ initial begin: test
 	for(i = 0; i<10; i = i + 1) begin
 		address		=	address_array[i];
 
-		$display("%4d: Address %h", $time, address);
-	#2;
-		while(stall) #2;
+		$display("%6d: Read Address %h", $time, address);
+		@(posedge	clk);
+		while(stall) @(posedge	clk);
 	end
 
 	read_C_L1	=	1'b0;
-#100;
+	repeat(50)	@(posedge	clk);
 
 	// 2. Read: Miss - (Memory) Hit
-	$display("%4d: Read-Miss-Hit", $time);
+	$display("%6d: Read-Miss-Hit", $time);
 	test_state	=	3'd2;
 
 	read_C_L1	=	1'b1;
@@ -119,12 +128,12 @@ initial begin: test
 	for(i = 10; i<20; i = i + 1) begin
 		address		=	address_array[i];
 
-		$display("%4d: Address %h", $time, address);
-	#8	
+		$display("%6d: Read Address %h", $time, address);
+		repeat(4)	@(posedge	clk);
 		ready_L2_L1	=	1'b1;
-	#2
+		@(posedge	clk);
 		ready_L2_L1	=	1'b0;
-	#2;
+		@(posedge	clk);
 		while(stall) #2;
 	end
 
@@ -132,7 +141,7 @@ initial begin: test
 #100;
 
 	// 3. Read: Miss - (Memory) Miss
-	$display("%4d: Read-Miss-Miss", $time);
+	$display("%6d: Read-Miss-Miss", $time);
 	test_state	=	3'd3;
 
 	read_C_L1	=	1'b1;
@@ -140,41 +149,52 @@ initial begin: test
 	for(i = 20; i<30; i = i + 1) begin
 		address		=	address_array[i];
 
-		$display("%4d: Address %h", $time, address);
-	#20
+		$display("%6d: Read Address %h", $time, address);
+		repeat(10)	@(posedge	clk);
 		ready_L2_L1	=	1'b1;
-	#2
+		@(posedge	clk);
 		ready_L2_L1	=	1'b0;
-	#2;
-		while(stall) #2;
+		@(posedge	clk);
+		while(stall) @(posedge	clk);
 	end
 
 	read_C_L1	=	1'b0;
-#100;
+	repeat(50)	@(posedge	clk);
 
 	// 4. Cache Replacement: Hit
-	$display("%4d: Cache Replacement-Hit", $time);
+	$display("%6d: Cache Replacement-Hit", $time);
 	test_state	=	3'd4;
 
 	read_C_L1	=	1'b1;
 
-
 	for(i = 30; i<60; i = i + 1) begin
 		address		=	address_array[i];
 
-		$display("%4d: Address %h", $time, address);
-	#20
-		ready_L2_L1	=	1'b1;
-	#2
+		$display("%6d: Read Address %h", $time, address);
+		repeat(5)	@(posedge	clk);
+		if(write_L1_L2)	begin	// for write
+			$display("%6d: Write Back", $time);
+			@(posedge	clk);
+			ready_L2_L1	=	1'b1;
+			@(posedge	clk);
+			ready_L2_L1	=	1'b0;
+		end
+
+		$display("%6d: Read", $time);
+		repeat(2)	@(posedge	clk);
+		ready_L2_L1	=	1'b1;	// for read
+		@(posedge	clk);
 		ready_L2_L1	=	1'b0;
-	#2;
-		while(stall) #2;
+		@(posedge	clk);
+		while(stall) @(posedge	clk);
 	end
 	
-#100;
+	read_C_L1	=	1'b0;
+
+	repeat(50)	@(posedge	clk);
 
 	// 5. Cache Replacement: Miss
-	$display("%4d: Cache Replacement-Miss", $time);
+	$display("%6d: Cache Replacement-Miss", $time);
 	test_state	=	3'd5;
 
 	write_C_L1	=	1'b1;
@@ -182,13 +202,13 @@ initial begin: test
 	for(i = 30; i<40; i = i + 1) begin
 		address		=	address_array[i];
 
-		$display("%4d: Address %h", $time, address);
-	#20
+		$display("%6d: Write Address (for dirty) %h", $time, address);
+		repeat(5)	@(posedge	clk);
 		ready_L2_L1	=	1'b1;
-	#2
+		@(posedge	clk);
 		ready_L2_L1	=	1'b0;
-	#2;
-		while(stall) #2;
+		@(posedge	clk);
+		while(stall) @(posedge	clk);
 	end
 
 	write_C_L1	=	1'b0;
@@ -197,26 +217,39 @@ initial begin: test
 
 	for(i = 0; i<30; i = i + 1) begin
 		address		=	address_array[i];
-	#2;
-		while(stall) #2;
+		repeat(5)	@(posedge	clk);
+		if(write_L1_L2)	begin	// for dirty
+			$display("%6d: Write Back", $time);
+			@(posedge	clk);
+			ready_L2_L1	=	1'b1;
+			@(posedge	clk);
+			ready_L2_L1	=	1'b0;
+		end
+
+		$display("%6d: Read", $time);
+		repeat(10)	@(posedge	clk);
+		ready_L2_L1	=	1'b1;	// for read
+		@(posedge	clk);
+		ready_L2_L1	=	1'b0;
+		@(posedge	clk);
+		while(stall) @(posedge	clk);
 	end
 
-#100;
+	repeat(50)	@(posedge	clk);
 
 	// 6. Flush
-	$display("%4d: FLUSH", $time);
+	$display("%6d: FLUSH", $time);
 	test_state	=	3'd6;
 
 	flush	=	1'b1;
 
-#100;
-	$stop;
+	repeat(50)	@(posedge	clk);
+	$finish;
 end
 
 initial begin
 	$dumpfile("tb_L1_D_controller_for_I.vcd");
 	$dumpvars(u_L1_D_controller);
 end
-
 
 endmodule
