@@ -1,26 +1,80 @@
-module L1_D_controller (
+
+module L1_I_controller (
     input clk,
     input nrst,
-    input [19:0] tag, 
+    input [51:0] tag, 
     input [5:0] index, 
     input read_C_L1, flush,
     input ready_L2_L1,
     input write_C_L1,
-
     output stall, refill, update, read_L1_L2, write_L1_L2
 );
 
-parameter   S_IDLE          =   2'b00;
-parameter   S_COMPARE       =   2'b01;
-parameter   S_WRITE_BACK    =   2'b10;
-parameter   S_ALLOCATE      =   2'b11;
-
-
-reg [19:0] TAG_ARR [63:0]
-reg [63:0] valid;
-reg [63:0] dirty;
-reg [1:0] state, next_state;
-
+// define TAG_ARR
+reg [53:0] TAG_ARR_0;
+reg [53:0] TAG_ARR_1;
+reg [53:0] TAG_ARR_2;
+reg [53:0] TAG_ARR_3;
+reg [53:0] TAG_ARR_4;
+reg [53:0] TAG_ARR_5;
+reg [53:0] TAG_ARR_6;
+reg [53:0] TAG_ARR_7;
+reg [53:0] TAG_ARR_8;
+reg [53:0] TAG_ARR_9;
+reg [53:0] TAG_ARR_10;
+reg [53:0] TAG_ARR_11;
+reg [53:0] TAG_ARR_12;
+reg [53:0] TAG_ARR_13;
+reg [53:0] TAG_ARR_14;
+reg [53:0] TAG_ARR_15;
+reg [53:0] TAG_ARR_16;
+reg [53:0] TAG_ARR_17;
+reg [53:0] TAG_ARR_18;
+reg [53:0] TAG_ARR_19;
+reg [53:0] TAG_ARR_20;
+reg [53:0] TAG_ARR_21;
+reg [53:0] TAG_ARR_22;
+reg [53:0] TAG_ARR_23;
+reg [53:0] TAG_ARR_24;
+reg [53:0] TAG_ARR_25;
+reg [53:0] TAG_ARR_26;
+reg [53:0] TAG_ARR_27;
+reg [53:0] TAG_ARR_28;
+reg [53:0] TAG_ARR_29;
+reg [53:0] TAG_ARR_30;
+reg [53:0] TAG_ARR_31;
+reg [53:0] TAG_ARR_32;
+reg [53:0] TAG_ARR_33;
+reg [53:0] TAG_ARR_34;
+reg [53:0] TAG_ARR_35;
+reg [53:0] TAG_ARR_36;
+reg [53:0] TAG_ARR_37;
+reg [53:0] TAG_ARR_38;
+reg [53:0] TAG_ARR_39;
+reg [53:0] TAG_ARR_40;
+reg [53:0] TAG_ARR_41;
+reg [53:0] TAG_ARR_42;
+reg [53:0] TAG_ARR_43;
+reg [53:0] TAG_ARR_44;
+reg [53:0] TAG_ARR_45;
+reg [53:0] TAG_ARR_46;
+reg [53:0] TAG_ARR_47;
+reg [53:0] TAG_ARR_48;
+reg [53:0] TAG_ARR_49;
+reg [53:0] TAG_ARR_50;
+reg [53:0] TAG_ARR_51;
+reg [53:0] TAG_ARR_52;
+reg [53:0] TAG_ARR_53;
+reg [53:0] TAG_ARR_54;
+reg [53:0] TAG_ARR_55;
+reg [53:0] TAG_ARR_56;
+reg [53:0] TAG_ARR_57;
+reg [53:0] TAG_ARR_58;
+reg [53:0] TAG_ARR_59;
+reg [53:0] TAG_ARR_60;
+reg [53:0] TAG_ARR_61;
+reg [53:0] TAG_ARR_62;
+reg [53:0] TAG_ARR_63;
 reg miss;
 reg hit;
 reg read_C_L1_reg;
@@ -32,10 +86,6 @@ assign stall = stall_reg;
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 
-
-
-
-
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
@@ -43,8 +93,6 @@ begin
     else   
         read_C_L1_reg <= read_C_L1;
 end
-
-
 // stall
 always@(posedge clk or negedge nrst)
 begin
@@ -52,22 +100,20 @@ begin
         stall_reg <= 1'b0;
     else if(miss == 1'b1)
         stall_reg <= 1'b1;
-    else if(stall_reg == 1'b1)         // 한 주기동안만 1 유지 
+    else if(stall_reg == 1'b1)
         stall_reg <= 1'b0;
-    else if(read_C_L1 == 1'b1)        // 읽기 신호 1이면 한 주기동안 1유지 
+    else if(read_C_L1 == 1'b1)
         stall_reg <= 1'b1;
     else stall_reg <= stall_reg;
 end
-
-
 // miss
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         miss <= 1'b0;
-    else if(ready_L2_L1 == 1'b1)   // L2 캐시에서 L1 캐시로 데이터를 보낼 준비가 되었다면 miss를 0으로 바꿈
+    else if(ready_L2_L1 == 1'b1)
         miss <= 1'b0;
-    else if (read_C_L1 == 1'b1) 
+    else if (read_C_L1 == 1'b1)
     begin
         case(index)
             0 :  miss <= ( (TAG_ARR_0[53] == 1'b1)&&(tag == TAG_ARR_0[51:0])) ? 1'b0 : 1'b1;  
@@ -140,13 +186,10 @@ begin
     else
         miss <= miss;          
 end
-
-
-// Tag
-always@(posedge clk or negedge nrst)    
+always@(posedge clk or negedge nrst)    //tag
 begin
     if (!nrst)
-    begin           
+    begin           // reset
         TAG_ARR_0   <= 54'h0;
         TAG_ARR_1   <= 54'h0;
         TAG_ARR_2   <= 54'h0;
@@ -212,8 +255,8 @@ begin
         TAG_ARR_62  <= 54'h0;
         TAG_ARR_63  <= 54'h0;
     end
-    else if (flush == 1'b1)             // Flush
-    begin           
+    else if (flush == 1'b1)
+    begin           // flush
         TAG_ARR_0[53]    <=   1'b0; 
         TAG_ARR_1[53]    <=   1'b0; 
         TAG_ARR_2[53]    <=   1'b0; 
@@ -282,7 +325,7 @@ begin
     end
     else if(read_C_L1_reg == 1'b1)
     begin        
-        case(index) 
+        case(index)
             0 : begin TAG_ARR_0[51:0] <= ( miss == 1'b1) ? TAG_ARR_0[51:0] : tag;        TAG_ARR_0[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_0[53] : 1'b1 ; end  
             1 : begin TAG_ARR_1[51:0] <= ( miss == 1'b1) ? TAG_ARR_1[51:0] : tag;        TAG_ARR_1[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_1[53] : 1'b1 ; end 
             2 : begin TAG_ARR_2[51:0] <= ( miss == 1'b1) ? TAG_ARR_2[51:0] : tag;        TAG_ARR_2[53] <=  (ready_L2_L1 == 1'b0)  ? TAG_ARR_2[53] : 1'b1 ; end
@@ -418,9 +461,6 @@ begin
     end
 end  
 
-
-
-// Refill
 always@(posedge clk or negedge nrst)
 begin
     if (!nrst)
@@ -433,9 +473,6 @@ begin
         refill_reg <= refill_reg;
 end
 
-
-
-// Read_L1_L2
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)

@@ -1,7 +1,4 @@
-
-
-
-module L1_I_controller (
+module L1_D_controller (
     input clk,
     input nrst,
     input [19:0] tag, 
@@ -9,9 +6,8 @@ module L1_I_controller (
     input read_C_L1, flush,
     input ready_L2_L1,
     input write_C_L1,
-    output stall, refill, update, read_L1_L2, write_L1_L2,
-    output [19:0] read_tag_L1_L2,
-    output [19:0] write_tag_L1_L2
+
+    output stall, refill, update, read_L1_L2, write_L1_L2
 );
 
 parameter   S_IDLE          =   2'b00;
@@ -25,6 +21,7 @@ parameter   S_ALLOCATE      =   2'b11;
 reg [19:0] TAG_ARR [63:0];
 reg [63:0] valid;
 reg [63:0] dirty;
+reg [63:0] lru;
 
 reg [1:0] state, next_state;
 
@@ -36,14 +33,14 @@ reg update_reg;
 reg read_L1_L2_reg;
 reg write_L1_L2_reg;
 genvar i;
+integer j;
 
-assign update = update_reg;
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
-assign stall = state != S_IDLE;
-assign read_tag_L1_L2 = tag;
-assign write_tag_L1_L2 = TAG_ARR[index];
+assign stall = (state != S_IDLE);
+assign update = update_reg;
+
 
 // FSM
 always@(posedge clk or negedge nrst)
@@ -60,7 +57,7 @@ begin
         S_IDLE          :       next_state      <=      ((read_C_L1)||(write_C_L1)) ?   S_COMPARE     :    S_IDLE;
         S_COMPARE       :       next_state      <=      hit                         ?   S_IDLE        :    
                                                         (!miss)                     ?   S_COMPARE     :    
-                                                        (write_C_L1 && dirty[index])?   S_WRITE_BACK  :    S_ALLOCATE; 
+                                                        (dirty[index])              ?   S_WRITE_BACK  :    S_ALLOCATE; 
         S_ALLOCATE      :       next_state      <=      ready_L2_L1                 ?   S_COMPARE     :    S_ALLOCATE;    
         S_WRITE_BACK    :       next_state      <=      ready_L2_L1                 ?   S_ALLOCATE    :    S_WRITE_BACK;
     endcase
@@ -84,6 +81,8 @@ begin
         hit <= 1'b0;
 end
 
+
+
 // miss
 always @ (posedge clk or negedge nrst)
 begin
@@ -100,6 +99,8 @@ begin
         miss <= 1'b0;
 end
 
+
+
 // dirty
 always@(posedge clk or negedge nrst)
 begin
@@ -112,6 +113,9 @@ begin
     else
         dirty <= dirty;
 end
+
+
+
 // valid
 always@(posedge clk or negedge nrst)
 begin
@@ -124,6 +128,8 @@ begin
     else
         valid <= valid;
 end
+
+
 
 generate
     for (i=0; i<64; i = i+1)    begin
@@ -139,6 +145,9 @@ generate
     end
 endgenerate
 
+
+
+//refill
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
@@ -149,15 +158,20 @@ begin
         refill_reg <= 1'b0;
 end
 
+
+
+//update
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         update_reg <= 1'b0;
-    else if ((state == S_ALLOCATE) && ready_L2_L1 && write_C_L1)
+    else if (((state == S_ALLOCATE) && ready_L2_L1 && write_C_L1) || ((state==S_COMPARE) && (write_C_L1) && hit))  //write hit 추가
         update_reg <= 1'b1;
     else
         update_reg <= 1'b0;
 end        
+
+
 
 //read_L1_L2
 always@(posedge clk or negedge nrst)
@@ -167,8 +181,10 @@ begin
     else if(state == S_ALLOCATE)
         read_L1_L2_reg <= 1'b1;
     else
-        read_C_L1_reg <= 1'b0;
+        read_L1_L2_reg <= 1'b0;
 end
+
+
 
 //write_L1_L2
 always@(posedge clk or negedge nrst)
@@ -182,5 +198,16 @@ begin
 end
 
 
-endmodule
+// Least Recently Used
+always @(posedge clk or negedge nrst)
+begin 
+    if ((state== S_COMPARE) && hit)  // read write 둘다 사용됐다고 봐야겠지?
+        lru[index] <= 1'b1;
+    else if((state== S_ALLOCATE) && ready_L2_L1) 
+        lru[index] <= 1'b0;
+    else 
+        lru <= lru;     // !nrst, flush 포함 모든 경우
+end
 
+
+endmodule

@@ -13,7 +13,7 @@ reg					refill_L1;
 wire	[511:0]		read_data;
 wire				stall_L1;
 
-L1_D_data_array u_L1_D_data_array (
+L1_I_data_array u_L1_D_data_array (
 	.clk			(clk), 
 	.nrst			(nrst), 
 	.read_data		(read_data), 
