@@ -81,7 +81,7 @@ always @(posedge clk or negedge nrst) begin
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}] )
             way_reg <= 1'b1;
         else
-            way_reg <= LRU;
+            way_reg <= LRU_reg;
     end
     else 
         way_reg <= way_reg;
@@ -89,15 +89,15 @@ end
 //LRU (if LRU == 0 -> way 0 replace, LRU == 1 -> way 1 replace)
 always@(posedge clk or negedge nrst) begin
     if(!nrst)
-        LRU <= 1'b0;
+        LRU_reg <= 1'b0;
     else if (state == S_COMPARE) begin
         if (hit)
-            LRU <= !way;
+            LRU_reg <= !way;
         else
-            LRU <= LRU;
+            LRU_reg <= LRU_reg;
     end
     else
-        LRU <= LRU;
+        LRU_reg <= LRU_reg;
 end 
 
 // hit
