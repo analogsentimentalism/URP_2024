@@ -8,7 +8,8 @@ module L1_D_controller (
     input ready_L2_L1,
     input write_C_L1,
     output stall, refill, update, read_L1_L2, write_L1_L2,
-    output [20:0] read_tag_L1_L2,
+    output [4:0] index_L1_L2,
+    output [20:0] tag_L1_L2,
     output [20:0] write_tag_L1_L2,
     output way
 );
@@ -44,9 +45,11 @@ assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
 assign stall = state != S_IDLE;
-assign read_tag_L1_L2 = tag_C_L1;
-assign write_tag_L1_L2 = TAG_ARR[index_C_L1];
+assign tag_L1_L2 = tag_C_L1;
+assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}];
 assign way = way_reg;
+assign index_L1_L2 = index_C_L1;
+
 // FSM
 always@(posedge clk or negedge nrst)
 begin
@@ -62,7 +65,7 @@ begin
         S_IDLE          :       next_state      <=      ((read_C_L1)||(write_C_L1))         ?   S_COMPARE     :    S_IDLE;
         S_COMPARE       :       next_state      <=      hit                                 ?   S_IDLE        :    
                                                         (!miss)                             ?   S_COMPARE     :    
-                                                        (write_C_L1 && dirty[index_C_L1])   ?   S_WRITE_BACK  :    S_ALLOCATE; 
+                                                        (write_C_L1 && dirty[{index_C_L1,way_reg}])   ?   S_WRITE_BACK  :    S_ALLOCATE; 
         S_ALLOCATE      :       next_state      <=      ready_L2_L1                         ?   S_COMPARE     :    S_ALLOCATE;    
         S_WRITE_BACK    :       next_state      <=      ready_L2_L1                         ?   S_ALLOCATE    :    S_WRITE_BACK;
     endcase
@@ -107,7 +110,7 @@ begin
         hit <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if(valid[index_C_L1] && ((tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] ) || (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
+        if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
             hit <= 1'b1;
         else
             hit <= 1'b0;
@@ -123,7 +126,7 @@ begin
         miss <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if(valid[index_C_L1] && ((tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] ) || (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
+        if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
             miss <= 1'b0;
         else
             miss <= 1'b1;
@@ -138,9 +141,9 @@ begin
     if(!nrst)
         dirty <= 64'h0;
     else if((state == S_COMPARE) && hit && write_C_L1)
-        dirty[index_C_L1] <= 1'b1;
+        dirty[{index_C_L1,way_reg}] <= 1'b1;
     else if((state == S_ALLOCATE) && ready_L2_L1)
-        dirty[index_C_L1] <= 1'b0;
+        dirty[{index_C_L1,way_reg}] <= 1'b0;
     else
         dirty <= dirty;
 end
@@ -152,7 +155,7 @@ begin
     else if ((state == S_IDLE) && flush)
         valid <= 64'h0;
     else if ((state == S_ALLOCATE) && ready_L2_L1)
-        valid[index_C_L1] <= 1'b1;
+        valid[{index_C_L1,way_reg}] <= 1'b1;
     else
         valid <= valid;
 end
@@ -163,7 +166,7 @@ generate
         begin
             if(!nrst)
                 TAG_ARR[i] <= 21'h0;
-            else if((state == S_ALLOCATE)&& ready_L2_L1 && (index_C_L1 == i))
+            else if((state == S_ALLOCATE)&& ready_L2_L1 && ({index_C_L1,way_reg} == i))
                 TAG_ARR[i] <= tag_C_L1;
             else
                 TAG_ARR[i] <= TAG_ARR[i];
