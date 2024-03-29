@@ -21,7 +21,7 @@ parameter   S_ALLOCATE      =   2'b11;
 reg [19:0] TAG_ARR [63:0];
 reg [63:0] valid;
 reg [63:0] dirty;
-reg [63:0] lru;
+//reg [63:0] lru;
 
 reg [1:0] state, next_state;
 
@@ -197,7 +197,7 @@ begin
         write_L1_L2_reg <= 1'b0;
 end
 
-
+/*
 // Least Recently Used
 always @(posedge clk or negedge nrst)
 begin 
@@ -208,6 +208,7 @@ begin
     else 
         lru <= lru;     // !nrst, flush 포함 모든 경우
 end
+*/
 
 
 endmodule
