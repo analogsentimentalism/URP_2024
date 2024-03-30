@@ -38,6 +38,7 @@ reg write_L1_L2_reg;
 
 reg LRU_reg;
 reg way_reg;
+reg check;
 genvar i;
 
 assign update = update_reg;
@@ -70,11 +71,21 @@ begin
         S_WRITE_BACK    :       next_state      <=      ready_L2_L1                         ?   S_ALLOCATE    :    S_WRITE_BACK;
     endcase
 end                    
+always @(posedge clk or negedge nrst) begin
+    if(!nrst)
+        check<=1'b0;
+    else if (state == S_ALLOCATE)
+        check <= 1'b1;
+    else if (state == S_IDLE)
+        check <= 1'b0;
+    else
+        check <= check;
+end
 //way
 always @(posedge clk or negedge nrst) begin
     if(!nrst)
         way_reg <= 1'b0;
-    else if (state == S_COMPARE) begin
+    else if ((state == S_COMPARE) & !check) begin
         if (!valid[{index_C_L1,1'b0}])
             way_reg <= 1'b0;
         else if (!valid[{index_C_L1,1'b1}])
@@ -110,10 +121,12 @@ begin
         hit <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
-            hit <= 1'b1;
-        else
+        if (hit)
             hit <= 1'b0;
+        else if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
+            hit <= 1'b1;
+        else 
+            hit <= hit;
     end
     else
         hit <= 1'b0;
@@ -126,7 +139,9 @@ begin
         miss <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
+        if(miss)
+            miss <= 1'b0;
+        else if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
             miss <= 1'b0;
         else
             miss <= 1'b1;
@@ -202,7 +217,7 @@ begin
     else if(state == S_ALLOCATE)
         read_L1_L2_reg <= 1'b1;
     else
-        read_C_L1_reg <= 1'b0;
+        read_L1_L2_reg <= 1'b0;
 end
 
 //write_L1_L2
