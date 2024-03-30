@@ -36,7 +36,7 @@ reg update_reg;                      //For write hits, controller asserts update
 reg read_L1_L2_reg;
 reg write_L1_L2_reg;
 
-reg LRU_reg;                         //LRU
+reg [31:0] LRU_reg;                         //LRU
 reg way_reg;                         //Way
 reg check;                           //Check
 genvar i;
@@ -47,7 +47,7 @@ assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
 assign stall = (state != S_IDLE);
 assign tag_L1_L2 = tag_C_L1;
-assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}];            // tag array 내에서 같은 index 내의 way (0,1) 여부에 따라 구분
+assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}];          // write back할 주소 tag
 assign way = way_reg;
 assign index_L1_L2 = index_C_L1;
 
@@ -95,7 +95,7 @@ always @(posedge clk or negedge nrst) begin
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}] )
             way_reg <= 1'b1;
         else
-            way_reg <= LRU_reg;
+            way_reg <= LRU_reg [index_C_L1];
     end
     else 
         way_reg <= way_reg;
@@ -106,9 +106,9 @@ always@(posedge clk or negedge nrst) begin
         LRU_reg <= 1'b0;
     else if (state == S_COMPARE) begin
         if (hit)
-            LRU_reg <= !way;
+            LRU_reg [index_C_L1] <= !way;
         else
-            LRU_reg <= LRU_reg;
+            LRU_reg [index_C_L1] <= LRU_reg [index_C_L1];
     end
     else
         LRU_reg <= LRU_reg;
