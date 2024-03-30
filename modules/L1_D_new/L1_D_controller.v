@@ -36,7 +36,7 @@ reg update_reg;
 reg read_L1_L2_reg;
 reg write_L1_L2_reg;
 
-reg LRU_reg;
+reg [31:0] LRU_reg;
 reg way_reg;
 reg check;
 genvar i;
@@ -95,7 +95,7 @@ always @(posedge clk or negedge nrst) begin
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}] )
             way_reg <= 1'b1;
         else
-            way_reg <= LRU_reg;
+            way_reg <= LRU_reg[index_C_L1];
     end
     else 
         way_reg <= way_reg;
@@ -103,12 +103,12 @@ end
 //LRU (if LRU == 0 -> way 0 replace, LRU == 1 -> way 1 replace)
 always@(posedge clk or negedge nrst) begin
     if(!nrst)
-        LRU_reg <= 1'b0;
+        LRU_reg <= 32'h0;
     else if (state == S_COMPARE) begin
         if (hit)
-            LRU_reg <= !way;
+            LRU_reg[index_C_L1] <= !way;
         else
-            LRU_reg <= LRU_reg;
+            LRU_reg[index_C_L1] <= LRU_reg[index_C_L1];
     end
     else
         LRU_reg <= LRU_reg;
