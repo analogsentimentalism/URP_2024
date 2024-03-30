@@ -193,7 +193,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         refill_reg <= 1'b0;
-    else if((state == S_ALLOCATE) && ready_L2_L1 && read_C_L1)
+    else if((state == S_ALLOCATE) && ready_L2_L1)   //수정
         refill_reg <= 1'b1;
     else
         refill_reg <= 1'b0;
@@ -203,7 +203,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         update_reg <= 1'b0;
-    else if ((state == S_ALLOCATE) && ready_L2_L1 && write_C_L1)       //write miss 후 write할 라인을 가져올 때
+    else if ((state == S_COMPARE) && hit)    // 수정: hit 일 때만 update=1로 올려준다
         update_reg <= 1'b1;
     else
         update_reg <= 1'b0;
