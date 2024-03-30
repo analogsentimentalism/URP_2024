@@ -189,7 +189,7 @@ generate
     end
 endgenerate
 
-always@(posedge clk or negedge nrst)
+always@(posedge clk or negedge nrst)       
 begin
     if(!nrst)
         refill_reg <= 1'b0;
