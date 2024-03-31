@@ -96,7 +96,7 @@ initial begin: test
 		@(posedge	clk);
 		ready_L2_L1	=	1'b0;
 		
-		while(stall) #2;
+		while(stall) @(posedge	clk);
 	end
 
 	write_C_L1	=	1'b0;
@@ -134,11 +134,11 @@ initial begin: test
 		@(posedge	clk);
 		ready_L2_L1	=	1'b0;
 		@(posedge	clk);
-		while(stall) #2;
+		while(stall) @(posedge	clk);
 	end
 
 	read_C_L1	=	1'b0;
-#100;
+	repeat(50)	@(posedge	clk);
 
 	// 3. Read: Miss - (Memory) Miss
 	$display("%6d: Read-Miss-Miss", $time);

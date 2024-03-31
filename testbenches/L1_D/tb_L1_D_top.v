@@ -19,7 +19,7 @@ reg		[31:0]		write_data;
 wire	[31:0]		read_data_L1_C;
 reg		[511:0]		read_data_L2_L1;
 
-L1_I_top u_L1_I_top (
+L1_D_top u_L1_D_top (
     .clk				(clk),
     .nrst				(nrst),
 
