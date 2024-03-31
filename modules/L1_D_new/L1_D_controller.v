@@ -36,7 +36,7 @@ reg update_reg;                      //For write hits, controller asserts update
 reg read_L1_L2_reg;
 reg write_L1_L2_reg;
 
-reg [31:0] LRU_reg;                  //LRU
+reg [31:0] LRU_reg;                         //LRU
 reg way_reg;                         //Way
 reg check;                           //Check
 genvar i;
@@ -47,7 +47,7 @@ assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
 assign stall = (state != S_IDLE);
 assign tag_L1_L2 = tag_C_L1;
-assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}];            // tag array 내에서 같은 index 내의 way (0,1) 여부에 따라 구분
+assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}];          // write back할 주소 tag
 assign way = way_reg;
 assign index_L1_L2 = index_C_L1;
 
@@ -95,7 +95,7 @@ always @(posedge clk or negedge nrst) begin
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}] )
             way_reg <= 1'b1;
         else
-            way_reg <= LRU_reg[index_C_L1];
+            way_reg <= LRU_reg [index_C_L1];
     end
     else 
         way_reg <= way_reg;
@@ -103,12 +103,12 @@ end
 //LRU (if LRU == 0 -> way 0 replace, LRU == 1 -> way 1 replace)
 always@(posedge clk or negedge nrst) begin
     if(!nrst)
-        LRU_reg <= 32'h0;
+        LRU_reg <= 1'b0;
     else if (state == S_COMPARE) begin
         if (hit)
-            LRU_reg[index_C_L1] <= !way;
+            LRU_reg [index_C_L1] <= !way;
         else
-            LRU_reg[index_C_L1] <= LRU_reg[index_C_L1];
+            LRU_reg [index_C_L1] <= LRU_reg [index_C_L1];
     end
     else
         LRU_reg <= LRU_reg;
@@ -189,11 +189,11 @@ generate
     end
 endgenerate
 
-always@(posedge clk or negedge nrst)
+always@(posedge clk or negedge nrst)       
 begin
     if(!nrst)
         refill_reg <= 1'b0;
-    else if((state == S_ALLOCATE) && ready_L2_L1 && read_C_L1)
+    else if((state == S_ALLOCATE) && ready_L2_L1)   //수정
         refill_reg <= 1'b1;
     else
         refill_reg <= 1'b0;
@@ -203,7 +203,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         update_reg <= 1'b0;
-    else if ((state == S_ALLOCATE) && ready_L2_L1 && write_C_L1)       //write miss 후 write할 라인을 가져올 때
+    else if ((state == S_COMPARE) && hit)    // 수정: hit 일 때만 update=1로 올려준다
         update_reg <= 1'b1;
     else
         update_reg <= 1'b0;
@@ -233,4 +233,3 @@ end
 
 
 endmodule
-
