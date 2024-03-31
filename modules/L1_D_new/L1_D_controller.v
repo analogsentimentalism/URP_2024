@@ -22,7 +22,7 @@ parameter   S_ALLOCATE      =   2'b11;
 
 
 // define TAG_ARR
-reg [20:0] TAG_ARR [63:0];
+reg [20:0] TAG_ARR [63:0];       //캐시 라인마다
 reg [63:0] valid;
 reg [63:0] dirty;
 
@@ -31,23 +31,23 @@ reg [1:0] state, next_state;
 reg miss;
 reg hit;
 reg read_C_L1_reg;
-reg refill_reg;
-reg update_reg;
+reg refill_reg;                      //controller asserts refill, and the data array accepts the memory data
+reg update_reg;                      //For write hits, controller asserts update and data array accepts the write data from the processor
 reg read_L1_L2_reg;
 reg write_L1_L2_reg;
 
-reg [31:0] LRU_reg;
-reg way_reg;
-reg check;
+reg [31:0] LRU_reg;                  //LRU
+reg way_reg;                         //Way
+reg check;                           //Check
 genvar i;
 
 assign update = update_reg;
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
-assign stall = state != S_IDLE;
+assign stall = (state != S_IDLE);
 assign tag_L1_L2 = tag_C_L1;
-assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}];
+assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}];            // tag array 내에서 같은 index 내의 way (0,1) 여부에 따라 구분
 assign way = way_reg;
 assign index_L1_L2 = index_C_L1;
 
@@ -85,7 +85,7 @@ end
 always @(posedge clk or negedge nrst) begin
     if(!nrst)
         way_reg <= 1'b0;
-    else if ((state == S_COMPARE) & !check) begin
+    else if ((state == S_COMPARE) & !check) begin            //idle-->compare 상태로 왔을 때
         if (!valid[{index_C_L1,1'b0}])
             way_reg <= 1'b0;
         else if (!valid[{index_C_L1,1'b1}])
@@ -121,7 +121,7 @@ begin
         hit <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if (hit)
+        if (hit)                 //hit을 한 클럭만 주기 위해서?
             hit <= 1'b0;
         else if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
             hit <= 1'b1;
@@ -158,7 +158,7 @@ begin
     else if((state == S_COMPARE) && hit && write_C_L1)
         dirty[{index_C_L1,way_reg}] <= 1'b1;
     else if((state == S_ALLOCATE) && ready_L2_L1)
-        dirty[{index_C_L1,way_reg}] <= 1'b0;
+        dirty[{index_C_L1,way_reg}] <= 1'b0;            //read일 때는 맞음. 그럼 write일 때는 로드할 땐 0, 쓰고 나서 1로 바꿔준다
     else
         dirty <= dirty;
 end
@@ -203,7 +203,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         update_reg <= 1'b0;
-    else if ((state == S_ALLOCATE) && ready_L2_L1 && write_C_L1)
+    else if ((state == S_ALLOCATE) && ready_L2_L1 && write_C_L1)       //write miss 후 write할 라인을 가져올 때
         update_reg <= 1'b1;
     else
         update_reg <= 1'b0;
