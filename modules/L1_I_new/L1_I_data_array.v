@@ -7,7 +7,7 @@ module L1_I_data_array (
     input [5:0] offset,
     input [511:0] read_data_L2_L1,
     input refill, way,
-    output [31:0] read_data_L1_C,
+    output [31:0] read_data_L1_C
 );
 reg [511:0] DATA_ARR [63:0];
 
