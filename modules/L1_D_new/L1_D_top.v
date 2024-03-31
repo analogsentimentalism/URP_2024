@@ -26,7 +26,7 @@ wire refill;
 wire update;
 wire way;
 
-L1_I_controller u_L1_I_controller(
+L1_D_controller u_L1_D_controller(
     .clk(clk),
     .nrst(nrst),
     .refill(refill),
@@ -45,7 +45,7 @@ L1_I_controller u_L1_I_controller(
     .way(way)
 );
 
-L1_I_data_array u_L1_I_data_array(
+L1_D_data_array u_L1_D_data_array(
     .clk(clk),
     .nrst(nrst),
     .index_C_L1(index),
