@@ -26,6 +26,7 @@ generate
         else
             DATA_ARR[i] <= DATA_ARR[i];
         end
+    end
 endgenerate 
 
 endmodule   
