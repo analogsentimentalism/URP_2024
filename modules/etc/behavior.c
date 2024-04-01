@@ -336,7 +336,7 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
     d_miss++;
     printf("Miss\n");
     /* 캐시의 set이 가득찬 경우 */
-    if (avail == 10) {
+    if (avail == -1) {
         ev = evict(set, assoc, 'd');
         p = &dp[set * assoc + ev];
         printf("Way %d is replaced.\n", ev);
@@ -400,4 +400,4 @@ int evict(int set, int assoc, char mode) {
     }
 
     return min_i;
-}
+}q
