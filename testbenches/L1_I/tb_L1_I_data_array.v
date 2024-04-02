@@ -15,7 +15,7 @@ module tb_L1_l_data_array;
     wire [31:0] read_data_L1_C;
 
     //
-    L1_l_data_array L1_I_data_array (
+    L1_I_data_array L1_I_data_array (
     .clk(clk),
     .nrst(nrst),
     .index(address[11:6]),
