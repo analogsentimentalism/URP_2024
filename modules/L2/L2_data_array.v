@@ -3,12 +3,12 @@ module L1_D_data_array (
     input nrst,
     input [4:0] index_L1_L2,
     input [5:0] offset,
-    input [31:0] write_data_L1_L2,
+    input [511:0] write_data_L1_L2,
     input [511:0] read_data_MEM_L2,
     input update, refill,
     input [1:0] way,
     //input [511:0] write_line_L2_L1,
-    output [31:0] read_data_L2_L1,
+    output [511:0] read_data_L2_L1,
     output [511:0] write_data_L2_MEM
 );
 
@@ -16,8 +16,8 @@ parameter cache_line_num = 11'd1024;
 
 
 reg [511:0] DATA_ARR [cache_line_num-1:0];
-assign read_data_L2_L1 = DATA_ARR[{index_L1_L2,way}][{offset[5:2],5'b0} +: 32];     //수정
-assign write_data_L2_MEM = DATA_ARR[{index_L1_L2,way}];
+assign write_data_L2_MEM = DATA_ARR[{index_L1_L2,way}];     //수정
+assign read_data_L2_L1 = DATA_ARR[{index_L1_L2,way}];
 genvar i;
 
 generate
