@@ -11,7 +11,7 @@ module L1_I_data_array (
 );
 reg [511:0] DATA_ARR [63:0];
 
-assign read_data_L1_C = DATA_ARR[{index_C_L1,way}][{offset,3'b00} +: 32];
+assign read_data_L1_C = DATA_ARR[{index_C_L1,way}][{offset[5:2],5'b00000} +: 32];
 genvar i;
 
 generate

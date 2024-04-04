@@ -203,7 +203,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         update_reg <= 1'b0;
-    else if ((state == S_COMPARE) && hit)    // 수정: hit 일 때만 update=1로 올려준다
+    else if ((state == S_COMPARE) && hit && write_C_L1)    // 수정: hit 일 때만 update=1로 올려준다
         update_reg <= 1'b1;
     else
         update_reg <= 1'b0;
