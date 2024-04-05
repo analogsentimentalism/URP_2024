@@ -32,13 +32,14 @@ L1_I_controller u_L1_I_controller(
     .stall(stall),
     .read_L1_L2(read_L1_L2),
     .tag_L1_L2(tag_L1_L2),
-    .way(way)
+    .way(way),
+	.flush(flush)
 );
 
 L1_I_data_array u_L1_I_data_array(
     .clk(clk),
     .nrst(nrst),
-    .index_C_L1(index),
+    .index_C_L1(index_C_L1),
     .offset(offset),
     .read_data_L1_C(read_data_L1_C),
     .read_data_L2_L1(read_data_L2_L1),
