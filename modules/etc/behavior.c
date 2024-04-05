@@ -156,7 +156,6 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc) {
     /* set에 해당되는 블럭이 없으므로 MISS이고 새로운 블럭을 올린다. */
     d_miss++;
     printf("L1 Cache Miss\n");
-    read_data_2(addr, 65536, b_size, 4); // L2 캐시 탐색
     /* 캐시의 set이 가득찬 경우 */
     if (avail == -1) {
         ev = evict(set, assoc, 'd');
@@ -204,6 +203,7 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc) {
             }
         }
     }
+    read_data_2(addr, 65536, b_size, 4); // L2 캐시 탐색
 }
 
 void read_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
@@ -332,7 +332,6 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
     /* set에 해당되는 블럭이 없으므로 MISS이고 새로운 블럭을 올린다. */
     d_miss++;
     printf("L1 Cache Miss\n");
-    write_data_2(addr, 65536, b_size, 4); // L2 캐시 탐색
     /* 캐시의 set이 가득찬 경우 */
     if (avail == -1) {
         ev = evict(set, assoc, 'd');
@@ -379,6 +378,7 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
             }
         }
     }
+    write_data_2(addr, 65536, b_size, 4); // L2 캐시 탐색
 }
 
 void write_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
