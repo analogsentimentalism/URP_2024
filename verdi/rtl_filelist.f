@@ -1,0 +1,3 @@
+-sverilog $LAB_PATH/modules/L1_I_new/L1_I_data_array.v
+-sverilog $LAB_PATH/modules/L1_I_new/L1_I_controller.v
+-sverilog $LAB_PATH/modules/L1_I_new/L1_I_top.v

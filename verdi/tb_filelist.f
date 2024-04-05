@@ -1,0 +1,2 @@
+-sverilog $LAB_PATH/testbenches/L1_I/tb_L1_I_top.sv
+-sverilog $LAB_PATH/verdi/timescale.sv
