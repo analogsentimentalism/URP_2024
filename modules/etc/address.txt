@@ -1,11 +1,8 @@
 123456
 123457
-123456
 321456
 789451
-ffffffff
-aaaaaaaa
-aaaaaaaa
-ffffffff
-aaaaaaff
 223456
+111456
+999456
+123456
