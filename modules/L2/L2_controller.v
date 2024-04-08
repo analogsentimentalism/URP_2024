@@ -39,7 +39,7 @@ reg read_L2_MEM_reg;
 reg write_L2_MEM_reg;
 
 reg [1:0] LRU_reg [cache_set_num-1:0];                          //LRU
-reg [4:0] LRU_array_reg [cache_set_num-1:0];
+reg [7:0] LRU_array_reg [cache_set_num-1:0];
 reg [1:0] way_reg;                         //Way
 reg check;                           //Check
 genvar i;
@@ -110,31 +110,11 @@ always @(posedge clk or negedge nrst) begin
             way_reg <= 2'b11;
         else begin
             case(LRU_array_reg[index_L1_L2])
-                5'b00000 : way_reg <= 2'b00;
-                5'b00001 : way_reg <= 2'b00;
-                5'b00010 : way_reg <= 2'b00;
-                5'b00011 : way_reg <= 2'b00;
-                5'b00100 : way_reg <= 2'b00;
-                5'b00101 : way_reg <= 2'b00;
-                5'b00110 : way_reg <= 2'b01;
-                5'b00111 : way_reg <= 2'b01;
-                5'b01000 : way_reg <= 2'b01;
-                5'b01001 : way_reg <= 2'b01;
-                5'b01010 : way_reg <= 2'b01;
-                5'b01011 : way_reg <= 2'b01;
-                5'b01100 : way_reg <= 2'b10;
-                5'b01101 : way_reg <= 2'b10;
-                5'b01110 : way_reg <= 2'b10;
-                5'b01111 : way_reg <= 2'b10;
-                5'b10000 : way_reg <= 2'b10;
-                5'b10001 : way_reg <= 2'b10;
-                5'b10010 : way_reg <= 2'b11;
-                5'b10011 : way_reg <= 2'b11;
-                5'b10100 : way_reg <= 2'b11;
-                5'b10101 : way_reg <= 2'b11;
-                5'b10110 : way_reg <= 2'b11;
-                5'b10111 : way_reg <= 2'b11;
-                default : way_reg <= way_reg;
+               8'b11xxxxxx: way_reg <= 2'b11;
+               8'bxx11xxxx: way_reg <= 2'b10;
+               8'bxxxx11xx: way_reg <= 2'b01;
+               8'bxxxxxx11: way_reg <= 2'b00;
+               default : way_reg <= way_reg;
             endcase
         end
     end
@@ -150,31 +130,115 @@ generate
                 LRU_array_reg[i] <= 5'h0;
             else if(state == S_COMPARE) begin
                 if (hit) begin
-                    case(LRU_array_reg)
-                        5'b00000 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01001 : (way == 2'b01) ? 5'b00011 : (way == 2'b10) ? 5'b00001 : 5'b00000; // 1234
-                        5'b00001 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01011 : (way == 2'b01) ? 5'b00101 : (way == 2'b10) ? 5'b00001 : 5'b00000; // 1243
-                        5'b00010 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01111 : (way == 2'b01) ? 5'b00011 : (way == 2'b10) ? 5'b00001 : 5'b00010; // 1324
-                        5'b00011 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10001 : (way == 2'b01) ? 5'b00011 : (way == 2'b10) ? 5'b00100 : 5'b00010; // 1342
-                        5'b00100 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10101 : (way == 2'b01) ? 5'b00101 : (way == 2'b10) ? 5'b00100 : 5'b00000; // 1423
-                        5'b00101 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10111 : (way == 2'b01) ? 5'b00101 : (way == 2'b10) ? 5'b00100 : 5'b00010; // 1432
-                        5'b00110 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01001 : (way == 2'b01) ? 5'b00011 : (way == 2'b10) ? 5'b00111 : 5'b00110; // 2134
-                        5'b00111 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01011 : (way == 2'b01) ? 5'b00101 : (way == 2'b10) ? 5'b00111 : 5'b00110; // 2143
-                        5'b01000 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01001 : (way == 2'b01) ? 5'b01101 : (way == 2'b10) ? 5'b00111 : 5'b01000; // 2314
-                        5'b01001 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01001 : (way == 2'b01) ? 5'b10000 : (way == 2'b10) ? 5'b01010 : 5'b01000; // 2341
-                        5'b01010 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01011 : (way == 2'b01) ? 5'b10011 : (way == 2'b10) ? 5'b01010 : 5'b00110; // 2413
-                        5'b01011 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01011 : (way == 2'b01) ? 5'b10110 : (way == 2'b10) ? 5'b01010 : 5'b01000; // 2431
-                        5'b01100 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01111 : (way == 2'b01) ? 5'b01101 : (way == 2'b10) ? 5'b00001 : 5'b01100; // 3124
-                        5'b01101 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10001 : (way == 2'b01) ? 5'b01101 : (way == 2'b10) ? 5'b00100 : 5'b01100; // 3142
-                        5'b01110 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01111 : (way == 2'b01) ? 5'b01101 : (way == 2'b10) ? 5'b00111 : 5'b01110; // 3214
-                        5'b01111 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b01111 : (way == 2'b01) ? 5'b10000 : (way == 2'b10) ? 5'b01010 : 5'b01110; // 3241
-                        5'b10000 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10001 : (way == 2'b01) ? 5'b10000 : (way == 2'b10) ? 5'b10010 : 5'b01100; // 3412
-                        5'b10001 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10001 : (way == 2'b01) ? 5'b10000 : (way == 2'b10) ? 5'b10100 : 5'b01110; // 3421
-                        5'b10010 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10101 : (way == 2'b01) ? 5'b10011 : (way == 2'b10) ? 5'b10010 : 5'b00000; // 4123
-                        5'b10011 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10111 : (way == 2'b01) ? 5'b10011 : (way == 2'b10) ? 5'b10010 : 5'b00010; // 4132
-                        5'b10100 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10101 : (way == 2'b01) ? 5'b10011 : (way == 2'b10) ? 5'b10100 : 5'b00110; // 4213
-                        5'b10101 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10101 : (way == 2'b01) ? 5'b10110 : (way == 2'b10) ? 5'b10100 : 5'b01000; // 4231
-                        5'b10110 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10111 : (way == 2'b01) ? 5'b10110 : (way == 2'b10) ? 5'b10010 : 5'b01100; // 4312
-                        5'b10111 : LRU_array_reg[i] <= (way == 2'b00) ? 5'b10111 : (way == 2'b01) ? 5'b10110 : (way == 2'b10) ? 5'b10100 : 5'b01110; // 4321
+                    case(way)
+                        2'b00 : begin
+                                    if (LRU_array_reg[i][1:0] == 2'b00)
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
+                                    else if(LRU_array_reg[i][1:0] == 2'b01)
+                                        begin
+                                            LRU_array_reg[i][1:0] <= 2'b00;
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] == 2'b00) ? 2'b01 : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] == 2'b00) ? 2'b01 : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] == 2'b00) ? 2'b01 : LRU_array_reg[i][7:6];
+                                        end
+                                    else if (LRU_array_reg[i][1:0] == 2'b10)
+                                        begin
+                                            LRU_array_reg[i][1:0] <= 2'b00;
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ? LRU_array_reg[3:2] + 2'b01 : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                        end
+                                    else if (LRU_array_reg[i][1:0] == 2'b11)
+                                        begin
+                                            LRU_array_reg[i][1:0] <= 2'b00;
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ? LRU_array_reg[3:2] + 2'b01 : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                        end
+                                    else
+                                        LRU_array_reg[i] <= LRU_array_reg;
+                                end
+                        2'b01 : begin
+                                    if (LRU_array_reg[i][3:2] == 2'b00)
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
+                                    else if(LRU_array_reg[i][3:2] == 2'b01)
+                                        begin
+                                            LRU_array_reg[i][3:2] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] == 2'b00) ? 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] == 2'b00) ? 2'b01 : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] == 2'b00) ? 2'b01 : LRU_array_reg[i][7:6];
+                                        end
+                                    else if (LRU_array_reg[i][3:2] == 2'b10)
+                                        begin
+                                            LRU_array_reg[i][3:2] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                        end
+                                    else if (LRU_array_reg[i][3:2] == 2'b11)
+                                        begin
+                                            LRU_array_reg[i][3:2] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                        end
+                                    else
+                                        LRU_array_reg[i] <= LRU_array_reg;
+                                end
+                          2'b10 : begin
+                                    if (LRU_array_reg[i][5:4] == 2'b00)
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
+                                    else if(LRU_array_reg[i][5:4] == 2'b01)
+                                        begin
+                                            LRU_array_reg[i][5:4] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] == 2'b00) ? 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] == 2'b00) ? 2'b01 : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] == 2'b00) ? 2'b01 : LRU_array_reg[i][7:6];
+                                        end
+                                    else if (LRU_array_reg[i][5:4] == 2'b10)
+                                        begin
+                                            LRU_array_reg[i][5:4] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                        end
+                                    else if (LRU_array_reg[i][5:4] == 2'b11)
+                                        begin
+                                            LRU_array_reg[i][5:4] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                        end
+                                    else
+                                        LRU_array_reg[i] <= LRU_array_reg;
+                                end
+                        2'b11 : begin
+                                    if (LRU_array_reg[i][7:6] == 2'b00)
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
+                                    else if(LRU_array_reg[i][7:6] == 2'b01)
+                                        begin
+                                            LRU_array_reg[i][7:6] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] == 2'b00) ? 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] == 2'b00) ? 2'b01 : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] == 2'b00) ? 2'b01 : LRU_array_reg[i][3:2];
+                                        end
+                                    else if (LRU_array_reg[i][7:6] == 2'b10)
+                                        begin
+                                            LRU_array_reg[i][3:2] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                        end
+                                    else if (LRU_array_reg[i][7:6] == 2'b11)
+                                        begin
+                                            LRU_array_reg[i][7:6] <= 2'b00;
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                        end
+                                    else
+                                        LRU_array_reg[i] <= LRU_array_reg;
+                                end                    
                         default : LRU_array_reg[i] <= LRU_array_reg[i];
                     endcase
                 end
