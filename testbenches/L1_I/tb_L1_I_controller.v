@@ -1,47 +1,55 @@
 `timescale 1ns/1ns
-module tb_L1_I_controller ();
+module tb_L1_I_controller #(
+	parameter	L1_CLK	= 1,			// L1의 클락
+	parameter	L2_CLK	= 2,			// L2의 클락
+	parameter	TOTAL	= 10000,		// 전체 address 개수
+	parameter	INIT	= 30,			// 처음 채울 개수
+	parameter	TNUM	= 21,			// # Tag bits
+	parameter	INUM	= 26 - TNUM		// # Index bits
+) ();
 
-reg				clk			;
-reg				nrst		;
+reg						clk				;
+reg						nrst			;
 
-reg		[31:0]	address		; 
-reg				read_C_L1	;
-reg				flush		;
-reg				ready_L2_L1	;
+reg		[31:0]			address			; 
+reg						read_C_L1		;
+reg						flush			;
+reg						ready_L2_L1		;
 
-wire			stall		;
-wire			refill		;
-wire			read_L1_L2	;
-wire			way			;
-wire	[4:0]	index_L1_L2	;
-wire	[20:0]	tag_L1_L2	;
+wire					stall			;
+wire					refill			;
+wire					read_L1_L2		;
+wire					way				;
+wire	[INUM - 1:0]	index_L1_L2		;
+wire	[TNUM - 1:0]	tag_L1_L2		;
 
 L1_I_controller u_L1_I_controller (
 
-	.clk			(clk			),
-    .nrst			(nrst			),
+	.clk			(	clk					),
+    .nrst			(	nrst				),
 
-    .tag_C_L1		(address[31:11]	),
-    .index_C_L1		(address[10:6]	),
-    .read_C_L1		(read_C_L1		),
-    .flush			(flush			),
-    .ready_L2_L1	(ready_L2_L1	),
+    .tag_C_L1		(	address[31-:TNUM]	),
+    .index_C_L1		(	address[6+:INUM]	),
+    .read_C_L1		(	read_C_L1			),
+    .flush			(	flush				),
+    .ready_L2_L1	(	ready_L2_L1			),
 
-    .stall			(stall			),
-	.refill			(refill			),
-	.way			(way			),
-    .read_L1_L2		(read_L1_L2		),
+    .stall			(	stall				),
+	.refill			(	refill				),
+	.way			(	way					),
+    .read_L1_L2		(	read_L1_L2			),
    
-	.index_L1_L2	(index_L1_L2	),
-	.tag_L1_L2		(tag_L1_L2		)
+	.index_L1_L2	(	index_L1_L2			),
+	.tag_L1_L2		(	tag_L1_L2			)
 );
 
 // Signals for Testbench
-reg		[63:0]	address_array	[0:9999]	;
-reg		[63:0]	replace_array	[0:9999]	;
-integer			i, j, EXIT					;
+reg		[31:0]	address_array	[TOTAL-1:0]	;
+reg		[31:0]	replace_array	[TOTAL-1:0]	;
+integer			i, j						;
+integer			aa, ra						;
 
-reg		[2:0]	test_state					;
+integer			test_state					;
 
 always begin
 #1   clk		= ~clk						;
@@ -49,46 +57,51 @@ end
 
 // Init
 initial begin: init
-   test_state	= 3'd0	;
+	clk			= 1'b1	;
+	nrst      	= 1'b0	;
+	address     = 'b0	;
+	read_C_L1	= 1'b0	;
+	flush		= 1'b0	;
+	ready_L2_L1	= 1'b0	;
 
-   clk			= 1'b1	;
-   nrst      	= 1'b0	;
-   address      = 64'b0	;
-   read_C_L1	= 1'b0	;
-   flush		= 1'b0	;
-   ready_L2_L1	= 1'b0	;
+	aa	= $fopen("../testbenches/etc/tb_L1_I_controller_address_array.txt", "wb");
+	ra	= $fopen("../testbenches/etc/tb_L1_I_controller_replace_array.txt", "wb");
 
-	for(i = 0; i<30; i = i + 1) begin   // random addresses
-		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[5:0], 6'b000000}	;
-		address_array[i+30]	= $urandom & 32'hFFFF_F03C | {i[5:0], 6'b000000}	;	// Same index
-		$display("%2dth address:\t%8h", i, address_array[i])					;
+	@(posedge clk);
+
+	for(i = 0; i<INIT * 2; i = i + 1) begin   // random addresses
+		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[0+:INUM], 6'b000000};
+		$fwrite(aa, "%h\n", address_array[i])									;
 	end
-	for(i = 0; i<30; i = i + 1) begin   // random addresses with same index
-		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][11:6], 6'b000000}	;
-		replace_array[i+30]	= $urandom & 32'hFFFF_F03C | {address_array[i][11:6], 6'b000000}	;	// Same index
-		$display("%2dth address\t:\t%8h", i, replace_array[i])									;
+	for(i = 0; i<INIT * 2; i = i + 1) begin   // random addresses with same index
+		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][6+:INUM], 6'b000000}	;
+		$fwriteh(ra, "%h\n",replace_array[i])													;
 	end
+
+	$fclose(aa);
+	$fclose(ra);
 end
 
 initial begin: test
 
 	// 0. Cache Init (Cold Miss) -> Read: Miss - (Memory) Hit
-	$display("Cache Init start");
+	$display("Cache Init start")			;
+	test_state	= 'd0						;
 
-	nrst		= 1'b1			;
-	repeat(5)	@(posedge	clk);
-	nrst		= 1'b0			;
+	nrst		= 1'b1						;
+	repeat(5 * L1_CLK)	@(posedge	clk)	;
+	nrst		= 1'b0						;
 
-	repeat(5)	@(posedge	clk);
-	nrst		= 1'b1			;
-	read_C_L1	= 1'b1			;   // Initial reset
+	repeat(5 * L1_CLK)	@(posedge	clk)	;
+	nrst		= 1'b1						;
+	read_C_L1	= 1'b1						;   // Initial reset
 
-	for(i = 0; i<20; i = i + 1) begin	// for way1. Cold Miss
+	for(i = 0; i<INIT>>>1; i = i + 1) begin	// for way1. Cold Miss
 		address		= address_array[i]				;
 
 		$display("%6d: Read Address %h", i, address);
 
-		repeat(4)   @(posedge   clk)				;
+		repeat(2 * L2_CLK)   @(posedge   clk)		;
 		ready_L2_L1	= 1'b1							;
 		@(posedge   clk)							;
 		ready_L2_L1	= 1'b0							;
@@ -96,12 +109,14 @@ initial begin: test
 		while(stall)	@(posedge   clk)			;
 	end
 
-	for(i = 30; i<40; i = i + 1) begin	// for way2. Conflict Miss
+	test_state	= 'd1	;
+
+	for(i = INIT; i<40; i = i + 1) begin	// for way2. Conflict Miss
 		address		= address_array[i]				;
 
 		$display("%6d: Read Address %h", i, address);
 
-		repeat(4)   @(posedge   clk)				;
+		repeat(2 * L2_CLK)   @(posedge   clk)		;
 		ready_L2_L1	= 1'b1							;
 		@(posedge   clk)							;
 		ready_L2_L1	= 1'b0							;
@@ -114,7 +129,7 @@ initial begin: test
 
    // 1. Read: Hit
 	$display("%6d: Read-Hit", $time);
-	test_state	= 3'd1				;
+	test_state	= 'd2				;
 
 	read_C_L1	= 1'b1				;
 
@@ -147,7 +162,7 @@ initial begin: test
 		address			= address_array[i]				;
 
 		$display("%6d: Read Address %h", $time, address);
-		repeat(10)   @(posedge   clk)					;
+		repeat(5 * L2_CLK)   @(posedge   clk)			;
 		ready_L2_L1		= 1'b1							;
 		@(posedge   clk)								;
 		ready_L2_L1		= 1'b0							;
@@ -159,7 +174,7 @@ initial begin: test
 		address			= address_array[i]				;
 
 		$display("%6d: Read Address %h", $time, address);
-		repeat(10)   @(posedge   clk)					;
+		repeat(5 * L2_CLK)   @(posedge   clk)			;
 		ready_L2_L1		= 1'b1							;
 		@(posedge   clk)								;
 		ready_L2_L1		= 1'b0							;
@@ -180,7 +195,7 @@ initial begin: test
 		address			= replace_array[i]				;
 
 		$display("%6d: Read Address %h", $time, address);
-		repeat(4)   @(posedge   clk)					;
+		repeat(2 * L2_CLK)   @(posedge   clk)			;
 		ready_L2_L1		= 1'b1							;
 		@(posedge   clk)								;
 		ready_L2_L1		= 1'b0							;
@@ -236,7 +251,7 @@ initial begin: test
 
 	// 7. Flush
 	$display("%6d: FLUSH", $time)	;
-	test_state	= 3'd7				;
+	test_state	= 7					;
 
 	flush		= 1'b1				;
 

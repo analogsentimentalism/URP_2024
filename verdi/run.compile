@@ -1,0 +1,14 @@
+#!/bin/bash
+
+source ./common.sh
+export LAB_PATH="$PWD/../"
+FILELIST_TB="$PWD/tb_filelist.f"
+FILELIST_RTL="$PWD/rtl_filelist.f"
+
+echo "Cleaning up the old directory"
+rm -rf $RUN_DIR
+echo "Creating a new directory"
+mkdir -p $RUN_DIR
+cd $RUN_DIR
+echo "Compiling"
+$COMPILE_CMD $COMPILE_OPTIONS -f $FILELIST_TB -f $FILELIST_RTL
