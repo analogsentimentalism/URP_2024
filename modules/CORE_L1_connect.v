@@ -4,9 +4,9 @@ module CORE_L1_connect(
 
     // CORE와 CORE_L1_connect 사이의 신호
     input [31:0] address,
-    input flush,
     input read_C_L1,
     input stall_L1I, stall_L1D,
+    input [31:0] read_data_L1D_C, read_data_L1I_C,
 
     output stall,
     output [31:0]read_data_L1_C,
@@ -25,5 +25,9 @@ module CORE_L1_connect(
     assign read_C_L1I = (address <= 32'h10000000) ? read_C_L1 : 1'b0;
     assign read_C_L1D = (address > 32'h10000000) ? read_C_L1 : 1'b0;
     assign stall = stall_L1I || stall_L1D;
+
+    assign read_data_L1_C = (read_C_L1I) ? read_data_L1I_C :
+                                (read_C_L1D) ? read_data_L1D_C : 32'h0;
+
 endmodule
     
