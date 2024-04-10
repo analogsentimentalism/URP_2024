@@ -8,7 +8,7 @@ module L2_controller (
     input ready_MEM_L2,
     input write_L1_L2,
     output ready_L2_L1,
-    output refill, update, read_L1_L2, write_L1_L2,
+    output refill, update, read_L2_MEM, write_L2_MEM,
     output [7:0] index_L2_MEM,
     output [17:0] tag_L2_MEM,
     output [17:0] write_tag_L2_MEM,

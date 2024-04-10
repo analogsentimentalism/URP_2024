@@ -1,7 +1,7 @@
-module L1_D_data_array (
+module L2_data_array (
     input clk,
     input nrst,
-    input [4:0] index_L1_L2,
+    input [7:0] index_L1_L2,
     input [5:0] offset,
     input [511:0] write_data_L1_L2,
     input [511:0] read_data_MEM_L2,

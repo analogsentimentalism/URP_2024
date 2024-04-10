@@ -7,8 +7,8 @@ module L1_I_controller (
     input read_C_L1, flush,
     input ready_L2_L1,
     output stall, refill, read_L1_L2, 
-    output [4:0] index_L1_L2,
-    output [20:0] tag_L1_L2,
+    output [7:0] index_L1_L2,
+    output [17:0] tag_L1_L2,
     output way
 );
 
@@ -40,9 +40,9 @@ genvar i;
 assign refill = refill_reg;
 assign read_L1_L2 = read_L1_L2_reg;
 assign stall = (state != S_IDLE);
-assign tag_L1_L2 = tag_C_L1;
+assign tag_L1_L2 = tag_C_L1[20:3];
 assign way = way_reg;
-assign index_L1_L2 = index_C_L1;
+assign index_L1_L2 = {tag_C_L1[2:0], index_C_L1};
 
 // FSM
 always@(posedge clk or negedge nrst)
