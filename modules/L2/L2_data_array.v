@@ -26,9 +26,9 @@ generate
 	if(!nrst)
             DATA_ARR[i] <= 512'h0;
 
-        else if ((refill == 1'b1) && ({index_C_L1,way} == i))
+        else if ((refill == 1'b1) && ({index_L1_L2,way} == i))
             DATA_ARR[i] <= read_data_MEM_L2;
-        else if ((update == 1'b1 && ({index_C_L1,way} == i)))     //write hit
+        else if ((update == 1'b1 && ({index_L1_L2,way} == i)))     //write hit
             DATA_ARR[i] <= write_data_L1_L2; 
         else
             DATA_ARR[i] <= DATA_ARR[i];

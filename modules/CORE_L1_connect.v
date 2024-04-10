@@ -15,7 +15,7 @@ module CORE_L1_connect(
     output [4:0] index_C_L1,
     output [5:0] offset,
     // L1I/ L1D로 분배
-    output read_C_L1I, read_C_L1D,
+    output read_C_L1I, read_C_L1D
 );
 
     assign tag_C_L1 = address[31:11];
