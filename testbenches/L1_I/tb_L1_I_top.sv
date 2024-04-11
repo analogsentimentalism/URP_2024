@@ -5,7 +5,9 @@ module tb_L1_I_top #(
 	parameter	TOTAL	= 64,			// 전체 address 개수
 	parameter	INIT	= 32,			// 처음 채울 개수
 	parameter	TNUM	= 21,			// # Tag bits
-	parameter	INUM	= 26 - TNUM		// # Index bits
+	parameter	INUM	= 26 - TNUM,	// # Index bits
+	parameter	TNUM_2	= 18,			// # Tag bits for L2
+	parameter	INUM_2	= 26 - TNUM_2	// # Index bits for L2
 ) ();
 
 reg						clk				;
@@ -21,8 +23,8 @@ wire	[31:0]			read_data_L1_C	;
 
 wire					stall			;
 wire					read_L1_L2		;
-wire	[INUM - 1:0]	index_L1_L2		;
-wire	[TNUM - 1:0]	tag_L1_L2		;
+wire	[INUM_2 - 1:0]	index_L1_L2		;
+wire	[TNUM_2 - 1:0]	tag_L1_L2		;
 
 L1_I_top u_L1_I_top (
 	.clk			(	clk					),
@@ -260,7 +262,7 @@ initial begin: test
 
 	repeat(50)	@(posedge   clk)	;
 
-	// 9. Read: L1 Miss - L2 Hit way1.
+	// 9. Read: L1 Miss - L2 Miss way1.
 	$display("Cache Init start - way1")	;
 	test_state	= 9						;
 
