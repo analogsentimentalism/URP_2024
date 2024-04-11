@@ -106,9 +106,10 @@ initial begin: test
 	$display("%6d: L1 Miss, L2 Hit. way0", $time)	;
 	test_state	= 1									;
 
-	refill	= '1									;
+
 
 	for(i = 0; i<INIT; i = i + 1) begin
+		refill	= '1										;
 		address	= address_array[i]							;
 		way		= '0										;
 		
@@ -116,6 +117,8 @@ initial begin: test
 		repeat(2 * L2_CLK)  @(posedge   clk)				;
 		read_data_L2_L1	= data_array[i]						;
 		repeat(L1_CLK)		@(posedge	clk)				;
+		refill	= '0										;
+		repeat(5 * L1_CLK)		@(posedge	clk)				;
 		$display("%6d: Data = %d", $time, read_data_L1_C)	;
 	end
 
@@ -130,7 +133,7 @@ initial begin: test
 		repeat(2 * L1_CLK)	@(posedge	clk)				;
 		repeat(2 * L2_CLK)  @(posedge   clk)				;
 		read_data_L2_L1	= data_array[i]						;
-		repeat(L1_CLK)		@(posedge	clk)			;
+		repeat(L1_CLK)		@(posedge	clk)				;
 		$display("%6d: Data = %d", $time, read_data_L1_C)	;
 	end
 
@@ -156,7 +159,7 @@ initial begin: test
 		address	= address_array[i]							;
 		way		= '1										;
 		
-		repeat(L1_CLK)		@(posedge	clk)				;
+		repeat(2 * L1_CLK)		@(posedge	clk)			;
 		$display("%6d: Data = %d", $time, read_data_L1_C)	;
 	end
 
