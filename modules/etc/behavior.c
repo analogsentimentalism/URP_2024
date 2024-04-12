@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <limits.h>
 
-//#define filename "trace1.din"
-#define filename "address.txt"
+#define filename "trace1.din"
+//#define filename "address.txt"
 
 
 struct i_cache {	/* 인스트럭션 캐시 구조체 */
@@ -40,6 +40,7 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc);
 void write_data(unsigned int addr, int c_size, int b_size, int assoc);
 void read_data_2(unsigned int addr, int c_size, int b_size, int assoc);
 void write_data_2(unsigned int addr, int c_size, int b_size, int assoc);
+void fetch_inst(int addr, int c_size, int b_size, int assoc);
 
 
 
@@ -53,12 +54,13 @@ int main() {
 void simulation(int c_size, int b_size) {
     i_total = i_miss = 0;
     d_total = d_miss = d_write = 0;
+    l2_total = l2_miss = l2_write = 0;
 
-    //int mode;
+    int mode;
     unsigned int addr; /* 파일로부터 읽은 값을 저장하는 변수 */
     int num = c_size / b_size;    /*캐시블락의 개수 */
     int num2 = 65536 / b_size;
-    double i_res, d_res;    /* miss rate을 저장하는 변수 */
+    double i_res, d_res, l2_res, total_res;    /* miss rate을 저장하는 변수 */
     FILE* fp = NULL;
     
     char rw, n;
@@ -69,24 +71,25 @@ void simulation(int c_size, int b_size) {
     
     fopen_s(&fp, filename, "r");
     while (!feof(fp)) {        
-        /*
         fscanf_s(fp, "%d %x\n", &mode, &addr);
 
         switch (mode) {
         case 0:
-            read_data(addr, c_size, b_size, assoc);
+            read_data(addr, c_size, b_size, 2);
             d_total++;
             break;
         case 1:
-            write_data(addr, c_size, b_size, assoc);
+            write_data(addr, c_size, b_size, 2);
             d_total++;
             break;
         case 2:
-            fetch_inst(addr, c_size, b_size, assoc);
+            fetch_inst(addr, c_size, b_size, 2);
             i_total++;
+            //read_data(addr, c_size, b_size, 2);
+            //d_total++;
             break;
         }
-        */
+        /*
         fscanf_s(fp, "%x\n", &addr);
         printf("Address : %.8x\n", addr);
         printf("R/W : ");
@@ -104,6 +107,7 @@ void simulation(int c_size, int b_size) {
         d_total++;
         printf("\n");
         scanf_s("%c", &n);        
+        */
     } 
 
     free(ip);
@@ -111,9 +115,16 @@ void simulation(int c_size, int b_size) {
     free(l2p);
     i_res = (double)i_miss / (double)i_total;
     d_res = (double)d_miss / (double)d_total;
-
-    //printf("cache size | block size | d-miss rate | i-miss rate | mem write\n");
-    //printf("%10d   %10d        %.4lf     %.4lf  %10d\n", c_size, b_size, d_res, i_res, d_write);
+    l2_res = (double)l2_miss / (double)l2_total;
+    
+    printf("total address number : %d\n", d_total + i_total);
+    printf("d cache access : %d\n", d_total);
+    printf("i cache access : %d\n", i_total);
+    printf("L2 cache access : %d\n", l2_total);
+    printf("cache size | block size | d-miss rate | i-miss rate | l2 write\n");
+    printf("%10d   %10d   %11.4lf   %11.4lf   %8d\n", c_size, b_size, d_res, i_res, d_write);
+    printf("cache size | block size | l2-miss rate | mem write\n");
+    printf("%10d   %10d   %12.4lf   %9d\n", 65536, b_size, l2_res,l2_write);
     fclose(fp);
 }
 
@@ -125,7 +136,7 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc) {
 
     num_of_sets = c_size / (b_size * assoc);    /* set의 개수를 구한다. */
     set = (addr / b_size) % num_of_sets;  /* 입력받은 인자로부터 해당 주소의 set을 구한다. */
-    printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
+    //printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
 
     /* 캐시에서 해당 set을 검색하여 HIT/MISS를 결정 */
     for (i = 0; i < assoc; i++) {
@@ -142,7 +153,7 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc) {
                     p->lru = assoc - 1;
                 }
             }
-            printf("L1 Cache Hit\n");;
+            //printf("L1 Cache Hit\n");;
             return;
         }
         /* 새로운 블럭이 들어갈 인덱스 */
@@ -155,17 +166,17 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc) {
 
     /* set에 해당되는 블럭이 없으므로 MISS이고 새로운 블럭을 올린다. */
     d_miss++;
-    printf("L1 Cache Miss\n");
+    //printf("L1 Cache Miss\n");
     /* 캐시의 set이 가득찬 경우 */
     if (avail == -1) {
         ev = evict(set, assoc, 'd');
         p = &dp[set * assoc + ev];
-        printf("(L1) Way %d is replaced.\n", ev);
+        //printf("(L1) Way %d is replaced.\n", ev);
 
         /* victim 블럭의 dirty bit이 1이면 메모리 쓰기를 한다. */
         if (p->dirty) {
             d_write++;
-            printf("Write data to L2 Cache.\n");
+            //printf("Write data to L2 Cache.\n");
         }
 
         p->valid = 1;
@@ -186,7 +197,7 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc) {
     /* 캐시의 set에 자리가 있는 경우 */
     else {
         p = &dp[set * assoc + avail];
-        printf("(L1) Way %d is replaced.\n", avail);
+        //printf("(L1) Way %d is replaced.\n", avail);
 
         p->valid = 1;
         p->tag = (addr / b_size) / num_of_sets;
@@ -204,6 +215,7 @@ void read_data(unsigned int addr, int c_size, int b_size, int assoc) {
         }
     }
     read_data_2(addr, 65536, b_size, 4); // L2 캐시 탐색
+    l2_total++;
 }
 
 void read_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
@@ -213,7 +225,7 @@ void read_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
 
     num_of_sets = c_size / (b_size * assoc);    /* set의 개수를 구한다. */
     set = (addr / b_size) % num_of_sets;  /* 입력받은 인자로부터 해당 주소의 set을 구한다. */
-    printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
+    //printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
 
     /* 캐시에서 해당 set을 검색하여 HIT/MISS를 결정 */
     for (i = 0; i < assoc; i++) {
@@ -230,7 +242,7 @@ void read_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
                     p->lru = assoc - 1;
                 }
             }
-            printf("L2 Cache Hit\n");;
+            //printf("L2 Cache Hit\n");;
             return;
         }
         /* 새로운 블럭이 들어갈 인덱스 */
@@ -243,17 +255,17 @@ void read_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
 
     /* set에 해당되는 블럭이 없으므로 MISS이고 새로운 블럭을 올린다. */
     l2_miss++;
-    printf("L2 Cache Miss\n");
+    //printf("L2 Cache Miss\n");
     /* 캐시의 set이 가득찬 경우 */
     if (avail == -1) {
         ev = evict(set, assoc, 'd');
         p = &l2p[set * assoc + ev];
-        printf("(L2) Way %d is replaced.\n", ev);
+        //printf("(L2) Way %d is replaced.\n", ev);
 
         /* victim 블럭의 dirty bit이 1이면 메모리 쓰기를 한다. */
         if (p->dirty) {
             l2_write++;
-            printf("Write data to Memory.\n");
+            //printf("Write data to Memory.\n");
         }
 
         p->valid = 1;
@@ -274,7 +286,7 @@ void read_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
     /* 캐시의 set에 자리가 있는 경우 */
     else {
         p = &l2p[set * assoc + avail];
-        printf("(L2) Way %d is replaced.\n", avail);
+        //printf("(L2) Way %d is replaced.\n", avail);
 
         p->valid = 1;
         p->tag = (addr / b_size) / num_of_sets;
@@ -300,7 +312,7 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
 
     num_of_sets = c_size / (b_size * assoc);    /* set의 개수를 구한다. */
     set = (addr / b_size) % num_of_sets;  /* 입력받은 인자로부터 해당 주소의 set을 구한다. */
-    printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
+    //printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
 
     /* 캐시에서 해당 set을 검색하여 HIT/MISS를 결정 */
     for (i = 0; i < assoc; i++) {
@@ -320,7 +332,7 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
                 }
             }
             p->dirty = 1;
-            printf("L1 Cache Hit\n");
+            //printf("L1 Cache Hit\n");
             return;
         }
         /* 새로운 블럭이 들어갈 인덱스 */
@@ -331,17 +343,17 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
     }
     /* set에 해당되는 블럭이 없으므로 MISS이고 새로운 블럭을 올린다. */
     d_miss++;
-    printf("L1 Cache Miss\n");
+    //printf("L1 Cache Miss\n");
     /* 캐시의 set이 가득찬 경우 */
     if (avail == -1) {
         ev = evict(set, assoc, 'd');
         p = &dp[set * assoc + ev];
-        printf("(L1) Way %d is replaced.\n", ev);
+        //printf("(L1) Way %d is replaced.\n", ev);
 
         /* victim 블럭의 dirty bit이 1이면 메모리 쓰기를 한다. */
         if (p->dirty) {
             d_write++;
-            printf("Write data to L2 Cache.\n");
+            //printf("Write data to L2 Cache.\n");
         }
 
         p->valid = 1;
@@ -362,7 +374,7 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
     /* 캐시의 set에 자리가 있는 경우 */
     else {
         p = &dp[set * assoc + avail];
-        printf("(L1) Way %d is replaced.\n", avail);
+        //printf("(L1) Way %d is replaced.\n", avail);
         p->valid = 1;
         p->tag = (addr / b_size) / num_of_sets;
         p->dirty = 1;
@@ -379,6 +391,7 @@ void write_data(unsigned int addr, int c_size, int b_size, int assoc) {
         }
     }
     write_data_2(addr, 65536, b_size, 4); // L2 캐시 탐색
+    l2_total++;
 }
 
 void write_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
@@ -388,7 +401,7 @@ void write_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
 
     num_of_sets = c_size / (b_size * assoc);    /* set의 개수를 구한다. */
     set = (addr / b_size) % num_of_sets;  /* 입력받은 인자로부터 해당 주소의 set을 구한다. */
-    printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
+    //printf("Tag : %x, Index : %x\n", ((addr / b_size) / num_of_sets), set);
 
     /* 캐시에서 해당 set을 검색하여 HIT/MISS를 결정 */
     for (i = 0; i < assoc; i++) {
@@ -408,7 +421,7 @@ void write_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
                 }
             }
             p->dirty = 1;
-            printf("L2 Cache Hit\n");
+            //printf("L2 Cache Hit\n");
             return;
         }
         /* 새로운 블럭이 들어갈 인덱스 */
@@ -419,17 +432,17 @@ void write_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
     }
     /* set에 해당되는 블럭이 없으므로 MISS이고 새로운 블럭을 올린다. */
     l2_miss++;
-    printf("L2 Cache Miss\n");
+    //printf("L2 Cache Miss\n");
     /* 캐시의 set이 가득찬 경우 */
     if (avail == -1) {
         ev = evict(set, assoc, 'd');
         p = &l2p[set * assoc + ev];
-        printf("(L2) Way %d is replaced.\n", ev);
+        //printf("(L2) Way %d is replaced.\n", ev);
 
         /* victim 블럭의 dirty bit이 1이면 메모리 쓰기를 한다. */
         if (p->dirty) {
             l2_write++;
-            printf("Write data to Memory.\n");
+            //printf("Write data to Memory.\n");
         }
 
         p->valid = 1;
@@ -450,7 +463,7 @@ void write_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
     /* 캐시의 set에 자리가 있는 경우 */
     else {
         p = &l2p[set * assoc + avail];
-        printf("(L2) Way %d is replaced.\n", avail);
+        //printf("(L2) Way %d is replaced.\n", avail);
         p->valid = 1;
         p->tag = (addr / b_size) / num_of_sets;
         p->dirty = 1;
@@ -466,6 +479,79 @@ void write_data_2(unsigned int addr, int c_size, int b_size, int assoc) {
             }
         }
     }
+}
+
+void fetch_inst(int addr, int c_size, int b_size, int assoc) {
+    int num_of_sets, set;   /* set의 개수와 입력받은 주소의 set을 저장하는 변수 */
+    int i, j, ev = 0, avail = -1;  /* 반복문의 인덱스와 victim의 인덱스, 그리고 새로 넣을 블럭의 인덱스 */
+    struct i_cache* p;  /* 캐시를 가리키는 포인터 */
+
+    num_of_sets = c_size / (b_size * assoc);    /* set의 개수를 구한다. */
+    set = (addr / b_size) % num_of_sets;  /* 입력받은 인자로부터 해당 주소의 set을 구한다. */
+
+
+    /* 캐시에서 해당 set을 검색하여 HIT/MISS를 결정 */
+    for (i = 0; i < assoc; i++) {
+        p = &ip[set * assoc + i];
+        /* valid bit이 1이고 tag값이 일치하면 접근 시간을 바꾸고 HIT */
+        if (p->valid == 1 && p->tag == (addr / b_size) / num_of_sets) {
+            for (j = 0; j < assoc; j++) {
+                if (j != i) {
+                    p = &ip[set * assoc + j];
+                    (p->lru)--;
+                }
+                else {
+                    p->lru = assoc - 1;
+                }
+            }
+            return;
+        }
+        else if (p->valid == 0) {
+                avail = i;
+        }
+    }
+
+    /* set에 해당되는 블럭이 없으므로 MISS이고 새로운 블럭을 올린다. */
+    i_miss++;
+
+    /* 캐시의 set이 가득찬 경우 */
+    if (avail == -1) {
+        ev = evict(set, assoc, 'i');
+        p = &ip[set * assoc + ev];
+
+        p->valid = 1;
+        p->tag = (addr / b_size) / num_of_sets;
+        for (j = 0; j < assoc; j++) {
+            if (j != ev) {
+                p = &ip[set * assoc + j];
+                if (p->lru != 0) {
+                    (p->lru)--;
+                }
+                else {
+                    p->lru = assoc - 1;
+                }
+            }
+        }
+    }
+    else {
+        p = &ip[set * assoc + avail];
+
+        p->valid = 1;
+        p->tag = (addr / b_size) / num_of_sets;
+        for (j = 0; j < assoc; j++) {
+            if (j != avail) {
+                p = &ip[set * assoc + j];
+                if (p->lru != 0) {
+                    (p->lru)--;
+                }
+                else {
+                    p->lru = assoc - 1;
+                }
+            }
+        }
+    }
+    read_data_2(addr, 65536, b_size, 4); // L2 캐시 탐색
+    l2_total++;
 }
 
 int evict(int set, int assoc, char mode) {
