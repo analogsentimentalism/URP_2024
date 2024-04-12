@@ -17,9 +17,10 @@ module L1_D_top(
     output read_L1_L2,
     input ready_L2_L1,
     input read_C_L1,
-    output [20:0] tag_L1_L2,
-    output [20:0] write_tag_L1_L2,
-    output [4:0] index_L1_L2
+    output [17:0] tag_L1_L2,
+    output [17:0] write_tag_L1_L2,
+    output [7:0] index_L1_L2,
+    output [7:0] write_index_L1_L2
 );
 
 wire refill;
@@ -34,6 +35,7 @@ L1_D_controller u_L1_D_controller(
     .index_C_L1(index_C_L1),
     .write_tag_L1_L2(write_tag_L1_L2),
     .index_L1_L2(index_L1_L2),
+    .write_index_L1_L2(write_index_L1_L2),
     .read_C_L1(read_C_L1),
     .ready_L2_L1(ready_L2_L1),
     .stall(stall),
@@ -42,13 +44,14 @@ L1_D_controller u_L1_D_controller(
     .write_L1_L2(write_L1_L2),
     .write_C_L1(write_C_L1),
     .tag_L1_L2(tag_L1_L2),
-    .way(way)
+    .way(way),
+	.flush(flush)
 );
 
 L1_D_data_array u_L1_D_data_array(
     .clk(clk),
     .nrst(nrst),
-    .index_C_L1(index),
+    .index_C_L1(index_C_L1),
     .write_data_C_L1(write_data),
     .offset(offset),
     .read_data_L1_C(read_data_L1_C),

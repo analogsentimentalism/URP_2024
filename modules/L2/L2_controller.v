@@ -7,8 +7,8 @@ module L2_controller (
     input read_L1_L2, flush,
     input ready_MEM_L2,
     input write_L1_L2,
-    output ready_L2_L1,
-    output refill, update, read_L1_L2, write_L1_L2,
+    output reg ready_L2_L1,
+    output refill, update, read_L2_MEM, write_L2_MEM,
     output [7:0] index_L2_MEM,
     output [17:0] tag_L2_MEM,
     output [17:0] write_tag_L2_MEM,
@@ -144,19 +144,19 @@ generate
                                     else if (LRU_array_reg[i][1:0] == 2'b10)
                                         begin
                                             LRU_array_reg[i][1:0] <= 2'b00;
-                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ? LRU_array_reg[3:2] + 2'b01 : LRU_array_reg[i][3:2];
-                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
-                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ? LRU_array_reg[i][3:2] + 2'b01 : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[i][5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[i][7:6] + 2'b01  : LRU_array_reg[i][7:6];
                                         end
                                     else if (LRU_array_reg[i][1:0] == 2'b11)
                                         begin
                                             LRU_array_reg[i][1:0] <= 2'b00;
-                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ? LRU_array_reg[3:2] + 2'b01 : LRU_array_reg[i][3:2];
-                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
-                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ? LRU_array_reg[i][3:2] + 2'b01 : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[i][5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[i][7:6] + 2'b01  : LRU_array_reg[i][7:6];
                                         end
                                     else
-                                        LRU_array_reg[i] <= LRU_array_reg;
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
                                 end
                         2'b01 : begin
                                     if (LRU_array_reg[i][3:2] == 2'b00)
@@ -171,19 +171,19 @@ generate
                                     else if (LRU_array_reg[i][3:2] == 2'b10)
                                         begin
                                             LRU_array_reg[i][3:2] <= 2'b00;
-                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
-                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
-                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[i][1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[i][5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[i][7:6] + 2'b01  : LRU_array_reg[i][7:6];
                                         end
                                     else if (LRU_array_reg[i][3:2] == 2'b11)
                                         begin
                                             LRU_array_reg[i][3:2] <= 2'b00;
-                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
-                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
-                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[i][1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[i][5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[i][7:6] + 2'b01  : LRU_array_reg[i][7:6];
                                         end
                                     else
-                                        LRU_array_reg[i] <= LRU_array_reg;
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
                                 end
                           2'b10 : begin
                                     if (LRU_array_reg[i][5:4] == 2'b00)
@@ -198,19 +198,19 @@ generate
                                     else if (LRU_array_reg[i][5:4] == 2'b10)
                                         begin
                                             LRU_array_reg[i][5:4] <= 2'b00;
-                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
-                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
-                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[i][1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ?  LRU_array_reg[i][3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b01) ?  LRU_array_reg[i][7:6] + 2'b01  : LRU_array_reg[i][7:6];
                                         end
                                     else if (LRU_array_reg[i][5:4] == 2'b11)
                                         begin
                                             LRU_array_reg[i][5:4] <= 2'b00;
-                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
-                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
-                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[7:6] + 2'b01  : LRU_array_reg[i][7:6];
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[i][1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ?  LRU_array_reg[i][3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][7:6] <= (LRU_array_reg[i][7:6] <= 2'b10) ?  LRU_array_reg[i][7:6] + 2'b01  : LRU_array_reg[i][7:6];
                                         end
                                     else
-                                        LRU_array_reg[i] <= LRU_array_reg;
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
                                 end
                         2'b11 : begin
                                     if (LRU_array_reg[i][7:6] == 2'b00)
@@ -225,19 +225,19 @@ generate
                                     else if (LRU_array_reg[i][7:6] == 2'b10)
                                         begin
                                             LRU_array_reg[i][3:2] <= 2'b00;
-                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
-                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
-                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b01) ? LRU_array_reg[i][1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b01) ?  LRU_array_reg[i][5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b01) ?  LRU_array_reg[i][3:2] + 2'b01  : LRU_array_reg[i][3:2];
                                         end
                                     else if (LRU_array_reg[i][7:6] == 2'b11)
                                         begin
                                             LRU_array_reg[i][7:6] <= 2'b00;
-                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[1:0] + 2'b01 : LRU_array_reg[i][1:0];
-                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[5:4] + 2'b01  : LRU_array_reg[i][5:4];
-                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ?  LRU_array_reg[3:2] + 2'b01  : LRU_array_reg[i][3:2];
+                                            LRU_array_reg[i][1:0] <= (LRU_array_reg[i][1:0] <= 2'b10) ? LRU_array_reg[i][1:0] + 2'b01 : LRU_array_reg[i][1:0];
+                                            LRU_array_reg[i][5:4] <= (LRU_array_reg[i][5:4] <= 2'b10) ?  LRU_array_reg[i][5:4] + 2'b01  : LRU_array_reg[i][5:4];
+                                            LRU_array_reg[i][3:2] <= (LRU_array_reg[i][3:2] <= 2'b10) ?  LRU_array_reg[i][3:2] + 2'b01  : LRU_array_reg[i][3:2];
                                         end
                                     else
-                                        LRU_array_reg[i] <= LRU_array_reg;
+                                        LRU_array_reg[i] <= LRU_array_reg[i];
                                 end                    
                         default : LRU_array_reg[i] <= LRU_array_reg[i];
                     endcase
@@ -289,10 +289,10 @@ begin
                 (valid[{index_L1_L2,2'b11}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}]))))
             hit <= 1'b1;
         else if(write_L1_L2 && 
-                ((valid[{index_L1_L2,2'b00}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b00}])) || 
-                (valid[{index_L1_L2,2'b01}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b01}])) ||
-                (valid[{index_L1_L2,2'b10}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b10}])) ||
-                (valid[{index_L1_L2,2'b11}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}]))))
+                ((valid[{index_L1_L2,2'b00}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b00}])) || 
+                (valid[{index_L1_L2,2'b01}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b01}])) ||
+                (valid[{index_L1_L2,2'b10}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b10}])) ||
+                (valid[{index_L1_L2,2'b11}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}]))))
             hit <= 1'b1;
         else 
             hit <= hit;
@@ -316,10 +316,10 @@ begin
                 (valid[{index_L1_L2,2'b11}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}])))
             miss <= 1'b0;
         else if(write_L1_L2 && 
-                ((valid[{index_L1_L2,2'b00}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b00}])) || 
-                (valid[{index_L1_L2,2'b01}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b01}])) ||
-                (valid[{index_L1_L2,2'b10}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b10}])) ||
-                (valid[{index_L1_L2,2'b11}] && (write_tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}]))))
+                ((valid[{index_L1_L2,2'b00}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b00}])) || 
+                (valid[{index_L1_L2,2'b01}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b01}])) ||
+                (valid[{index_L1_L2,2'b10}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b10}])) ||
+                (valid[{index_L1_L2,2'b11}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}]))))
             miss <= 1'b0;
     
         else
