@@ -23,8 +23,7 @@ reg		[L21BUS - 1:0]	read_data_L2_L1	;
 wire	[L1CBUS - 1:0]	read_data_L1_C	;
 wire	[TNUM - 1:0]	tag_L1_L2		;
 
-    //
-    L1_I_data_array L1_I_data_array (
+L1_I_data_array u_L1_I_data_array (
     .clk				(	clk						),
     .nrst				(	nrst					),
     .index_C_L1			(	address		[6+:INUM]	),
@@ -66,20 +65,26 @@ initial begin: init
 	@(posedge clk);	// 파일 오픈 적용이 잘 안될까봐
 
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
-		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[0+:INUM], 6'd0}	;
-		$fwrite(aa, "%h\n", address_array[i])								;
+		address_array[i]	= $urandom & 32'hFFFF_F83C | {i[0+:INUM], 6'd0}	;
+		$fwrite(aa, "0x%h\n", address_array[i])								;
 	end
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
-		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][6+:INUM], 6'd0}	;
-		$fwriteh(ra, "%h\n",replace_array[i])												;
+		replace_array[i]	= $urandom & 32'hFFFF_F83C | {address_array[i][6+:INUM], 6'd0}	;
+		$fwriteh(ra, "0x%h\n",replace_array[i])												;
 	end
+	std::randomize(data_array);
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
-		data_array[i]	= $urandom			;
-		$fwrite(d, "%h\n", data_array[i])	;
+		for(j = 0; j<512; j = j + 32) begin
+			$fwrite(d, "%d ", data_array[i][j+:32])	;
+		end
+		$fwrite(d, "\n");
 	end
+	std::randomize(rdata_array);
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
-		rdata_array[i]	= $urandom			;
-		$fwriteh(r, "%h\n",rdata_array[i])	;
+		for(j = 0; j<512; j = j + 32) begin
+			$fwrite(r, "%d ", rdata_array[i][j+:32])	;
+		end
+		$fwrite(r, "\n");
 	end
 
 	$fclose(aa)	;
@@ -106,10 +111,9 @@ initial begin: test
 	$display("%6d: L1 Miss, L2 Hit. way0", $time)	;
 	test_state	= 1									;
 
-
+	refill	= '1									;
 
 	for(i = 0; i<INIT; i = i + 1) begin
-		refill	= '1										;
 		address	= address_array[i]							;
 		way		= '0										;
 		
@@ -117,8 +121,6 @@ initial begin: test
 		repeat(2 * L2_CLK)  @(posedge   clk)				;
 		read_data_L2_L1	= data_array[i]						;
 		repeat(L1_CLK)		@(posedge	clk)				;
-		refill	= '0										;
-		repeat(5 * L1_CLK)		@(posedge	clk)				;
 		$display("%6d: Data = %d", $time, read_data_L1_C)	;
 	end
 
@@ -138,6 +140,7 @@ initial begin: test
 	end
 
 	refill	= '0;
+	repeat(50)   @(posedge   clk)	;
 
 	// 3. L1 Hit, way0
 	$display("%6d: L1 Hit. way0", $time)	;
@@ -162,6 +165,8 @@ initial begin: test
 		repeat(2 * L1_CLK)		@(posedge	clk)			;
 		$display("%6d: Data = %d", $time, read_data_L1_C)	;
 	end
+
+	repeat(50)   @(posedge   clk)	;
 
 	// 5. L1 Miss, L2 Miss. way0
 	$display("%6d: L1 Miss, L2 Miss. way0", $time)	;
@@ -195,7 +200,14 @@ initial begin: test
 		$display("%6d: Data = %d", $time, read_data_L1_C)	;
 	end
 
+	repeat(50)   @(posedge   clk)	;
+
 	$finish;
+end
+
+initial begin
+	$dumpfile("tb_L1_I_data_array.vcd")	;
+	$dumpvars(u_L1_I_data_array)		;
 end
 
 endmodule

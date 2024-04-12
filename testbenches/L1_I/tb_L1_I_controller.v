@@ -2,8 +2,8 @@
 module tb_L1_I_controller #(
 	parameter	L1_CLK	= 1,			// L1의 클락
 	parameter	L2_CLK	= 2,			// L2의 클락
-	parameter	TOTAL	= 10000,		// 전체 address 개수
-	parameter	INIT	= 30,			// 처음 채울 개수
+	parameter	TOTAL	= 64,			// 전체 address 개수
+	parameter	INIT	= 32,			// 처음 채울 개수
 	parameter	TNUM	= 21,			// # Tag bits
 	parameter	INUM	= 26 - TNUM		// # Index bits
 ) ();
@@ -69,11 +69,11 @@ initial begin: init
 
 	@(posedge clk);
 
-	for(i = 0; i<INIT * 2; i = i + 1) begin   // random addresses
+	for(i = 0; i<INIT<<1; i = i + 1) begin   // random addresses
 		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[0+:INUM], 6'b000000};
 		$fwrite(aa, "%h\n", address_array[i])									;
 	end
-	for(i = 0; i<INIT * 2; i = i + 1) begin   // random addresses with same index
+	for(i = 0; i<INIT<<1; i = i + 1) begin   // random addresses with same index
 		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][6+:INUM], 6'b000000}	;
 		$fwriteh(ra, "%h\n",replace_array[i])													;
 	end

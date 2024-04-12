@@ -72,11 +72,11 @@ initial begin: init
 	@(posedge clk);	// 파일 오픈 적용이 잘 안될까봐
 
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
-		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[0+:INUM], 6'd0};
+		address_array[i]	= $urandom & 32'hFFFF_F83C | {i[0+:INUM], 6'd0};
 		$fwrite(aa, "%h\n", address_array[i])									;
 	end
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
-		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][6+:INUM], 6'd0}	;
+		replace_array[i]	= $urandom & 32'hFFFF_F83C | {address_array[i][6+:INUM], 6'd0}	;
 		$fwriteh(ra, "%h\n",replace_array[i])													;
 	end
 

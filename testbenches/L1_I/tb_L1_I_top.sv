@@ -80,20 +80,20 @@ initial begin: init
 	@(posedge clk);	// 파일 오픈 적용이 잘 안될까봐
 
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
-		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[0+:INUM], 6'd0}	;
-		$fwrite(aa, "%h\n", address_array[i])								;
+		address_array[i]	= $urandom & 32'hFFFF_F83C | {i[0+:INUM], 6'd0}	;
+		$fwrite(aa, "0x%h\n", address_array[i])								;
 	end
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
-		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][6+:INUM], 6'd0}	;
-		$fwriteh(ra, "%h\n",replace_array[i])												;
+		replace_array[i]	= $urandom & 32'hFFFF_F83C | {address_array[i][6+:INUM], 6'd0}	;
+		$fwriteh(ra, "0x%h\n",replace_array[i])												;
 	end
+	std::randomize(data_array);
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
-		data_array[i]	= $urandom			;
-		$fwrite(d, "%h\n", data_array[i])	;
+		$fwrite(d, "%d\n", data_array[i])	;
 	end
+	std::randomize(rdata_array);
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
-		rdata_array[i]	= $urandom			;
-		$fwriteh(r, "%h\n",rdata_array[i])	;
+		$fwriteh(r, "%d\n",rdata_array[i])	;
 	end
 
 	$fclose(aa)	;
@@ -234,7 +234,9 @@ initial begin: test
 	test_state	= 7					;
 
 	flush		= 1'b1				;
-
+	repeat(L1_CLK)	@(posedge	clk);
+	flush		= 1'b0				;
+	
 	repeat(50)	@(posedge   clk)	;
 
 	$display("For L2 Miss")			;
