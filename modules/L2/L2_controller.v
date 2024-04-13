@@ -38,7 +38,6 @@ reg update_reg;                      //For write hits, controller asserts update
 reg read_L2_MEM_reg;
 reg write_L2_MEM_reg;
 
-reg [1:0] LRU_reg [cache_set_num-1:0];                          //LRU
 reg [7:0] LRU_array_reg [cache_set_num-1:0];
 reg [1:0] way_reg;                         //Way
 reg check;                           //Check
@@ -133,11 +132,11 @@ always @(posedge clk or negedge nrst) begin
 end
 //LRU (if LRU == 0 -> way 0 replace, LRU == 1 -> way 1 replace)
 generate
-    for (i=0; i<cache_line_num; i = i+1)    begin
+    for (i=0; i<cache_set_num; i = i+1)    begin
         always@(posedge clk or negedge nrst)
         begin
             if(!nrst)
-                LRU_array_reg[i] <= 8'h11100100;
+                LRU_array_reg[i] <= 8'b11100100;
             else if(state == S_COMPARE) begin
                 if (hit) begin
                     case(way)
