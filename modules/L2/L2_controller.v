@@ -116,7 +116,8 @@ always @(posedge clk or negedge nrst) begin
             way_reg <= 2'b01;
         else if (LRU_array_reg[index_L1_L2][1:0] == 2'b11)
             way_reg <= 2'b00;
-        
+        else
+            way_reg <= way_reg;
         //begin
         //    case(LRU_array_reg[index_L1_L2])
         //       8'b11xxxxxx: way_reg <= 2'b11;
