@@ -122,6 +122,7 @@ initial begin: test
 		ready_MEM_L2	= 1'b1								;
 		repeat(MEM_CLK)	@(posedge   clk)				;
 		ready_MEM_L2	= 1'b0								;
+		repeat(L2_CLK)	@(posedge   clk)			;
 	end
 
 	repeat(50)	@(posedge   clk)		;	// test_state 바뀔 때 구분.
@@ -141,6 +142,7 @@ initial begin: test
 		ready_MEM_L2	= 1'b1								;
 		repeat(MEM_CLK)	@(posedge   clk)				;
 		ready_MEM_L2	= 1'b0								;
+		repeat(L2_CLK)	@(posedge   clk)			;
 	end
 
 	// 3. Read: L3 Miss - Mem Hit way2.
@@ -157,9 +159,10 @@ initial begin: test
 		ready_MEM_L2	= 1'b1							;
 		repeat(MEM_CLK)	@(posedge   clk)				;
 		ready_MEM_L2	= 1'b0							;
+		repeat(L2_CLK)	@(posedge   clk)			;
 	end
 
-	// 3. Read: L3 Miss - Mem Hit way3.
+	// 4. Read: L3 Miss - Mem Hit way3.
 	$display("Cache Init start - way3")	;
 	test_state	= 4	;
 
@@ -173,6 +176,7 @@ initial begin: test
 		ready_MEM_L2	= 1'b1								;
 		repeat(MEM_CLK)	@(posedge   clk)				;
 		ready_MEM_L2	= 1'b0								;
+		repeat(10*L2_CLK)	@(posedge   clk)			;
 	end
 
 	read_L1_L2   = 1'b0				;
