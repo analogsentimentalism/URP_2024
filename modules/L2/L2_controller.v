@@ -38,7 +38,6 @@ reg update_reg;                      //For write hits, controller asserts update
 reg read_L2_MEM_reg;
 reg write_L2_MEM_reg;
 
-reg [1:0] LRU_reg [cache_set_num-1:0];                          //LRU
 reg [7:0] LRU_array_reg [cache_set_num-1:0];
 reg [1:0] way_reg;                         //Way
 reg check;                           //Check
@@ -108,26 +107,36 @@ always @(posedge clk or negedge nrst) begin
             way_reg <= 2'b10;
         else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}] )
             way_reg <= 2'b11;
-        else begin
-            case(LRU_array_reg[index_L1_L2])
-               8'b11xxxxxx: way_reg <= 2'b11;
-               8'bxx11xxxx: way_reg <= 2'b10;
-               8'bxxxx11xx: way_reg <= 2'b01;
-               8'bxxxxxx11: way_reg <= 2'b00;
-               default : way_reg <= way_reg;
-            endcase
-        end
+        else if (LRU_array_reg[index_L1_L2][7:6] == 2'b11)
+            way_reg <= 2'b11;
+        else if (LRU_array_reg[index_L1_L2][5:4] == 2'b11)
+            way_reg <= 2'b10;
+        else if (LRU_array_reg[index_L1_L2][3:2] == 2'b11)
+            way_reg <= 2'b01;
+        else if (LRU_array_reg[index_L1_L2][1:0] == 2'b11)
+            way_reg <= 2'b00;
+        else
+            way_reg <= way_reg;
+        //begin
+        //    case(LRU_array_reg[index_L1_L2])
+        //       8'b11xxxxxx: way_reg <= 2'b11;
+        //       8'bxx11xxxx: way_reg <= 2'b10;
+        //       8'bxxxx11xx: way_reg <= 2'b01;
+        //       8'bxxxxxx11: way_reg <= 2'b00;
+        //       default : way_reg <= way_reg;
+        //    endcase
+        //end // 
     end
     else 
         way_reg <= way_reg;
 end
 //LRU (if LRU == 0 -> way 0 replace, LRU == 1 -> way 1 replace)
 generate
-    for (i=0; i<cache_line_num; i = i+1)    begin
+    for (i=0; i<cache_set_num; i = i+1)    begin
         always@(posedge clk or negedge nrst)
         begin
             if(!nrst)
-                LRU_array_reg[i] <= 5'h0;
+                LRU_array_reg[i] <= 8'b11100100;
             else if(state == S_COMPARE) begin
                 if (hit) begin
                     case(way)

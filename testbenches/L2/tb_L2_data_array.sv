@@ -1,12 +1,15 @@
 `timescale 1ns/1ns
 
-module tb_L1_D_data_array #(
+module tb_L2_data_array #(
 	parameter	L1_CLK	= 1,			// L1의 클락
 	parameter	L2_CLK	= 1,			// L2의 클락
-	parameter	TOTAL	= 64,			// 전체 address 개수
-	parameter	INIT	= 32,			// 처음 채울 개수
-	parameter	TNUM	= 21,			// # Tag bits
+	parameter	M_CLK	= 1,			// Memory의 클락
+	parameter	TOTAL	= 1024,			// 전체 address 개수
+	parameter	INIT	= 256,			// 처음 채울 개수
+	parameter	TNUM	= 18,			// # Tag bits
 	parameter	INUM	= 26 - TNUM,	// # Index bits
+	parameter	TNUM_2	= 18,			// # Tag bits for L2
+	parameter	INUM_2	= 26 - TNUM_2	// # Index bits for L2
 	parameter	L1CBUS	= 32, 
 	parameter	L21BUS	= 512
 ) ();
@@ -28,7 +31,7 @@ wire	[L1CBUS - 1:0]	read_data_L1_C	;
 wire	[TNUM - 1:0]	write_L1_L2		;
 
 
-L1_D_data_array u_L1_D_data_array (
+L2_data_array u_L2_data_array (
     .clk				(	clk					),
     .nrst				(	nrst				),
     .index_C_L1			(	address	[6+:INUM]	),
@@ -68,12 +71,12 @@ initial begin: init
 	refill		= '0	;
 	way			= '0	;
 
-	aa	= $fopen("../testbenches/etc/tb_L1_D_data_array_address_array.txt", "wb"	);
-	ra	= $fopen("../testbenches/etc/tb_L1_D_data_array_replace_array.txt", "wb"	);
-	d	= $fopen("../testbenches/etc/tb_L1_D_data_array_data_array.txt", "wb"		);
-	r	= $fopen("../testbenches/etc/tb_L1_D_data_array_rdata_array.txt", "wb"		);
-	w	= $fopen("../testbenches/etc/tb_L1_D_data_array_wdata_array.txt", "wb"		);
-	w_2	= $fopen("../testbenches/etc/tb_L1_D_data_array_wdata_array_2.txt", "wb"	);
+	aa	= $fopen("../testbenches/etc/tb_L2_data_array_address_array.txt", "wb"	);
+	ra	= $fopen("../testbenches/etc/tb_L2_data_array_replace_array.txt", "wb"	);
+	d	= $fopen("../testbenches/etc/tb_L2_data_array_data_array.txt", "wb"		);
+	r	= $fopen("../testbenches/etc/tb_L2_data_array_rdata_array.txt", "wb"		);
+	w	= $fopen("../testbenches/etc/tb_L2_data_array_wdata_array.txt", "wb"		);
+	w_2	= $fopen("../testbenches/etc/tb_L2_data_array_wdata_array_2.txt", "wb"	);
 
 	@(posedge clk);	// 파일 오픈 적용이 잘 안될까봐
 
@@ -336,8 +339,8 @@ initial begin: test
 end
 
 initial begin
-	$dumpfile("tb_L1_D_data_array.vcd")	;
-	$dumpvars(u_L1_D_data_array)		;
+	$dumpfile("tb_L2_data_array.vcd")	;
+	$dumpvars(u_L2_data_array)		;
 end
 
 endmodule
