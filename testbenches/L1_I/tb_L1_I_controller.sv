@@ -84,9 +84,6 @@ initial begin: init
 	$fclose(ra);
 end
 
-property p1;
-@(posedge clk) $fell(refill) ##1 $fell(stall);
-endproperty
 
 initial begin: test
 
@@ -115,10 +112,18 @@ initial begin: test
       
 		while(stall)	repeat(L1_CLK)	@(posedge   clk);
 		
+		sequence s1;
+		$fell(refill) #(2*L1_CLK) $fell(stall);
+ 		endsequence
+	
+		property p1;
+		@(posedge clk) s1;
+		endproperty
+
 		a1: assert property(p1)
-	     $display("property p1 succeeded");
-   		 else
-   		 $display("property p1 failed");
+	        $display("property p1 succeeded");
+   		else
+   			$display("property p1 failed");
 
 	end
 
