@@ -126,7 +126,7 @@ always @(posedge clk or negedge nrst) begin
         //       8'bxxxxxx11: way_reg <= 2'b00;
         //       default : way_reg <= way_reg;
         //    endcase
-        //end
+        //end // 
     end
     else 
         way_reg <= way_reg;
