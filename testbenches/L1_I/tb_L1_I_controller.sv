@@ -5,7 +5,9 @@ module tb_L1_I_controller #(
 	parameter	TOTAL	= 64,			// 전체 address 개수
 	parameter	INIT	= 32,			// 처음 채울 개수
 	parameter	TNUM	= 21,			// # Tag bits
-	parameter	INUM	= 26 - TNUM		// # Index bits
+	parameter	INUM	= 26 - TNUM,	// # Index bits
+	parameter	TNUM_2	= 18,			// # Tag bits for L2
+	parameter	INUM_2	= 26 - TNUM_2	// # Index bits for L2
 ) ();
 
 reg						clk				;
@@ -20,8 +22,8 @@ wire					stall			;
 wire					refill			;
 wire					read_L1_L2		;
 wire					way				;
-wire	[INUM - 1:0]	index_L1_L2		;
-wire	[TNUM - 1:0]	tag_L1_L2		;
+wire	[INUM_2 - 1:0]	index_L1_L2		;
+wire	[TNUM_2 - 1:0]	tag_L1_L2		;
 
 L1_I_controller u_L1_I_controller (
 
@@ -70,11 +72,11 @@ initial begin: init
 	@(posedge clk);	// 파일 오픈 적용이 잘 안될까봐
 
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
-		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[0+:INUM], 6'd0};
+		address_array[i]	= $urandom & 32'hFFFF_F83C | {i[0+:INUM], 6'd0};
 		$fwrite(aa, "%h\n", address_array[i])									;
 	end
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
-		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][6+:INUM], 6'd0}	;
+		replace_array[i]	= $urandom & 32'hFFFF_F83C | {address_array[i][6+:INUM], 6'd0}	;
 		$fwriteh(ra, "%h\n",replace_array[i])													;
 	end
 

@@ -13,8 +13,8 @@ module L1_I_top(
     output read_L1_L2,
     input ready_L2_L1,
     input read_C_L1,
-    output [20:0] tag_L1_L2,
-    output [4:0] index_L1_L2
+    output [17:0] tag_L1_L2,
+    output [7:0] index_L1_L2
 );
 
 wire refill;

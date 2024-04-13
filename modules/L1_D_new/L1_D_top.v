@@ -44,13 +44,14 @@ L1_D_controller u_L1_D_controller(
     .write_L1_L2(write_L1_L2),
     .write_C_L1(write_C_L1),
     .tag_L1_L2(tag_L1_L2),
-    .way(way)
+    .way(way),
+	.flush(flush)
 );
 
 L1_D_data_array u_L1_D_data_array(
     .clk(clk),
     .nrst(nrst),
-    .index_C_L1(index),
+    .index_C_L1(index_C_L1),
     .write_data_C_L1(write_data),
     .offset(offset),
     .read_data_L1_C(read_data_L1_C),
