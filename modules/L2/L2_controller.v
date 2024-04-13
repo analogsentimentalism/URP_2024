@@ -127,7 +127,7 @@ generate
         always@(posedge clk or negedge nrst)
         begin
             if(!nrst)
-                LRU_array_reg[i] <= 5'h0;
+                LRU_array_reg[i] <= 8'h0;
             else if(state == S_COMPARE) begin
                 if (hit) begin
                     case(way)
