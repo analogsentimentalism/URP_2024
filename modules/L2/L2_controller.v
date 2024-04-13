@@ -108,15 +108,24 @@ always @(posedge clk or negedge nrst) begin
             way_reg <= 2'b10;
         else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}] )
             way_reg <= 2'b11;
-        else begin
-            case(LRU_array_reg[index_L1_L2])
-               8'b11xxxxxx: way_reg <= 2'b11;
-               8'bxx11xxxx: way_reg <= 2'b10;
-               8'bxxxx11xx: way_reg <= 2'b01;
-               8'bxxxxxx11: way_reg <= 2'b00;
-               default : way_reg <= way_reg;
-            endcase
-        end
+        else if (LRU_array_reg[index_L1_L2][7:6] == 2'b11)
+            way_reg <= 2'b11;
+        else if (LRU_array_reg[index_L1_L2][5:4] == 2'b11)
+            way_reg <= 2'b10;
+        else if (LRU_array_reg[index_L1_L2][3:2] == 2'b11)
+            way_reg <= 2'b01;
+        else if (LRU_array_reg[index_L1_L2][1:0] == 2'b11)
+            way_reg <= 2'b00;
+        
+        //begin
+        //    case(LRU_array_reg[index_L1_L2])
+        //       8'b11xxxxxx: way_reg <= 2'b11;
+        //       8'bxx11xxxx: way_reg <= 2'b10;
+        //       8'bxxxx11xx: way_reg <= 2'b01;
+        //       8'bxxxxxx11: way_reg <= 2'b00;
+        //       default : way_reg <= way_reg;
+        //    endcase
+        //end
     end
     else 
         way_reg <= way_reg;
