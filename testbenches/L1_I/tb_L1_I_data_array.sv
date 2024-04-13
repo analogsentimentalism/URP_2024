@@ -72,16 +72,18 @@ initial begin: init
 		replace_array[i]	= $urandom & 32'hFFFF_F83C | {address_array[i][6+:INUM], 6'd0}	;
 		$fwriteh(ra, "0x%h\n",replace_array[i])												;
 	end
-	std::randomize(data_array);
-	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
+	// std::randomize(data_array);
+	for(i = 0; i<TOTAL; i = i + 1) begin
 		for(j = 0; j<512; j = j + 32) begin
+			data_array[i][j+:32]	= $urandom		;
 			$fwrite(d, "%d ", data_array[i][j+:32])	;
 		end
 		$fwrite(d, "\n");
 	end
-	std::randomize(rdata_array);
-	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
+	// std::randomize(rdata_array);
+	for(i = 0; i<TOTAL; i = i + 1) begin
 		for(j = 0; j<512; j = j + 32) begin
+			rdata_array[i][j+:32]	= $urandom			;
 			$fwrite(r, "%d ", rdata_array[i][j+:32])	;
 		end
 		$fwrite(r, "\n");
