@@ -138,7 +138,7 @@ generate
             if(!nrst)
                 LRU_array_reg[i] <= 8'b11100100;
             else if(state == S_COMPARE) begin
-                if (hit) begin
+                if (hit & (index_L1_L2 == i)) begin
                     case(way)
                         2'b00 : begin
                                     if (LRU_array_reg[i][1:0] == 2'b00)
