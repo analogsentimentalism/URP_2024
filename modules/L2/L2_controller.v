@@ -92,19 +92,18 @@ always @(posedge clk or negedge nrst) begin
         
         if (!valid[{index_L1_L2,2'b00}])
             way_reg <= 2'b00;
+        else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b00}] )
+            way_reg <= 2'b00; 
         else if (!valid[{index_L1_L2,2'b01}])
             way_reg <= 2'b01;
+        else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b01}] )
+            way_reg <= 2'b01; 
         else if (!valid[{index_L1_L2, 2'b10}])
             way_reg <= 2'b10;
+        else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b10}] )
+            way_reg <= 2'b10; 
         else if (!valid[{index_L1_L2, 2'b11}])
             way_reg <= 2'b11; 
-
-        else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b00}] )
-            way_reg <= 2'b00;
-        else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b01}] )
-            way_reg <= 2'b01;
-        else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b10}] )
-            way_reg <= 2'b10;
         else if (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b11}] )
             way_reg <= 2'b11;
         else if (LRU_array_reg[index_L1_L2][7:6] == 2'b11)
