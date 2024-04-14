@@ -84,6 +84,19 @@ initial begin: init
 	$fclose(ra);
 end
 
+		sequence s1;
+		$fell(refill) |=> $fell(stall);
+ 		endsequence
+	
+		property p1;
+		@(posedge clk) s1;
+		endproperty
+
+		a1: assert property(p1)
+	        $display("property p1 succeeded");
+   		else
+   			$display("property p1 failed");
+
 initial begin: test
 
 	// 1. Read: L1 Miss - L2 Hit way0.
@@ -110,6 +123,9 @@ initial begin: test
 		ready_L2_L1	= 1'b0								;
       
 		while(stall)	repeat(L1_CLK)	@(posedge   clk);
+		
+		
+
 	end
 
 	repeat(50)	@(posedge   clk)		;	// test_state 바뀔 때 구분.
