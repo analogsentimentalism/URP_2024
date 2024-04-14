@@ -107,12 +107,14 @@ initial begin: test
 
 	repeat(5 * L2_CLK)	@(posedge	clk)	;
 	nrst		= 1'b1						;
-	read_L1_L2	= 1'b1						;   // Initial reset
+	
 
 	// 1-4. Read: L2 Miss - MEM Hit way0-3.
 	for(j = 0; j < 4; j = j + 1) begin
 		$display("%6d: Cache Init start - way%d", $time, j)	;
 		test_state	= test_state + 1							;
+
+		read_L1_L2	= 1'b1						;   // Initial reset
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin	// fill way0.
 			address		= address_array[i]				;
@@ -124,43 +126,43 @@ initial begin: test
 			ready_MEM_L2	= 1'b1								;
 			repeat(MEM_CLK)	@(posedge   clk)				;
 			ready_MEM_L2	= 1'b0								;
-			repeat(L2_CLK)	@(posedge   clk)			;
+			repeat(2 * L2_CLK)	@(posedge   clk)			;
 		end
-		
+		read_L1_L2   = 1'b0				;
 		repeat(50)	@(posedge   clk)	;	// test_state 바뀔 때 구분.
 											// Cache clock과 관련 X
 	end
 
-	read_L1_L2   = 1'b0				;
 	repeat(50)   @(posedge   clk)	;
 
 	// 5-8. Read: L2 Hit way0-3.
-	read_L1_L2	= 1'b1				;
 
 	for(j = 0; j<4; j = j + 1) begin
 		$display("%6d: Read-Hit-way%d", $time, j)	;
 		test_state	= test_state + 1				;
+		
+		read_L1_L2	= 1'b1				;
 
-		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin	// read hit way 0
+		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address	= address_array[i]						;
 
 			$display("%6d: Read Address %h", $time, address);
-			repeat(L2_CLK)	@(posedge   clk)				;
+			repeat(3 * L2_CLK)	@(posedge   clk)				;
 		end
 
+		read_L1_L2   = 1'b0				;
 		repeat(50)	@(posedge   clk)	;
 
 	end
 
-	read_L1_L2   = 1'b0				;
 	repeat(50)	@(posedge   clk)	;
 
 	// 9-12. Read: L2 Miss - MEM Hit (Replace way0-3)
-	read_L1_L2	= 1'b1				;
 
 	for(j = 0; j<4; j = j + 1) begin
 		$display("%6d: Read-Miss-Hit (Replace way%d)", $time, j)	;
 		test_state	= test_state + 1								;
+		read_L1_L2	= 1'b1				;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address			= replace_array[i]				;
@@ -172,13 +174,13 @@ initial begin: test
 			ready_MEM_L2	= 1'b1							;
 			repeat(MEM_CLK)	@(posedge   clk)				;
 			ready_MEM_L2	= 1'b0							;
-			repeat(L2_CLK)	@(posedge   clk)				;
+			repeat(2 * L2_CLK)	@(posedge   clk)				;
 		end
 
+		read_L1_L2	= 1'b0				;
 		repeat(50)	@(posedge   clk)	;
 	end
 
-	read_L1_L2	= 1'b0				;
 	repeat(50)	@(posedge   clk)	;
 
 	// 13. Flush
@@ -194,11 +196,11 @@ initial begin: test
 	$display("For MEM Miss")			;
 
 	// 14-17. Read: L2 Miss - MEM Miss way0-3.
-	read_L1_L2	= 1'b1	;
 
 	for(j = 0; j<4; j = j + 1) begin
 		$display("%6d: Cache Init start - way%d", $time, j)	;
 		test_state	= test_state + 1						;
+		read_L1_L2	= 1'b1	;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address		= address_array[i]					;
@@ -210,20 +212,21 @@ initial begin: test
 			ready_MEM_L2	= 1'b1							;
 			repeat(MEM_CLK)	@(posedge   clk)				;
 			ready_MEM_L2	= 1'b0							;
-			repeat(L2_CLK)	@(posedge   clk)				;
+			repeat(2 * L2_CLK)	@(posedge   clk)				;
 		end
-
+		read_L1_L2	= 1'b0	;
 		repeat(50)	@(posedge   clk)	;
 	end
 
 	repeat(50)	@(posedge   clk)	;
 
 	// 18-21. Read: L2 Miss - MEM Miss (Replace way0-3)
-	read_L1_L2	= 1'b1	;
+	
 
 	for(j = 0; j < 4; j = j + 1) begin
 		$display("%6d: Read-Miss-Miss (Replace way%d)", $time, j)	;
 		test_state	= test_state + 1								;
+		read_L1_L2	= 1'b1	;
 		
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
@@ -236,14 +239,14 @@ initial begin: test
 			ready_MEM_L2	= 1'b1							;
 			repeat(MEM_CLK)	@(posedge   clk)				;
 			ready_MEM_L2	= 1'b0							;
-			repeat(L2_CLK)	@(posedge   clk)				;
+			repeat(2 * L2_CLK)	@(posedge   clk)				;
 		end
-
+		read_L1_L2	= 1'b0				;
 		repeat(50)   @(posedge   clk)	;
 
 	end
 
-	read_L1_L2	= 1'b0				;	
+		
 	repeat(50)   @(posedge   clk)	;
 
 	// init for write
@@ -256,11 +259,12 @@ initial begin: test
 	repeat(50)   @(posedge   clk)	;
 
 	// 22-25. Write: L2 Miss - MEM Hit. Way0-3
-	write_L1_L2	= 1'b1	;
+	
 
 	for(j = 0; j < 4; j = j + 1) begin
 		$display("%6d: Write-Miss-Hit. Way%d", $time, j)	;
 		test_state	= test_state + 1						;
+		write_L1_L2	= 1'b1	;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address		= address_array[i]	;
@@ -271,64 +275,67 @@ initial begin: test
 			ready_MEM_L2		= 1'b1						;
 			repeat(MEM_CLK)   @(posedge   clk)				;
 			ready_MEM_L2		= 1'b0						;
-			repeat(L2_CLK)	@(posedge   clk)				;
+			repeat(2 * L2_CLK)	@(posedge   clk)				;
 		end
-
+		write_L1_L2	= 1'b0				;
 		repeat(50)   @(posedge   clk)	;
-		
+
 	end
 
-	write_L1_L2	= 1'b0				;
+	
 	repeat(50)   @(posedge   clk)	;
 
    // 25-28. Read: L2 Hit way0-3.
-	read_L1_L2	= 1'b1				;
+	
 
    for(j = 0; j < 4; j = j + 1) begin
 		$display("%6d: Read-Hit-way%d", $time, j)	;
 		test_state	= test_state + 1				;
+		read_L1_L2	= 1'b1				;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address	= address_array[i]						;
 
 			$display("%6d: Read Address %h", $time, address);
-			repeat(L2_CLK)	@(posedge   clk)				;
+			repeat(4 * L2_CLK)	@(posedge   clk)				;
 		end
-
+		read_L1_L2	= 1'b0				;
 		repeat(50)	@(posedge   clk)	;
 
    end
 
-   read_L1_L2	= 1'b0				;
+   
    repeat(50)	@(posedge   clk)	;
 
 	// 29-32. Write: L2 Hit. Way0-3.
-	write_L1_L2	= 1'b1								;
+	
 
 	for(j = 0; j < 4; j = j + 1) begin
 	$display("%6d: Write L2 Hit. Way%d", $time, j)	;
 	test_state	= test_state + 1					;
+	write_L1_L2	= 1'b1								;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address		= address_array[i]	;
 
 			$display("%6d: Write Address %h", $time, address);
-			repeat(2 * L2_CLK)	@(posedge   clk)			;
+			repeat(3 * L2_CLK)	@(posedge   clk)			;
 		end
-
+	write_L1_L2	= 1'b0				;
 	repeat(50)   @(posedge   clk)	;
 
 	end
 
-	write_L1_L2	= 1'b0				;
+	
 	repeat(50)   @(posedge   clk)	;
 
 	// 33-36. Read: L2 Miss - MEM Hit (Write back) way0-3.
-	read_L1_L2	= 1'b1									;
+	
 
 	for(j=0; j<4; j = j + 1) begin
 	$display("%6d: Read-Miss-Hit (Write back) way%d", $time, j)	;
 	test_state	= test_state + 1								;
+	read_L1_L2	= 1'b1									;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address			= replace_array[i]				;
@@ -341,22 +348,23 @@ initial begin: test
 			ready_MEM_L2	= 1'b1							;
 			repeat(MEM_CLK)	@(posedge   clk)				;
 			ready_MEM_L2	= 1'b0							;
-			repeat(L2_CLK)	@(posedge   clk)				;
+			repeat(2 * L2_CLK)	@(posedge   clk)				;
 		end
-		
+		read_L1_L2	= 1'b0				;
 		repeat(50)   @(posedge   clk)	;
 
 	end
 
-	read_L1_L2	= 1'b0				;
+	
 	repeat(50)	@(posedge   clk)	;
 
 	// 37-40. Write: L2 Miss - MEM Miss. Way0-3.
-	write_L1_L2	= 1'b1									;
+	
 
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Write-Miss-Miss. Way%d", $time, j)	;
 		test_state	= test_state + 1					;
+		write_L1_L2	= 1'b1									;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address		= address_array[i]	;
@@ -367,22 +375,23 @@ initial begin: test
 			ready_MEM_L2		= 1'b1								;
 			repeat(MEM_CLK)   @(posedge   clk)					;
 			ready_MEM_L2		= 1'b0								;
-			repeat(L2_CLK)   @(posedge   clk)					;
+			repeat(2 * L2_CLK)   @(posedge   clk)					;
 		end
-
+		write_L1_L2	= 1'b0				;
 		repeat(50)   @(posedge   clk)	;
 
 	end
 
-	write_L1_L2	= 1'b0				;
+	
 	repeat(50)	@(posedge   clk)	;
 
 	// 41-44. Read: L2 Miss - MEM Miss (Write back) way0-3.
-	read_L1_L2	= 1'b1									;
+	
 
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Read-Miss-Miss (Write back) way%d", $time, j);
 		test_state	= test_state + 1								;
+		read_L1_L2	= 1'b1									;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address			= replace_array[i]				;
@@ -395,12 +404,13 @@ initial begin: test
 			ready_MEM_L2	= 1'b1									;
 			repeat(MEM_CLK)	@(posedge   clk)					;
 			ready_MEM_L2	= 1'b0									;
-			repeat(L2_CLK)	@(posedge   clk)					;
+			repeat(2 * L2_CLK)	@(posedge   clk)					;
 		end
+		read_L1_L2	= 1'b0				;
 		repeat(50)	@(posedge   clk)	;
 	end
 
-	read_L1_L2	= 1'b0				;
+	
 	repeat(50)	@(posedge   clk)	;
 
 	// 45. Write Init
@@ -419,17 +429,18 @@ initial begin: test
 		ready_MEM_L2		= 1'b1								;
 		repeat(MEM_CLK)   @(posedge   clk)					;
 		ready_MEM_L2		= 1'b0								;
-		repeat(L2_CLK)	@(posedge   clk)				;
+		repeat(2 * L2_CLK)	@(posedge   clk)				;
 	end
 
 	write_L1_L2	= 1'b0				;
 	repeat(50)	@(posedge   clk)	;
 
-	// 46-49. Write: L1 Miss - L2 Hit. (Write back) Way0-3.
-	write_L1_L2	= 1'b1								;
+	// 46-49. Write: L2 Miss - MEM Hit. (Write back) Way0-3.
+	
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Write-Miss-Hit. (Write back) Way%d", $time, j)	;
 		test_state	= test_state + 1									;
+		write_L1_L2	= 1'b1								;
 
 		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin
 			address		= replace_array[i]	;
@@ -445,21 +456,22 @@ initial begin: test
 			ready_MEM_L2		= 1'b1							;
 			repeat(MEM_CLK)   @(posedge   clk)				;
 			ready_MEM_L2		= 1'b0							;
-			repeat(L2_CLK)	@(posedge   clk)			;
+			repeat(2 * L2_CLK)	@(posedge   clk)			;
 		end
-
+		write_L1_L2	= 1'b0				;
 		repeat(50)	@(posedge   clk)	;
 	end
 
-	write_L1_L2	= 1'b0				;
+	
 	repeat(50)	@(posedge   clk)	;
 
 	// 50-53. Write: L2 Miss - MEM Miss. (Write back) Way0-3.
-	write_L1_L2	= 1'b1				;
+	
 
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Write-Miss-Hit. (Write back) Way%d", $time, j)	;
 		test_state	= test_state + 1									;
+		write_L1_L2	= 1'b1				;
 
 		for(i = 0; i<INIT; i = i  + 1) begin
 			address		= address_array[i]	;
@@ -475,8 +487,9 @@ initial begin: test
 			ready_MEM_L2		= 1'b1							;
 			repeat(MEM_CLK)   @(posedge   clk)				;
 			ready_MEM_L2		= 1'b0							;
-			repeat(L2_CLK)	@(posedge   clk)			;
+			repeat(2 * L2_CLK)	@(posedge   clk)			;
 		end
+		write_L1_L2 = 1'b0;
 		repeat(50)	@(posedge   clk)	;
 	end
 
