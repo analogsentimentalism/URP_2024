@@ -38,7 +38,9 @@ L2_controller u_L2_controller(
     .write_L2_MEM(write_L2_MEM),
     .write_L1_L2(write_L1_L2),
     .tag_L2_MEM(tag_L2_MEM),
-    .way(way)
+    .way(way),
+	.flush(flush),
+	.ready_MEM_L2(ready_MEM_L2)
 );
 
 L2_data_array u_L2_data_array(
