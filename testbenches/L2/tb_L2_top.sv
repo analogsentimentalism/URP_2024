@@ -1,7 +1,7 @@
 `timescale 1ns/1ns
 module tb_L2_top #(
-	parameter	L2_CLK	= 1,			// L1의 클락
-	parameter	MEM_CLK	= 1,			// L2의 클락
+	parameter	L2_CLK	= 1,			// L2의 클락
+	parameter	MEM_CLK	= 1,			// MEM의 클락
 	parameter	TOTAL	= 1024,			// 전체 address 개수
 	parameter	INIT	= 256,			// 처음 채울 개수
 	parameter	TNUM	= 18,			// # Tag bits
@@ -155,7 +155,18 @@ initial begin: test
 	repeat(5 * L2_CLK)	@(posedge	clk)	;
 	nrst		= 1'b1						;
 	
+		sequence s1;
+		$fell(refill) ##(1*L1_CLK) $fell(stall);
+ 		endsequence
+	
+		property p1;
+		@(posedge clk) s1;
+		endproperty
 
+		a1: assert property(p1)
+	        $display("property p1 succeeded");
+   		else
+   			$display("property p1 failed");
 	// 1-4. Read: L2 Miss - MEM Hit way0-3.
 	for(j = 0; j < 4; j = j + 1) begin
 		$display("%6d: Cache Init start - way%d", $time, j)	;

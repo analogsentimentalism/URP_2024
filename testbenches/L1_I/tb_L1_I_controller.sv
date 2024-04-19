@@ -84,18 +84,7 @@ initial begin: init
 	$fclose(ra);
 end
 
-		sequence s1;
-		$fell(refill) |=> $fell(stall);
- 		endsequence
-	
-		property p1;
-		@(posedge clk) s1;
-		endproperty
-
-		a1: assert property(p1)
-	        $display("property p1 succeeded");
-   		else
-   			$display("property p1 failed");
+		
 
 initial begin: test
 

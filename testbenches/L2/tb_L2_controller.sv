@@ -1,7 +1,7 @@
 `timescale 1ns/1ns
 module tb_L2_controller #(
-	parameter	L2_CLK	= 1,			// L1의 클락
-	parameter	MEM_CLK	= 1,			// L2의 클락
+	parameter	L2_CLK	= 1,			// L2의 클락
+	parameter	MEM_CLK	= 1,			// MEM의 클락
 	parameter	TOTAL	= 1024,			// 전체 address 개수
 	parameter	INIT	= 256,			// 처음 채울 개수
 	parameter	TNUM	= 18,			// # Tag bits
@@ -116,7 +116,7 @@ initial begin: test
 
 		read_L1_L2	= 1'b1						;   // Initial reset
 
-		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin	// fill way0.
+		for(i = INIT*j; i<INIT*(j+1); i = i + 1) begin	// fill way0-->way1-->way2-->way3
 			address		= address_array[i]				;
 
 			$display("%6d: Read Address %h", $time, address);
