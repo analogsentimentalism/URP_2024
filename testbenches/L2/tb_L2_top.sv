@@ -145,6 +145,38 @@ initial begin: init
 	$fclose(w_2);
 end
 
+
+// test state 1~4
+    property p1;
+		@(posedge clk) (read_L1_L2 && $rose(read_L2_MEM)) |-> $rose(ready_MEM_L2) && read_data_MEM_L2;
+	endproperty
+
+	a1: assert property(p1)
+	    $display("Read and Ready Handshake success");
+   		else
+   		$display("Handshake failed");
+
+
+	property p2;
+		@(posedge clk) (read_L1_L2 &&  !$stable(read_data_MEM_L2)) |-> ##2 (read_data_L2_L1==read_data_MEM_L2);
+	endproperty 
+
+	a2: assert property(p2)
+		$display("Mem read data to L1 delivery success");
+		else
+		$display("Deilvery failed");
+
+
+
+
+
+
+
+
+
+
+
+
 initial begin: test
 	test_state	= 0							;
 
@@ -176,18 +208,6 @@ initial begin: test
 			ready_MEM_L2	= 1'b0								;
 			repeat(2 * L2_CLK)	@(posedge   clk)			;
 
-			sequence s1;
-			$fell(refill) ##(1*L1_CLK) $fell(stall);
- 			endsequence
-	
-			property p1;
-			@(posedge clk) s1;
-			endproperty
-
-			a1: assert property(p1)
-	        $display("property p1 succeeded");
-   			else
-   			$display("property p1 failed");
 		end
 		read_L1_L2   = 1'b0				;
 		repeat(50)	@(posedge   clk)	;	// test_state 바뀔 때 구분.
