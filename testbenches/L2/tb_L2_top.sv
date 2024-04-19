@@ -155,18 +155,7 @@ initial begin: test
 	repeat(5 * L2_CLK)	@(posedge	clk)	;
 	nrst		= 1'b1						;
 	
-		sequence s1;
-		$fell(refill) ##(1*L1_CLK) $fell(stall);
- 		endsequence
-	
-		property p1;
-		@(posedge clk) s1;
-		endproperty
-
-		a1: assert property(p1)
-	        $display("property p1 succeeded");
-   		else
-   			$display("property p1 failed");
+		
 	// 1-4. Read: L2 Miss - MEM Hit way0-3.
 	for(j = 0; j < 4; j = j + 1) begin
 		$display("%6d: Cache Init start - way%d", $time, j)	;
@@ -186,6 +175,19 @@ initial begin: test
 			repeat(MEM_CLK)	@(posedge   clk)				;
 			ready_MEM_L2	= 1'b0								;
 			repeat(2 * L2_CLK)	@(posedge   clk)			;
+
+			sequence s1;
+			$fell(refill) ##(1*L1_CLK) $fell(stall);
+ 			endsequence
+	
+			property p1;
+			@(posedge clk) s1;
+			endproperty
+
+			a1: assert property(p1)
+	        $display("property p1 succeeded");
+   			else
+   			$display("property p1 failed");
 		end
 		read_L1_L2   = 1'b0				;
 		repeat(50)	@(posedge   clk)	;	// test_state 바뀔 때 구분.
