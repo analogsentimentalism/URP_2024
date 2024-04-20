@@ -155,7 +155,7 @@ end
 
 // test state 1~4: L2 miss MEM hit
     property p1;
-		@(posedge clk) (read_L1_L2 && $rose(read_L2_MEM)) |-> $rose(ready_MEM_L2) && read_data_MEM_L2;
+		@(posedge clk) (test_state==1 || test_state==2 || test_state==3 || test_state==4)&&(read_L1_L2 && $rose(read_L2_MEM)) |-> $rose(ready_MEM_L2) && read_data_MEM_L2;
 	endproperty
 
 	a1: assert property(p1)
@@ -165,7 +165,7 @@ end
 
 
 	property p2;
-		@(posedge clk) (read_L1_L2 &&  !$stable(read_data_MEM_L2)) |-> ##2 (read_data_L2_L1==read_data_MEM_L2);
+		@(posedge clk) (test_state==1 || test_state==2 || test_state==3 || test_state==4) && (read_L1_L2 &&  !$stable(read_data_MEM_L2)) |-> ##2 (read_data_L2_L1==read_data_MEM_L2);
 	endproperty 
 
 	a2: assert property(p2)
@@ -176,7 +176,7 @@ end
 
 // test state 5~8: L2 hit
 	property p3;
-		@(posedge clk) read_L1_L2 && !$rose(read_L2_MEM) |-> ##3 !$stable(read_data_L2_L1);     //점검필요
+		@(posedge clk) (test_state==5 || test_state==6 || test_state==7 || test_state==8) && $rose(ready_L2_L1) |-> !$stable(read_data_L2_L1);     //점검필요
 	endproperty
 
 	a3: assert property(p3)
@@ -185,11 +185,25 @@ end
 		$display("L2 hit failed, p3_count: %d", p3_count++);
 
 
-// test case 9~12: Read: L2 Miss - MEM Hit (Replace)
+// test case 9~12: Read: L2 Miss - MEM Hit (Replace)                 refill 어떻게 쓰지...
+	property p4;
+		@(posedge clk) (test_state==9 || test_state==10 || test_state==11 || test_state==12) && $rose(read_L2_MEM) && $rose(ready_MEM_L2) |-> ##3 $rose(ready_L2_L1) ;
+	endproperty
 
+	a4: assert property(p4)
+		$display("Replace and read complete");
+		else
+		$display("read failure");
 
-// test case 13
+// test case 13    안됨
+	property p5;
+		@(posedge clk) (test_state==13) && $rose(flush) |-> ##1 valid=='b0;
+	endproperty
 
+	a5: assert property(p5)
+		$display("Flush success");
+		else
+		$display("Flush failure");
 
 // test case 14~17
 
