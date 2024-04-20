@@ -73,6 +73,13 @@ integer			i, j						;
 integer			aa, ra, d, r, w, w_2		;
 
 integer			test_state					;
+integer 		p1_count	=	0			;  //failure count
+integer 		p2_count 	=	0			;
+integer 		p3_count 	=	0			;
+integer 		p4_count 	=	0			;
+integer 		p5_count 	=	0			;
+integer 		p6_count 	=	0			;
+integer 		p7_count 	=	0			;
 
 always begin
 #1   clk		= ~clk						;
@@ -146,7 +153,7 @@ initial begin: init
 end
 
 
-// test state 1~4
+// test state 1~4: L2 miss MEM hit
     property p1;
 		@(posedge clk) (read_L1_L2 && $rose(read_L2_MEM)) |-> $rose(ready_MEM_L2) && read_data_MEM_L2;
 	endproperty
@@ -154,7 +161,7 @@ end
 	a1: assert property(p1)
 	    $display("Read and Ready Handshake success");
    		else
-   		$display("Handshake failed");
+   		$display("Handshake failed, p1_count: %d", p1_count++);
 
 
 	property p2;
@@ -164,14 +171,57 @@ end
 	a2: assert property(p2)
 		$display("Mem read data to L1 delivery success");
 		else
-		$display("Deilvery failed");
+		$display("Deilvery failed, p2_count: %d", p2_count++);
 
 
+// test state 5~8: L2 hit
+	property p3;
+		@(posedge clk) read_L1_L2 && !$rose(read_L2_MEM) |-> ##3 !$stable(read_data_L2_L1);     //점검필요
+	endproperty
 
-// test state 5~8
+	a3: assert property(p3)
+		$display("L2 hit success");
+		else
+		$display("L2 hit failed, p3_count: %d", p3_count++);
 
 
+// test case 9~12: Read: L2 Miss - MEM Hit (Replace)
 
+
+// test case 13
+
+
+// test case 14~17
+
+
+// test case 18~21
+
+
+// test case 22~25
+
+
+// test case 26~29
+
+
+// test case 30~33
+
+
+// test case 34~37
+
+
+// test case 38~41
+
+
+// test case 42~45
+
+
+// test case 46
+
+
+// test case 47~50
+
+
+// test case 51~54
 
 
 
@@ -366,7 +416,7 @@ initial begin: test
 
 	repeat(50)   @(posedge   clk)	;
 
-   // 25-28. Read: L2 Hit way0-3.
+   // 26-29. Read: L2 Hit way0-3.
 	
    for(j = 0; j < 4; j = j + 1) begin
 		$display("%6d: Read-Hit-way%d", $time, j)	;
@@ -386,7 +436,7 @@ initial begin: test
 
    repeat(50)	@(posedge   clk)	;
 
-	// 29-32. Write: L2 Hit. Way0-3.
+	// 30-33. Write: L2 Hit. Way0-3.
 	
 	for(j = 0; j < 4; j = j + 1) begin
 	$display("%6d: Write L2 Hit. Way%d", $time, j)	;
@@ -407,7 +457,7 @@ initial begin: test
 
 	repeat(50)   @(posedge   clk)	;
 
-	// 33-36. Read: L2 Miss - MEM Hit (Write back) way0-3.
+	// 34-37. Read: L2 Miss - MEM Hit (Write back) way0-3.
 
 	for(j=0; j<4; j = j + 1) begin
 	$display("%6d: Read-Miss-Hit (Write back) way%d", $time, j)	;
@@ -436,7 +486,7 @@ initial begin: test
 	
 	repeat(50)	@(posedge   clk)	;
 
-	// 37-40. Write: L2 Miss - MEM Miss. Way0-3.
+	// 38-41. Write: L2 Miss - MEM Miss. Way0-3.
 	
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Write-Miss-Miss. Way%d", $time, j)	;
@@ -462,7 +512,7 @@ initial begin: test
 
 	repeat(50)	@(posedge   clk)	;
 
-	// 41-44. Read: L2 Miss - MEM Miss (Write back) way0-3.
+	// 42-45. Read: L2 Miss - MEM Miss (Write back) way0-3.
 	
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Read-Miss-Miss (Write back) way%d", $time, j);
@@ -490,7 +540,7 @@ initial begin: test
 	
 	repeat(50)	@(posedge   clk)	;
 
-	// 45. Write Init
+	// 46. Write Init
 	$display("%6d: (Write Init)", $time)	;
 	test_state	= 45								;
 
@@ -513,7 +563,7 @@ initial begin: test
 	write_L1_L2	= 1'b0				;
 	repeat(50)	@(posedge   clk)	;
 
-	// 46-49. Write: L2 Miss - MEM Hit. (Write back) Way0-3.
+	// 47-50. Write: L2 Miss - MEM Hit. (Write back) Way0-3.
 	
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Write-Miss-Hit. (Write back) Way%d", $time, j)	;
@@ -544,7 +594,7 @@ initial begin: test
 	
 	repeat(50)	@(posedge   clk)	;
 
-	// 50-53. Write: L2 Miss - MEM Miss. (Write back) Way0-3.
+	// 51-54. Write: L2 Miss - MEM Miss. (Write back) Way0-3.
 	
 	for(j=0;j<4; j=j+1) begin
 		$display("%6d: Write-Miss-Hit. (Write back) Way%d", $time, j)	;
