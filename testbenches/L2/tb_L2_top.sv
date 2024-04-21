@@ -307,7 +307,7 @@ end
 		@(posedge clk) s38 |-> s39;
 	endproperty
 
-	a34: assert property (p38)
+	a38: assert property (p38)
 		$display("Write: L2 Miss- MEM miss success");
 		else
 		$display("Write: L2 Miss- MEM miss fail, p10_count: %d", p10_count++);
@@ -325,7 +325,7 @@ end
 		@(posedge clk) s42 |-> s43;
 	endproperty
 
-	a34: assert property (p42)
+	a42: assert property (p42)
 		$display("Read: L2 Miss-MEM miss (Writeback) success");
 		else
 		$display("Read: L2 Miss-MEM miss (Writeback) fail, p11_count: %d", p11_count++);
@@ -343,7 +343,7 @@ end
 		@(posedge clk) s46 |-> s46_1;
 	endproperty
 
-	a34: assert property (p46)
+	a46: assert property (p46)
 		$display("Write Init success");
 		else
 		$display("Write Init fail, p12_count: %d", p12_count++);
@@ -361,7 +361,7 @@ end
 		@(posedge clk) s47 |-> s48;
 	endproperty
 
-	a34: assert property (p47)
+	a47: assert property (p47)
 		$display("Write: L2 Miss - MEM hit (write back) success");
 		else
 		$display("Write: L2 Miss - MEM hit (write back) fail, p13_count: %d", p13_count++);
@@ -379,7 +379,7 @@ end
 		@(posedge clk) s51 |-> s52;
 	endproperty
 
-	a34: assert property (p51)
+	a51: assert property (p51)
 		$display("Write: L2 Miss - MEM Miss (write back) success");
 		else
 		$display("Write: L2 Miss - MEM Miss (write back) fail, p14_count: %d", p14_count++);
