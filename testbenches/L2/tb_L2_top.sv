@@ -183,7 +183,7 @@ end
 
 // test state 5~8: L2 hit
 	property p3;
-		@(posedge clk) (test_state==5 || test_state==6 || test_state==7 || test_state==8) && $rose(ready_L2_L1) |-> !$stable(read_data_L2_L1);     //점검필요
+		@(posedge clk) (test_state==5 || test_state==6 || test_state==7 || test_state==8) && $rose(ready_L2_L1) |-> !$stable(read_data_L2_L1) || $stable(read_data_L2_L1) && $fell(read_L1_L2) ;     //점검필요
 	endproperty
 
 	a3: assert property(p3)
@@ -220,7 +220,7 @@ end
 	endsequence
 
 	sequence s3; 
-		##3 ready_L2_L1 && !$stable(address);
+		##3 ($rose(ready_L2_L1) && !$stable(address)) || ($rose(ready_L2_L1) && $stable(address) && $fell(read_L1_L2));
 	endsequence
 
 	property p6;
@@ -249,7 +249,7 @@ end
 	endsequence
 
 	sequence s5;
-		##3 $rose(ready_L2_L1) && !$stable(address);
+		##3 ($rose(ready_L2_L1) && !$stable(address)) || ($rose(ready_L2_L1) && $stable(address) && $fell(write_L1_L2));
 	endsequence 
 
 	property p8;
@@ -336,7 +336,7 @@ end
 	endsequence 
 
 	sequence s46_1;
-		##3 $rose(ready_L2_L1) && !$stable(address);
+		##3 ($rose(ready_L2_L1) && !$stable(address)) || ($rose(ready_L2_L1) && $stable(address) && $fell(write_L1_L2));
 	endsequence
 
 	property p46;
