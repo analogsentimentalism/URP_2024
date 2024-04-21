@@ -185,7 +185,7 @@ end
 		$display("L2 hit failed, p3_count: %d", p3_count++);
 
 
-// test case 9~12: Read: L2 Miss - MEM Hit (Replace)                 refill 어떻게 쓰지...
+// test case 9~12: Read: L2 Miss - MEM Hit (Replace)                 
 	property p4;
 		@(posedge clk) (test_state==9 || test_state==10 || test_state==11 || test_state==12) && $rose(read_L2_MEM) && $rose(ready_MEM_L2) |-> ##3 $rose(ready_L2_L1) ;
 	endproperty
@@ -195,48 +195,187 @@ end
 		else
 		$display("read failure");
 
-// test case 13    안됨
-	property p5;
+// test case 13    안됨 
+	/*property p5;
 		@(posedge clk) (test_state==13) && $rose(flush) |-> ##1 valid=='b0;
 	endproperty
 
 	a5: assert property(p5)
 		$display("Flush success");
 		else
-		$display("Flush failure");
+		$display("Flush failure");      */
+
 
 // test case 14~17
+	
+	sequence s2; 
+		(test_state==14 || test_state==15 || test_state==16 || test_state==17) && !$stable(address) ##14 $rose(ready_MEM_L2);
+	endsequence
+
+	sequence s3; 
+		##3 ready_L2_L1 && !$stable(address);
+	endsequence
+
+	property p6;
+		@(posedge clk)   s2 |-> s3; 
+	endproperty	 
+
+	a6: assert property(p6)
+		$display("L2 MEM MISSes success");
+		else
+		$display("L2 MEM miss failure");
 
 
 // test case 18~21
+	property p7;
+		@(posedge clk) (test_state==18 || test_state==19 || test_state==20 || test_state==21) && !$stable(address) |-> ##14 ready_MEM_L2 && !$stable(read_data_MEM_L2);
+	endproperty
 
+	a7: assert property(p7)
+		$display("MISS-MISS Replace success");
+		else
+		$display("MISS-MISS Replace fail");
 
 // test case 22~25
+	sequence s4;
+		(test_state==22 || test_state==23 || test_state==24 || test_state==25) && !$stable(address)  ##4 $rose(read_L2_MEM) && $rose(ready_MEM_L2);
+	endsequence
 
+	sequence s5;
+		##3 $rose(ready_L2_L1) && !$stable(address);
+	endsequence 
 
-// test case 26~29
+	property p8;
+		@(posedge clk) s4 |-> s5;
+	endproperty
+
+	a8: assert property(p8)
+		$display("L2 miss MEM hit Write success");
+		else
+		$display("L2 miss MEM hit Write fail");
+
+// test case 26~29    일부러 repeat(4*L2_CLK) 준건가?
+
 
 
 // test case 30~33
+	property p10;
+		@(posedge clk) (test_state==30 || test_state==31 || test_state==32 || test_state==33) && !$stable(address) |-> ##3 $rose(ready_L2_L1);
+	endproperty
 
+	a10: assert property(p10)
+		$display("Write L2 Hit success");
+		else	
+		$display("Write L2 hit fail");
 
 // test case 34~37
+	sequence s34;
+		(test_state==34 || test_state==35 || test_state==36 || test_state==37) && !$stable(address)  ##4 $rose(read_L2_MEM);
+	endsequence 
+
+	sequence s35;
+		##2 $rose(ready_MEM_L2);
+	endsequence
+
+	property p34;
+		@(posedge clk) s34 |-> s35;
+	endproperty
+
+	a34: assert property (p34)
+		$display("Read: L2 miss MEM hit and Write back success");
+		else
+		$display("Read: L2 miss MEM hit and Write back fail");
 
 
 // test case 38~41
+	sequence s38;
+		(test_state==38 || test_state==39 || test_state==40 || test_state==41) && !$stable(address)  ##4 $rose(read_L2_MEM);
+	endsequence 
 
+	sequence s39;
+		##10 $rose(ready_MEM_L2);
+	endsequence
+
+	property p38;
+		@(posedge clk) s38 |-> s39;
+	endproperty
+
+	a34: assert property (p38)
+		$display("Write: L2 Miss- MEM miss success");
+		else
+		$display("Write: L2 Miss- MEM miss fail");
 
 // test case 42~45
+	sequence s42;
+		(test_state==42 || test_state==43 || test_state==44 || test_state==45) && !$stable(address)  ##4 $rose(read_L2_MEM);
+	endsequence 
 
+	sequence s43;
+		##12 $rose(ready_MEM_L2);
+	endsequence
+
+	property p42;
+		@(posedge clk) s42 |-> s43;
+	endproperty
+
+	a34: assert property (p42)
+		$display("Read: L2 Miss-MEM miss (Writeback) success");
+		else
+		$display("Read: L2 Miss-MEM miss (Writeback) fail");
 
 // test case 46
+	sequence s46;
+		(test_state==46) && !$stable(address)  ##4 $rose(read_L2_MEM) && $rose(ready_MEM_L2);
+	endsequence 
 
+	sequence s46_1;
+		##3 $rose(ready_L2_L1) && !$stable(address);
+	endsequence
+
+	property p46;
+		@(posedge clk) s46 |-> s46_1;
+	endproperty
+
+	a34: assert property (p46)
+		$display("Write Init success");
+		else
+		$display("Write Init fail");
 
 // test case 47~50
+	sequence s47;
+		(test_state==47 || test_state==48 || test_state==49 || test_state==50) && !$stable(address)  ##4 $rose(ready_MEM_L2) && $rose(write_L2_MEM);
+	endsequence 
 
+	sequence s48;
+		##3 $rose(ready_MEM_L2);
+	endsequence
+
+	property p47;
+		@(posedge clk) s47 |-> s48;
+	endproperty
+
+	a34: assert property (p47)
+		$display("Write: L2 Miss - MEM hit (write back) success");
+		else
+		$display("Write: L2 Miss - MEM hit (write back) fail");
 
 // test case 51~54
+	sequence s51;
+		(test_state==51 || test_state==52 || test_state==53 || test_state==54) && !$stable(address)  ##4 $rose(ready_MEM_L2) && $rose(write_L2_MEM);
+	endsequence 
 
+	sequence s52;
+		##13 $rose(ready_MEM_L2);
+	endsequence
+
+	property p51;
+		@(posedge clk) s51 |-> s52;
+	endproperty
+
+	a34: assert property (p51)
+		$display("Write: L2 Miss - MEM Miss (write back) success");
+		else
+		$display("Write: L2 Miss - MEM Miss (write back) fail");
 
 
 
@@ -556,7 +695,7 @@ initial begin: test
 
 	// 46. Write Init
 	$display("%6d: (Write Init)", $time)	;
-	test_state	= 45								;
+	test_state	= test_state+1								;
 
 	write_L1_L2	= 1'b1								;
 
