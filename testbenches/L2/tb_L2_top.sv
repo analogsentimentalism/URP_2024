@@ -80,6 +80,13 @@ integer 		p4_count 	=	0			;
 integer 		p5_count 	=	0			;
 integer 		p6_count 	=	0			;
 integer 		p7_count 	=	0			;
+integer 		p8_count 	=	0			;
+integer 		p9_count 	=	0			;
+integer 		p10_count 	=	0			;
+integer 		p11_count 	=	0			;
+integer 		p12_count 	=	0			;
+integer 		p13_count 	=	0			;
+integer 		p14_count 	=	0			;
 
 always begin
 #1   clk		= ~clk						;
@@ -193,7 +200,7 @@ end
 	a4: assert property(p4)
 		$display("Replace and read complete");
 		else
-		$display("read failure");
+		$display("read failure, p4_count: %d", p4_count++);
 
 // test case 13    안됨 
 	/*property p5;
@@ -223,7 +230,7 @@ end
 	a6: assert property(p6)
 		$display("L2 MEM MISSes success");
 		else
-		$display("L2 MEM miss failure");
+		$display("L2 MEM miss failure, p5_count: %d", p5_count++);
 
 
 // test case 18~21
@@ -234,7 +241,7 @@ end
 	a7: assert property(p7)
 		$display("MISS-MISS Replace success");
 		else
-		$display("MISS-MISS Replace fail");
+		$display("MISS-MISS Replace fail, p6_count: %d", p6_count++);
 
 // test case 22~25
 	sequence s4;
@@ -252,7 +259,7 @@ end
 	a8: assert property(p8)
 		$display("L2 miss MEM hit Write success");
 		else
-		$display("L2 miss MEM hit Write fail");
+		$display("L2 miss MEM hit Write fail, p7_count: %d", p7_count++);
 
 // test case 26~29    일부러 repeat(4*L2_CLK) 준건가?
 
@@ -266,7 +273,7 @@ end
 	a10: assert property(p10)
 		$display("Write L2 Hit success");
 		else	
-		$display("Write L2 hit fail");
+		$display("Write L2 hit fail, p8_count: %d", p8_count++);
 
 // test case 34~37
 	sequence s34;
@@ -284,7 +291,7 @@ end
 	a34: assert property (p34)
 		$display("Read: L2 miss MEM hit and Write back success");
 		else
-		$display("Read: L2 miss MEM hit and Write back fail");
+		$display("Read: L2 miss MEM hit and Write back fail, p9_count: %d", p9_count++);
 
 
 // test case 38~41
@@ -303,7 +310,7 @@ end
 	a34: assert property (p38)
 		$display("Write: L2 Miss- MEM miss success");
 		else
-		$display("Write: L2 Miss- MEM miss fail");
+		$display("Write: L2 Miss- MEM miss fail, p10_count: %d", p10_count++);
 
 // test case 42~45
 	sequence s42;
@@ -321,7 +328,7 @@ end
 	a34: assert property (p42)
 		$display("Read: L2 Miss-MEM miss (Writeback) success");
 		else
-		$display("Read: L2 Miss-MEM miss (Writeback) fail");
+		$display("Read: L2 Miss-MEM miss (Writeback) fail, p11_count: %d", p11_count++);
 
 // test case 46
 	sequence s46;
@@ -339,7 +346,7 @@ end
 	a34: assert property (p46)
 		$display("Write Init success");
 		else
-		$display("Write Init fail");
+		$display("Write Init fail, p12_count: %d", p12_count++);
 
 // test case 47~50
 	sequence s47;
@@ -357,7 +364,7 @@ end
 	a34: assert property (p47)
 		$display("Write: L2 Miss - MEM hit (write back) success");
 		else
-		$display("Write: L2 Miss - MEM hit (write back) fail");
+		$display("Write: L2 Miss - MEM hit (write back) fail, p13_count: %d", p13_count++);
 
 // test case 51~54
 	sequence s51;
@@ -375,7 +382,7 @@ end
 	a34: assert property (p51)
 		$display("Write: L2 Miss - MEM Miss (write back) success");
 		else
-		$display("Write: L2 Miss - MEM Miss (write back) fail");
+		$display("Write: L2 Miss - MEM Miss (write back) fail, p14_count: %d", p14_count++);
 
 
 
