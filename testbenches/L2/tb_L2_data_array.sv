@@ -1,7 +1,6 @@
 `timescale 1ns/1ns
 
 module tb_L2_data_array #(
-	parameter	L1_CLK	= 1,			// L1의 클락
 	parameter	L2_CLK	= 1,			// L2의 클락
 	parameter	M_CLK	= 1,			// Memory의 클락
 	parameter	TOTAL	= 1024,			// 전체 address 개수
@@ -81,11 +80,11 @@ initial begin: init
 	@(posedge clk);	// 파일 오픈 적용이 잘 안될까봐
 
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
-		address_array[i]	= $urandom & 32'hFFFF_F03C | {i[0+:INUM], 6'd0}	;
+		address_array[i]	= $urandom & 32'hFFFF_C03F | {i[0+:INUM], 6'd0}	;
 		$fwrite(aa, "0x%h\n", address_array[i])								;
 	end
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses with same index
-		replace_array[i]	= $urandom & 32'hFFFF_F03C | {address_array[i][6+:INUM], 6'd0}	;
+		replace_array[i]	= $urandom & 32'hFFFF_C03F | {address_array[i][6+:INUM], 6'd0}	;
 		$fwriteh(ra, "0x%h\n",replace_array[i])												;
 	end
 	// std::randomize(data_array);
@@ -104,13 +103,21 @@ initial begin: init
 		end
 		$fwrite(r, "\n");
 	end
+	// std::randomize(data_array);
 	for(i = 0; i<TOTAL; i = i + 1) begin
-		wdata_array[i]	= $urandom			;
-		$fwrite(w, "%d\n", wdata_array[i])	;
+		for(j = 0; j<512; j = j + 32) begin
+			wdata_array[i][j+:32]	= $urandom		;
+			$fwrite(w, "%d ", wdata_array[i][j+:32])	;
+		end
+		$fwrite(w, "\n");
 	end
+	// std::randomize(rdata_array);
 	for(i = 0; i<TOTAL; i = i + 1) begin
-		wdata_array_2[i]	= $urandom		;
-		$fwrite(w, "%d\n", wdata_array_2[i]);
+		for(j = 0; j<512; j = j + 32) begin
+			wdata_array_2[i][j+:32]	= $urandom			;
+			$fwrite(w_2, "%d ", wdata_array_2[i][j+:32])	;
+		end
+		$fwrite(w_2, "\n");
 	end
 
 	$fclose(aa)	;

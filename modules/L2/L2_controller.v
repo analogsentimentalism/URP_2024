@@ -56,8 +56,10 @@ assign index_L2_MEM = index_L1_L2;
 // FSM
 always@(posedge clk or negedge nrst)
 begin
-    if(!nrst)
+    if(!nrst) begin
         state <= S_IDLE;
+		next_state	<= S_IDLE;
+	end
     else
         state <= next_state;
 end

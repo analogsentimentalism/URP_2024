@@ -49,6 +49,7 @@ CORE_L1_connect u_CORE_L1_connect (
     .stall_L1I(stall_L1I),
     .stall_L1D(stall_L1D),
 
+	.read_C_L1(read_C_L1),
     .read_data_L1D_C(read_data_L1D_C),
     .read_data_L1I_C(read_data_L1I_C),    
     .stall(stall),
@@ -73,7 +74,7 @@ L1_D_top u_L1_D_top (
     .read_data_L1_C(read_data_L1D_C),
     .read_data_L2_L1(read_data_L2_L1),
     .write_data_L1_L2(write_data_L1_L2),
-    .write_L1_L2(write_L1_L2),
+    .write_L1_L2(write_L1D_L2),
     .read_L1_L2(read_L1D_L2),
     .ready_L2_L1(ready_L2_L1D),
     .read_C_L1(read_C_L1D),
@@ -97,7 +98,7 @@ L1_I_top u_L1_I_top(
     .ready_L2_L1(ready_L2_L1I),
     .read_C_L1(read_C_L1I),
     .tag_L1_L2(tag_L1I_L2),
-    .index_L1_L2(tag_L1D_L2)
+    .index_L1_L2(index_L1_L2)
 );
 
 L1_L2_connect u_L1_L2_connect(
