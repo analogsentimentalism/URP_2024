@@ -91,7 +91,7 @@ task read (
 	begin
 		read_C_L1			= 'b1							;
 		address				= adrs							;
-		repeat(`PERIOD)	@(posedge	clk)					;
+		repeat(`PERIOD*2)	@(posedge	clk)					;
 		while(stall)	repeat(`PERIOD)	@(posedge	clk)	;
 		read_C_L1			= 'b0							;
 	end
@@ -105,7 +105,7 @@ task write (
 		write_C_L1			= 'b1							;
 		address				= adrs							;
 		write_data			= wdata							;
-		repeat(`PERIOD)	@(posedge	clk)					;
+		repeat(`PERIOD*2)	@(posedge	clk)					;
 		while(stall)	repeat(`PERIOD)	@(posedge	clk)	;
 		write_C_L1			= 'b0							;
 	end
