@@ -1,5 +1,7 @@
 `timescale 1ns/1ns
 `define	PERIOD	1
+`define L2_controller u_top.u_L2_top.u_L2_controller 
+`define L1_D_controller u_top.u_L1_D_top.u_L1_D_controller 
 
 module tb_top #(
 	parameter	TOTAL		= 1024,			// 전체 address 개수
@@ -229,6 +231,19 @@ initial begin: init
 	$fclose(rd)	;
 	$fclose(ri)	;
 end
+
+
+// test state 1: Write all L2
+
+    property p1;
+		@(posedge clk) ($rose(ready_MEM_L2) && (test_state==1)) |=> !$stsble(`L2_controller.valid) && (`L2_controller.valid[4*`L1_D_controller.index_C_L1 + `L2_controller.way]==1);
+	endproperty
+
+	a0: assert property(p1)
+	    $display("%d: Valid array in L2 has changed properly", $time);
+   		else
+   		$display("%d: ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR", $time);
+
 
 // data_array 이용해서 전부 랜덤으로 하다가, 검증 쉽게 하려고 순차로 바꿈.
 
