@@ -93,7 +93,7 @@ task read (
 	begin
 		read_C_L1			= 'b1							;
 		address				= adrs							;
-		repeat(`PERIOD*2)	@(posedge	clk)					;
+		repeat(`PERIOD*3)	@(posedge	clk)					;
 		while(stall)	repeat(`PERIOD)	@(posedge	clk)	;
 		read_C_L1			= 'b0							;
 	end
@@ -107,7 +107,7 @@ task write (
 		write_C_L1			= 'b1							;
 		address				= adrs							;
 		write_data			= wdata							;
-		repeat(`PERIOD*2)	@(posedge	clk)					;
+		repeat(`PERIOD*3)	@(posedge	clk)					;
 		while(stall)	repeat(`PERIOD)	@(posedge	clk)	;
 		write_C_L1			= 'b0							;
 	end
@@ -236,14 +236,32 @@ end
 // test state 1: Write all L2
 
     property p1;
-		@(posedge clk) ($rose(ready_MEM_L2) && (test_state==1)) |=> !$stsble(`L2_controller.valid) && (`L2_controller.valid[4*`L1_D_controller.index_C_L1 + `L2_controller.way]==1);
+		@(posedge clk) !(`L1_D_controller.dirty=='hFFFF_FFFF_FFFF_FFFF) && ($rose(ready_MEM_L2) && (test_state==1)) |=> !$stable(`L2_controller.valid) && (`L2_controller.valid[4*`L1_D_controller.index_C_L1 + `L2_controller.way]==1);
 	endproperty
+
+	property p2;
+		@(posedge clk) (`L1_D_controller.dirty=='hFFFF_FFFF_FFFF_FFFF) && $rose(`L1_D_controller.ready_L2_L1) && (test_state==1) && (`L1_D_controller.next_state ==2'b01) |-> ##1 (`L1_D_controller.dirty[2*`L1_D_controller.index_C_L1 + `L1_D_controller.way]==0) ;
+	endproperty 
+
+	property p3;
+		@(posedge clk) (`L1_D_controller.valid=='hFFFF_FFFF_FFFF_FFFF) && $fell(`L1_D_controller.ready_L2_L1) && (test_state==1) && (`L1_D_controller.dirty[2*`L1_D_controller.index_C_L1 + `L1_D_controller.way]==0) |-> ##2 (`L1_D_controller.dirty[2*`L1_D_controller.index_C_L1 + `L1_D_controller.way]==1);
+  	endproperty
+
 
 	a0: assert property(p1)
 	    $display("%d: Valid array in L2 has changed properly", $time);
    		else
    		$display("%d: ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR", $time);
 
+	a1: assert property(p2)
+		$display("p2 passed");
+		else
+		$display("p2 failed**************************");
+
+	a2: assert property(p3)
+		$display("p3 passed");
+		else
+		$display("p3 failed**************************");
 
 // data_array 이용해서 전부 랜덤으로 하다가, 검증 쉽게 하려고 순차로 바꿈.
 
