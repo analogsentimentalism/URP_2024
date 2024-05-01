@@ -3,15 +3,20 @@ module top (
     input clk,
     input nrst,
 
-    // CORE와 CORE_L1_connect 사이의 신호
-    input [31:0] address,
-    input flush,
-    input read_C_L1,
-    input write_C_L1,
+    // CORE와 L1I 사이의 신호
+    input [31:0] address_L1I,
+    input flush_L1I,
+    input read_C_L1I,
+    output stall_L1I,
+    output [31:0]read_data_L1I_C,
+    // CORE와 L1D top 사이의 신호
+    input [31:0] address_L1D,
+    input flush_L1D, 
+    input read_C_L1D,
+    input write_C_L1D,
     input [31:0] write_data,
-    output stall,
-    output [31:0]read_data_L1_C,
-
+    output stall_L1D,
+    output [31:0]read_data_L1D_C,
     // L2와 MEM 사이의 신호
     input [511:0] read_data_MEM_L2,
     input ready_MEM_L2,
@@ -23,11 +28,9 @@ module top (
     output [511:0] write_data_L2_MEM
 );
 
-wire stall_L1I, stall_L1D;
 wire [20:0] tag_C_L1;
 wire [4:0] index_C_L1;
 wire [5:0] offset;
-wire read_C_L1I, read_C_L1D;
 
 wire [511:0] read_data_L2_L1;
 wire [511:0] write_data_L1_L2;
@@ -42,33 +45,16 @@ wire [7:0] index_L1D_L2, index_L1I_L2, write_index_L1D_L2;
 wire [7:0] index_L1_L2;
 wire [31:0] read_data_L1D_C, read_data_L1I_C;
 
-CORE_L1_connect u_CORE_L1_connect (
-    .clk(clk),
-    .nrst(nrst),
-    .address(address),
-    .stall_L1I(stall_L1I),
-    .stall_L1D(stall_L1D),
 
-	.read_C_L1(read_C_L1),
-    .read_data_L1D_C(read_data_L1D_C),
-    .read_data_L1I_C(read_data_L1I_C),    
-    .stall(stall),
-    .read_data_L1_C(read_data_L1_C),
-    .tag_C_L1(tag_C_L1),
-    .index_C_L1(index_C_L1),
-    .offset(offset),
-    .read_C_L1I(read_C_L1I),
-    .read_C_L1D(read_C_L1D)
-);
 
 L1_D_top u_L1_D_top (
     .clk(clk),
     .nrst(nrst),
-    .tag_C_L1(tag_C_L1),
-    .index_C_L1(index_C_L1),
-    .offset(offset),
-    .write_C_L1(write_C_L1),
-    .flush(flush),
+    .tag_C_L1(address_L1D[31:11]),
+    .index_C_L1(address_L1D[10:6]),
+    .offset(address_L1D[5:0]),
+    .write_C_L1(write_C_L1D),
+    .flush(flush_L1D),
     .stall(stall_L1D),
     .write_data(write_data),
     .read_data_L1_C(read_data_L1D_C),
@@ -87,10 +73,10 @@ L1_D_top u_L1_D_top (
 L1_I_top u_L1_I_top(
     .clk(clk),
     .nrst(nrst),
-    .tag_C_L1(tag_C_L1),
-    .index_C_L1(index_C_L1),
-    .offset(offset),
-    .flush(flush),
+    .tag_C_L1(address_L1I[31:11]),
+    .index_C_L1(address_L1I[10:6]),
+    .offset(address_L1I[5:0]),
+    .flush(flush_L1I),
     .stall(stall_L1I),
     .read_data_L1_C(read_data_L1I_C),
     .read_data_L2_L1(read_data_L2_L1),
