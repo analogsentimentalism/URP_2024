@@ -58,7 +58,6 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst) begin
         state <= S_IDLE;
-		next_state	<= S_IDLE;
 	end
     else
         state <= next_state;
