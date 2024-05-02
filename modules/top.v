@@ -83,7 +83,7 @@ L1_I_top u_L1_I_top(
     .ready_L2_L1(ready_L2_L1I),
     .read_C_L1(read_C_L1I),
     .tag_L1_L2(tag_L1I_L2),
-    .index_L1_L2(index_L1_L2)
+    .index_L1_L2(index_L1I_L2)
 );
 
 L1_L2_connect u_L1_L2_connect(
