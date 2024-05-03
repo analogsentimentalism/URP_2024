@@ -60,6 +60,7 @@ begin
         S_COMPARE       :       next_state      <=      hit                                 ?   S_IDLE        :    
                                                         (!miss)                             ?   S_COMPARE     :    S_ALLOCATE; 
         S_ALLOCATE      :       next_state      <=      ready_L2_L1                         ?   S_COMPARE     :    S_ALLOCATE;    
+        default         :       next_state      <=      S_IDLE;
     endcase
 end                    
 always @(posedge clk or negedge nrst) begin

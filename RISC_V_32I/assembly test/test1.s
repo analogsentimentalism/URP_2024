@@ -1,0 +1,5 @@
+ADDI a0, x0, 0x0000000A
+ADDI a1, x0, 0x00000007
+ADD a2, a0, a1
+ADD a3, a0, a0
+ADD a4, a1, a1
