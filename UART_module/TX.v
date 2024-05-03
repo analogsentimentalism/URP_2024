@@ -7,7 +7,7 @@ module uart_tx(
     
     localparam IDLE = 0, START = 1, ST2 = 2, ST3 = 3, ST4 = 4, ST5 = 5, ST6 = 6, ST7 = 7, ST8 = 8, ST9 = 9, STOP = 10;
     
-    (*keep="true"*) reg [3:0] state;
+    reg [3:0] state;
 
     ///////////////state transition///////////////
     always @(posedge clk) begin
