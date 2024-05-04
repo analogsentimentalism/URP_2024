@@ -9,7 +9,8 @@ module L1_I_controller (
     output stall, refill, read_L1_L2, 
     output [7:0] index_L1_L2,
     output [17:0] tag_L1_L2,
-    output way
+    output way,
+    output L1I_miss_o
 );
 
 parameter   S_IDLE          =   2'b00;
@@ -43,7 +44,7 @@ assign stall = (state != S_IDLE);
 assign tag_L1_L2 = tag_C_L1[20:3];
 assign way = way_reg;
 assign index_L1_L2 = {tag_C_L1[2:0], index_C_L1};
-
+assign L1I_miss_o = miss;
 // FSM
 always@(posedge clk or negedge nrst)
 begin

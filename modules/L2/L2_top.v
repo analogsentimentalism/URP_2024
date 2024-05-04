@@ -16,7 +16,8 @@ module L2_top(
     output [17:0] write_tag_L2_MEM,
     
     output [511:0] read_data_L2_L1,
-    output [511:0] write_data_L2_MEM
+    output [511:0] write_data_L2_MEM,
+    output L2_miss_o
 );
 
 wire refill;
@@ -40,7 +41,8 @@ L2_controller u_L2_controller(
     .tag_L2_MEM(tag_L2_MEM),
     .way(way),
 	.flush(flush),
-	.ready_MEM_L2(ready_MEM_L2)
+	.ready_MEM_L2(ready_MEM_L2),
+    .L2_miss_o(L2_miss_o)
 );
 
 L2_data_array u_L2_data_array(
