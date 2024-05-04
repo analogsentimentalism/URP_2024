@@ -21,8 +21,6 @@ initial begin
     rst = 0;
     #10
     enb = 1;
-    
-    #3569;
     // $display("%32h", TEST.DATAMEM.MEM_Data[88]);
     // $display("%32h", TEST.DATAMEM.MEM_Data[56]);
     // $display("%32h", TEST.DATAMEM.MEM_Data[57]);
@@ -33,7 +31,7 @@ riscV32I TEST(
 );
 
 initial begin
-	forever #100 clk <= ~clk;
+	forever #20 clk <= ~clk;
 end
 
 initial begin

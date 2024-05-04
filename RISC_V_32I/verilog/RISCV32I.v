@@ -86,13 +86,13 @@ top #() u_top (
 	.flush_L1I			(	flush[0]			),
 	.flush_L1D			(	flush[1]			),
 	.read_C_L1I			(	read_C_L1I			),
-	.read_C_L1D			(	read_C_L1D			),
+	.read_C_L1D			(	~MemRW & read_C_L1D	),
 	.write_C_L1D		(	MemRW				),
 	.write_data			(	DataB				),
 	.read_data_L1I_C	(	instruction			),
 
-	.stall_L1I			(	stall[1]			),
-	.stall_L1D			(	stall[0]			),
+	.stall_L1I			(	stall[0]			),
+	.stall_L1D			(	stall[1]			),
 	.read_data_L1D_C	(	DMEM				),
 
 	.read_data_MEM_L2	(	read_data_MEM_L2	),
@@ -107,12 +107,15 @@ top #() u_top (
 );
 
 mem #() u_mem (
-	.clk				(	clk_mem					),
+	.clk				(	clk_mem				),
 	.rstn				(	~rst				),
 	.read_L2_MEM		(	read_L2_MEM			),
 	.write_L2_MEM		(	write_L2_MEM		),
 	.ready_MEM_L2		(	ready_MEM_L2		),
-	.read_data_MEM_L2	(	read_data_MEM_L2	)
+	.read_data_MEM_L2	(	read_data_MEM_L2	),
+	.index_L2_MEM		(	index_L2_MEM		),
+	.tag_L2_MEM			(	tag_L2_MEM			),
+	.read_C_L1			(	read_C_L1I			)
 );
 
 
@@ -132,60 +135,41 @@ ALU ALU_riscV(
 );
 
 reg [1:0] stall_temp;
-wire clk_temp;
-assign clk_temp = ~ clk;
 
 reg [1:0] flag_stall;
 reg flag_clk;
 
 always @ (posedge clk) begin
     if (rst) begin
-		flag_clk <= 'b0;
         PC <= 9'b0;
 		PC_Next <= 9'b0;
     end
     else if (enb) begin
-		flag_clk <= ~clk_temp&clk;
-        PC <= PC_Next;
-		PC_Next <= (PCsel ? ALU_o : PCp4);
+        PC <= stall[0] ? PC : PC_Next;
+		PC_Next <= PCsel ? ALU_o : PCp4;
     end
 end
 
-always @(posedge clk_mem) begin
+always @(PC or negedge stall[0] or rst or enb) begin
 	if (rst) begin
-		stall_temp <= 'b0;
 		read_C_L1I	<= 'b0;
+	end
+	else if (enb) begin
+		read_C_L1I	<= ~ ((stall[0] ^ flag_stall[0]) & ~stall[0]);
+	end
+end
+
+always @(ALU_o or negedge stall[1] or rst or enb) begin
+	if (rst) begin
 		read_C_L1D	<= 'b0;
 	end
-	else begin
-		stall_temp <= stall;
-		if(flag_clk & flag_stall[1]) begin
-			read_C_L1I	<= 'b1;
-		end
-		else read_C_L1I <= 'b0;
-		if(flag_clk & flag_stall[0]) begin
-			read_C_L1D	<= 'b1;
-		end
-		else read_C_L1D <= 'b0;
+	else if (enb) begin
+		read_C_L1D	<= ~ ((stall[1] ^ flag_stall[1]) & ~stall[1]);
 	end
 end
 
-always @(negedge stall[0]) begin
-	if (rst) begin
-		flag_stall[0] <= 'b0;
-	end
-	else begin
-		flag_stall[0] <= ~(stall_temp[0] & ~stall[0]);
-	end
-end
-
-always @(negedge stall[1]) begin
-	if (rst) begin
-		flag_stall[1] <= 'b0;
-	end
-	else begin
-		flag_stall[1] <= ~(stall_temp[1] & ~stall[1]);
-	end
+always @(posedge clk_mem) begin
+	flag_stall	<= stall;
 end
 
 
