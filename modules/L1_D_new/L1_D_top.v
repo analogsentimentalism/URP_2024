@@ -20,7 +20,8 @@ module L1_D_top(
     output [17:0] tag_L1_L2,
     output [17:0] write_tag_L1_L2,
     output [7:0] index_L1_L2,
-    output [7:0] write_index_L1_L2
+    output [7:0] write_index_L1_L2,
+    output L1D_miss_o
 );
 
 wire refill;
@@ -45,7 +46,8 @@ L1_D_controller u_L1_D_controller(
     .write_C_L1(write_C_L1),
     .tag_L1_L2(tag_L1_L2),
     .way(way),
-	.flush(flush)
+	.flush(flush),
+    .L1D_miss_o(L1D_miss_o)
 );
 
 L1_D_data_array u_L1_D_data_array(

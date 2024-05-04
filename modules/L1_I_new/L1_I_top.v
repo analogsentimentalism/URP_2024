@@ -14,7 +14,8 @@ module L1_I_top(
     input ready_L2_L1,
     input read_C_L1,
     output [17:0] tag_L1_L2,
-    output [7:0] index_L1_L2
+    output [7:0] index_L1_L2,
+    output L1I_miss_o
 );
 
 wire refill;
@@ -33,7 +34,8 @@ L1_I_controller u_L1_I_controller(
     .read_L1_L2(read_L1_L2),
     .tag_L1_L2(tag_L1_L2),
     .way(way),
-	.flush(flush)
+	.flush(flush),
+    .L1I_miss_o(L1I_miss_o)
 );
 
 L1_I_data_array u_L1_I_data_array(

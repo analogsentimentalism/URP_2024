@@ -12,7 +12,8 @@ module L2_controller (
     output [7:0] index_L2_MEM,
     output [17:0] tag_L2_MEM,
     output [17:0] write_tag_L2_MEM,
-    output [1:0] way
+    output [1:0] way,
+    output L2_miss_o
 );
 
 parameter   S_IDLE          =   2'b00;
@@ -52,7 +53,7 @@ assign tag_L2_MEM = tag_L1_L2;
 assign write_tag_L2_MEM = TAG_ARR[{index_L1_L2,way_reg}];          // write back할 주소 tag
 assign way = way_reg;
 assign index_L2_MEM = index_L1_L2;
-
+assign L2_miss_o = miss;
 // FSM
 always@(posedge clk or negedge nrst)
 begin
