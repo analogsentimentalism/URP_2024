@@ -1,7 +1,5 @@
 `timescale 1ns/1ns
 `define	PERIOD	1
-`define L2_controller u_top.u_L2_top.u_L2_controller 
-`define L1_D_controller u_top.u_L1_D_top.u_L1_D_controller 
 
 module tb_top #(
 	parameter	TOTAL		= 1024,			// 전체 address 개수
@@ -202,7 +200,7 @@ initial begin: init
 	end
 	for(i = 0; i<TOTAL; i = i + 1) begin   // random addresses
 		instruction_array[i]	= $urandom & 32'h0FFF_C03F | {4'h0, {(22-INUM){1'd0}}, i[0+:INUM], 6'd0}	;
-		$fwrite(aa, "0x%h\n", instruction_array[i])	 							;
+		$fwrite(aa, "0x%h\n", instruction_array[i])								;
 	end
 	// std::randomize(data_array);
 	for(i = 0; i<TOTAL; i = i + 1) begin
@@ -231,75 +229,6 @@ initial begin: init
 	$fclose(rd)	;
 	$fclose(ri)	;
 end
-
-
-// test state 1: Write all L2
-
-    property p1;
-		@(posedge clk) !(`L1_D_controller.dirty=='hFFFF_FFFF_FFFF_FFFF) && ($rose(ready_MEM_L2) && (test_state==1)) |=> !$stable(`L2_controller.valid) && (`L2_controller.valid[4*`L1_D_controller.index_C_L1 + `L2_controller.way]==1);
-	endproperty
-
-	property p2;
-		@(posedge clk) (`L1_D_controller.dirty=='hFFFF_FFFF_FFFF_FFFF) && $rose(`L1_D_controller.ready_L2_L1) && (test_state==1) && (`L1_D_controller.next_state ==2'b01) |-> ##1 (`L1_D_controller.dirty[2*`L1_D_controller.index_C_L1 + `L1_D_controller.way]==0) ;
-	endproperty 
-
-	property p3;
-		@(posedge clk) (`L1_D_controller.valid=='hFFFF_FFFF_FFFF_FFFF) && $fell(`L1_D_controller.ready_L2_L1) && (test_state==1) && (`L1_D_controller.dirty[2*`L1_D_controller.index_C_L1 + `L1_D_controller.way]==0) |-> ##2 (`L1_D_controller.dirty[2*`L1_D_controller.index_C_L1 + `L1_D_controller.way]==1);
-  	endproperty
-
-	//property p4;
-		//@(posedge clk) 
-
-
-
-
-	a0: assert property(p1)
-	    $display("%d: Valid array in L2 has changed properly", $time);
-   		else
-   		$display("%d: ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR", $time);
-
-	a1: assert property(p2)
-		$display("p2 passed");
-		else
-		$display("p2 failed**************************");
-
-	a2: assert property(p3)
-		$display("p3 passed");
-		else
-		$display("p3 failed**************************");
-
-//test state 2:Fill all I
-
-	property p5;
-		@(posedge clk) (test_state==2) && !$stable(read_data_L1_C) &&(read_data_MEM_L2[8*address[0+:6]+:32] == read_data_L1_C) |=> $fell(stall);
-	endproperty
-
-	a5: assert property(p5)
-		$display("p5 ok");
-		else	
-		$display("p5 failed ERROR ERROR ERROR ERROR ERROR ERROR");
-
-// test state 3: Hit all I
-
-	property p6;
-		@(posedge clk) (test_state==3) && $fell(stall) && ( == read_data_L1_C) |=> ##1 $rose(stall);
-
-
-// test state 4: Hit all D
-
-
-
-
-// test state 5: Write all D
-
-
-
-
-// test state 6: Read all D in L2 (Write back)
-
-
-
-
 
 // data_array 이용해서 전부 랜덤으로 하다가, 검증 쉽게 하려고 순차로 바꿈.
 
@@ -370,7 +299,6 @@ test_state	= 0	;
 
 	for(i=0;i<TOTAL;i=i+1) begin
 		write(address_array[i], {4'b0111, wdata_array[i][27:0]})			;
-		$display("%d\t:\twrite:\t%h", $time, {4'b0111, wdata_array[i][27:0]})		;
 	end
 
 test_state	= 0	;
