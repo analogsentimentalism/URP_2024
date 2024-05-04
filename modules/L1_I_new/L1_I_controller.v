@@ -81,10 +81,10 @@ always @(posedge clk or negedge nrst) begin
     else if ((state == S_COMPARE) & !check) begin            //idle-->compare 상태로 왔을 때
         if (!valid[{index_C_L1,1'b0}])
             way_reg <= 1'b0;
-        else if (!valid[{index_C_L1,1'b1}])
-            way_reg <= 1'b1;
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )
             way_reg <= 1'b0;
+        else if (!valid[{index_C_L1,1'b1}])
+            way_reg <= 1'b1;
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}] )
             way_reg <= 1'b1;
         else
