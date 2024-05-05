@@ -115,7 +115,7 @@ L2_top u_L2_top(
     .write_data(write_data_L1_L2),
     .read_data_MEM_L2(read_data_MEM_L2),
     .read_L1_L2(read_L1_L2),
-    .flush(flush),
+    .flush(flush_L1I),
     .ready_MEM_L2(ready_MEM_L2),
     .write_L1_L2(write_L1D_L2),
     .ready_L2_L1(ready_L2_L1),

@@ -53,7 +53,7 @@ assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}][20:3];          // write 
 assign write_index_L1_L2 = {TAG_ARR[{index_C_L1,way_reg}][2:0], index_C_L1};
 assign way = way_reg;
 assign index_L1_L2 = {tag_C_L1[2:0],index_C_L1};
-assign L1D_miss_o;
+assign L1D_miss_o = miss;
 // FSM
 always@(posedge clk or negedge nrst)
 begin

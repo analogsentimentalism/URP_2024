@@ -1,14 +1,36 @@
 module riscV32I(
-    output [31:0] WB_o,
-    input  [31:0] inst_data, 
-    input  [6:0]  inst_addr, 
-    input  clk, clk_mem, rst, inst_wen, enb
+    input clk, clk_mem, rst, enb
 );
 
 reg [8:0] PC;
 
+// reg clk;
+// reg [3:0] clk_cnt;
+
+// always @(posedge clk_mem) begin
+// 	if (rst) begin
+// 		clk_cnt <= 'b0;
+// 		clk	<= 'b0;
+// 	end
+// 	else begin
+// 		if (clk_cnt == 'b1111) begin
+// 			clk_cnt <= 'b0;
+// 			clk	<= ~ clk;
+// 		end
+// 		else begin
+// 			clk_cnt <= clk_cnt + 1;
+// 			clk	<= clk;
+// 		end
+// 	end
+// end
+
+
 wire [1:0] stall;
-wire [1:0] flush;
+reg [1:0] flush;
+
+wire		L2_miss_o;
+wire		L1I_miss_o;
+wire		L1D_miss_o;
 
 // for CORE
 reg				read_C_L1I					;
@@ -77,7 +99,7 @@ ImmGen IMMGEN(
 //     .clk(clk), .rst(rst), .MemWrite(MemRW)
 // );
 
-top #() u_top (
+top u_top (
 	.clk				(	clk_mem				),
 	.nrst				(	~rst				),
 
@@ -103,10 +125,13 @@ top #() u_top (
 	.index_L2_MEM		(	index_L2_MEM		),
 	.tag_L2_MEM			(	tag_L2_MEM			),
 	.write_tag_L2_MEM	(	write_tag_L2_MEM	),
-	.write_data_L2_MEM	(	write_data_L2_MEM	)
+	.write_data_L2_MEM	(	write_data_L2_MEM	),
+	.L2_miss_o			(	L2_miss_o			),
+	.L1I_miss_o			(	L1I_miss_o			),
+	.L1D_miss_o			(	L1D_miss_o			)
 );
 
-mem #() u_mem (
+mem u_mem (
 	.clk				(	clk_mem				),
 	.rstn				(	~rst				),
 	.read_L2_MEM		(	read_L2_MEM			),
@@ -141,6 +166,7 @@ reg flag_clk;
 
 always @ (posedge clk) begin
     if (rst) begin
+		flush <= 'b0;
         PC <= 9'b0;
 		PC_Next <= 9'b0;
     end
@@ -150,21 +176,27 @@ always @ (posedge clk) begin
     end
 end
 
-always @(PC or negedge stall[0] or rst or enb) begin
+always @(PC or stall[0] or rst or enb or flag_stall[0]) begin
 	if (rst) begin
 		read_C_L1I	<= 'b0;
 	end
 	else if (enb) begin
 		read_C_L1I	<= ~ ((stall[0] ^ flag_stall[0]) & ~stall[0]);
 	end
+	else begin
+		read_C_L1I	<= 'b0;
+	end
 end
 
-always @(ALU_o or negedge stall[1] or rst or enb) begin
+always @(ALU_o or stall[1] or rst or enb or flag_stall[1]) begin
 	if (rst) begin
 		read_C_L1D	<= 'b0;
 	end
-	else if (enb) begin
+	else if (enb & ~ALU_o[31]) begin
 		read_C_L1D	<= ~ ((stall[1] ^ flag_stall[1]) & ~stall[1]);
+	end
+	else begin
+		read_C_L1D	<= 'b0;
 	end
 end
 

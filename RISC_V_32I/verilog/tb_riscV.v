@@ -27,7 +27,7 @@ initial begin
 end
 
 riscV32I TEST(
-    WB_o, inst_data, inst_addr, clk, clk_mem, rst, inst_wen, enb
+	clk, clk_mem, rst, enb
 );
 
 initial begin
