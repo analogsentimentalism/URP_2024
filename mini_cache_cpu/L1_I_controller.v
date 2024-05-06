@@ -158,7 +158,7 @@ begin
 end
 
 generate
-    for (i=0; i<64; i = i+1)    begin
+    for (i=0; i<8; i = i+1)    begin
         always@(posedge clk or negedge nrst)
         begin
             if(!nrst)

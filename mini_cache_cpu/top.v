@@ -22,9 +22,9 @@ module top (
     input ready_MEM_L2,
     output read_L2_MEM,
     output write_L2_MEM,
-    output [7:0] index_L2_MEM,
-    output [17:0] tag_L2_MEM,
-    output [17:0] write_tag_L2_MEM,
+    output [4:0] index_L2_MEM,
+    output [20:0] tag_L2_MEM,
+    output [20:0] write_tag_L2_MEM,
     output [511:0] write_data_L2_MEM,
     output L2_miss_o, L1I_miss_o, L1D_miss_o
 );
