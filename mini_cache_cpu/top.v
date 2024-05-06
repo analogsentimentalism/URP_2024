@@ -50,8 +50,8 @@ wire [4:0] index_L1_L2;
 L1_D_top u_L1_D_top (
     .clk(clk),
     .nrst(nrst),
-    .tag_C_L1(address_L1D[31:11]),
-    .index_C_L1(address_L1D[10:6]),
+    .tag_C_L1(address_L1D[31:8]),
+    .index_C_L1(address_L1D[7:6]),
     .offset(address_L1D[5:0]),
     .write_C_L1(write_C_L1D),
     .flush(flush_L1D),
@@ -74,8 +74,8 @@ L1_D_top u_L1_D_top (
 L1_I_top u_L1_I_top(
     .clk(clk),
     .nrst(nrst),
-    .tag_C_L1(address_L1I[31:11]),
-    .index_C_L1(address_L1I[10:6]),
+    .tag_C_L1(address_L1I[31:8]),
+    .index_C_L1(address_L1I[7:6]),
     .offset(address_L1I[5:0]),
     .flush(flush_L1I),
     .stall(stall_L1I),
