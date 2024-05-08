@@ -13,7 +13,7 @@ module L1_D_data_array (
 );
 reg [511:0] DATA_ARR [63:0];
 
-assign read_data_L1_C = DATA_ARR[{index_C_L1,way}][{offset,3'b00} +: 32];
+assign read_data_L1_C = DATA_ARR[{index_C_L1,way}][{offset,3'b000} +: 32];
 assign write_data_L1_L2 = DATA_ARR[{index_C_L1,way}];
 genvar i;
 
@@ -27,7 +27,7 @@ generate
         else if ((refill == 1'b1) && ({index_C_L1,way} == i))
             DATA_ARR[i] <= read_data_L2_L1;
         else if ((update == 1'b1 && ({index_C_L1,way} == i)))
-            DATA_ARR[i] <= write_data_C_L1; 
+            DATA_ARR[i][{offset,3'b000} +:32] <= write_data_C_L1; 
         else
             DATA_ARR[i] <= DATA_ARR[i];
         end
