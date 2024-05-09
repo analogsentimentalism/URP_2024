@@ -1,14 +1,14 @@
 `timescale 1ns / 10ps
 
 module clock_module(
-    input wire clk_in,
+    input wire clk,
     output wire clk_out
     );
     
     wire locked;
     wire clk_100mhz;
    
-    clk_wiz_0 u0(.clk_out1(clk_100mhz), .locked(locked), .clk_in1(clk_in));     // clock wizard instance
+    clk_wiz_0 u0(.clk_out1(clk_100mhz), .locked(locked), .clk_in1(clk));     // clock wizard instance
     baudrate_gen u1(.clk(clk_100mhz), .clk1(clk_out));                          // baud rate generator instance
     
 endmodule
