@@ -26,7 +26,9 @@ module top (
     output [20:0] tag_L2_MEM,
     output [20:0] write_tag_L2_MEM,
     output [511:0] write_data_L2_MEM,
-    output L2_miss_o, L1I_miss_o, L1D_miss_o
+    output L2_miss_o, L1I_miss_o, L1D_miss_o,
+	output read_L1_L2,
+	output write_L1_L2
 );
 
 wire [23:0] tag_C_L1;
@@ -35,9 +37,7 @@ wire [5:0] offset;
 
 wire [511:0] read_data_L2_L1;
 wire [511:0] write_data_L1_L2;
-wire write_L1_L2;
 wire read_L1D_L2, read_L1I_L2;
-wire read_L1_L2;
 wire ready_L2_L1I, ready_L2_L1D;
 wire ready_L2_L1;
 wire [20:0] tag_L1D_L2, write_tag_L1D_L2, tag_L1I_L2;
@@ -60,7 +60,7 @@ L1_D_top u_L1_D_top (
     .read_data_L1_C(read_data_L1D_C),
     .read_data_L2_L1(read_data_L2_L1),
     .write_data_L1_L2(write_data_L1_L2),
-    .write_L1_L2(write_L1D_L2),
+    .write_L1_L2(write_L1_L2),
     .read_L1_L2(read_L1D_L2),
     .ready_L2_L1(ready_L2_L1D),
     .read_C_L1(read_C_L1D),
@@ -117,7 +117,7 @@ L2_top u_L2_top(
     .read_L1_L2(read_L1_L2),
     .flush(flush_L1I),
     .ready_MEM_L2(ready_MEM_L2),
-    .write_L1_L2(write_L1D_L2),
+    .write_L1_L2(write_L1_L2),
     .ready_L2_L1(ready_L2_L1),
     .read_L2_MEM(read_L2_MEM),
     .write_L2_MEM(write_L2_MEM),

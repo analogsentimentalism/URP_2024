@@ -1,6 +1,8 @@
 module riscV32I(
     input clk, clk_mem, rst, enb,
-	output L2_miss_o, L1I_miss_o, L1D_miss_o
+	output L2_miss_o, L1I_miss_o, L1D_miss_o,
+	output read_C_L1I_o, read_C_L1D_o, write_C_L1D_o,
+	output read_L1_L2, write_L1_L2
 );
 
 reg [8:0] PC;
@@ -33,6 +35,11 @@ reg [1:0] flush;
 reg				read_C_L1I					;
 reg				read_C_L1D					;
 reg				write_C_L1D					;
+
+assign	read_C_L1I_o = read_C_L1I;
+assign	read_C_L1D_o = read_C_L1D;
+assign	write_C_L1D_o = write_C_L1D;
+
 
 // for MEM
 wire		[511:0]	read_data_MEM_L2			;
@@ -127,7 +134,10 @@ top u_top (
 	.write_data_L2_MEM	(	write_data_L2_MEM	),
 	.L2_miss_o			(	L2_miss_o			),
 	.L1I_miss_o			(	L1I_miss_o			),
-	.L1D_miss_o			(	L1D_miss_o			)
+	.L1D_miss_o			(	L1D_miss_o			),
+
+	.read_L1_L2			(	read_L1_L2			),
+	.write_L1_L2		(	write_L1_L2			)
 );
 
 mem u_mem (
@@ -142,7 +152,7 @@ mem u_mem (
 	.opcode				(	instruction[6:2]	),
 	.read_C_L1I			(	read_C_L1I			),
 	.read_C_L1D			(	read_C_L1D			),
-	.write_C_L1D			(	write_C_L1D			)
+	.write_C_L1D		(	write_C_L1D			)
 );
 
 
