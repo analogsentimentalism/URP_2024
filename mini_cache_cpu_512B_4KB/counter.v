@@ -1,6 +1,6 @@
 module counter #(
-	parameter ICNT = 6000,
-	parameter JCNT = 1000
+	parameter ICNT = 600,
+	parameter JCNT = 100
 ) (
 	input		clk,
 	input		rstn,
@@ -32,6 +32,15 @@ reg	[7:0] cnt_L1D_miss;
 reg	[7:0] cnt_L2_read;
 reg	[7:0] cnt_L2_write;
 reg	[7:0] cnt_L2_miss;
+
+reg	[7:0] cnt_L1I_read_reg;
+reg	[7:0] cnt_L1I_miss_reg;
+reg	[7:0] cnt_L1D_read_reg;
+reg	[7:0] cnt_L1D_write_reg;
+reg	[7:0] cnt_L1D_miss_reg;
+reg	[7:0] cnt_L2_read_reg;
+reg	[7:0] cnt_L2_write_reg;
+reg	[7:0] cnt_L2_miss_reg;
 
 integer j;
 
@@ -121,32 +130,43 @@ always @(posedge clk) begin
 		read_L1_L2_prev		<= read_L1_L2;
 		write_L1_L2_prev	<= write_L1_L2;
 		miss_L2_L1_prev		<= miss_L2_L1;
-		if(j == JCNT) begin
-			data_o	<= cnt_L1I_miss;
-			j = j + 1;
+		if (j == 'b0) begin
+			cnt_L1I_read_reg	<= cnt_L1I_read;
+			cnt_L1I_miss_reg	<= cnt_L1I_miss;
+			cnt_L1D_read_reg	<= cnt_L1D_read;
+			cnt_L1D_write_reg	<= cnt_L1D_write;
+			cnt_L1D_miss_reg	<= cnt_L1D_miss;
+			cnt_L2_read_reg		<= cnt_L2_read;
+			cnt_L2_write_reg	<= cnt_L2_write;
+			cnt_L2_miss_reg		<= cnt_L2_miss;
+			j <= j + 1;
+		end
+		else if(j == JCNT) begin
+			data_o	<= cnt_L1I_miss_reg;
+			j <= j + 1;
 		end
 		else if (j == JCNT * 2) begin
-			data_o	<= cnt_L1I_read;
-			j = j + 1;
+			data_o	<= cnt_L1I_read_reg;
+			j <= j + 1;
 		end
 		else if(j == JCNT*3) begin
-			data_o	<= cnt_L1D_miss;
-			j = j + 1;
+			data_o	<= cnt_L1D_miss_reg;
+			j <= j + 1;
 		end
 		else if (j == JCNT * 4) begin
-			data_o	<= cnt_L1D_read + cnt_L1D_write;
-			j = j + 1;
+			data_o	<= cnt_L1D_read_reg + cnt_L1D_write_reg;
+			j <= j + 1;
 		end
 		else if(j == JCNT*5) begin
-			data_o	<= cnt_L2_miss;
-			j = j + 1;
+			data_o	<= cnt_L2_miss_reg;
+			j <= j + 1;
 		end
 		else if (j == JCNT * 6) begin
-			data_o	<= cnt_L2_read + cnt_L2_write;
-			j = j + 1;
+			data_o	<= cnt_L2_read_reg + cnt_L2_write_reg;
+			j <= 0;
 		end
 		else begin
-			j = j + 1;
+			j <= j + 1;
 		end
 	end
 end
