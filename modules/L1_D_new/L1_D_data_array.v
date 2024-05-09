@@ -11,7 +11,7 @@ module L1_D_data_array (
     output [31:0] read_data_L1_C,
     output [511:0] write_data_L1_L2
 );
-reg [511:0] DATA_ARR [63:0];
+(* ram_style = "block" *) reg [511:0] DATA_ARR [63:0];
 
 assign read_data_L1_C = DATA_ARR[{index_C_L1,way}][{offset,3'b000} +: 32];
 assign write_data_L1_L2 = DATA_ARR[{index_C_L1,way}];

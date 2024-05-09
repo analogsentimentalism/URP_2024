@@ -133,7 +133,7 @@ always @(posedge clk or negedge nrst) begin
 end
 //LRU (if LRU == 0 -> way 0 replace, LRU == 1 -> way 1 replace)
 generate
-    for (i=0; i<cache_set_num; i = i+1)    begin
+    for (i=0; i<cache_set_num; i = i+1)    begin : block2
         always@(posedge clk or negedge nrst)
         begin
             if(!nrst)
@@ -365,7 +365,7 @@ begin
 end
 
 generate
-    for (i=0; i<cache_line_num; i = i+1)    begin
+    for (i=0; i<cache_line_num; i = i+1)    begin : block3
         always@(posedge clk or negedge nrst)
         begin
             if(!nrst)

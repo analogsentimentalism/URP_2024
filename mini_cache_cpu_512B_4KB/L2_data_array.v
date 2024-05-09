@@ -15,16 +15,16 @@ parameter cache_line_num = 8'd128;
 
 
 reg [511:0] DATA_ARR [cache_line_num-1:0];
-assign write_data_L2_MEM = DATA_ARR[{index_L1_L2,way}];     //수정
+assign write_data_L2_MEM = DATA_ARR[{index_L1_L2,way}];     //?��?��
 assign read_data_L2_L1 = DATA_ARR[{index_L1_L2,way}];
 genvar i;
 
 generate
-    for (i=0; i<cache_line_num; i= i+1) begin
-        always@(posedge clk or negedge nrst)
+    for (i=0; i<cache_line_num; i= i+1) begin : block1
+        always@(posedge clk  or negedge nrst)
         begin
 	if(!nrst)
-            DATA_ARR[i] <= 512'h0;
+       DATA_ARR[i] <= 512'h0;
 
         else if ((refill == 1'b1) && ({index_L1_L2,way} == i))
             DATA_ARR[i] <= read_data_MEM_L2;

@@ -18,7 +18,7 @@ assign write_data_L1_L2 = DATA_ARR[{index_C_L1,way}];
 genvar i;
 
 generate
-    for (i=0; i<8; i= i+1) begin : block6
+    for (i=0; i<8; i= i+1) begin
         always@(posedge clk or negedge nrst)
         begin
 	if(!nrst)
