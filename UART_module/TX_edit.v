@@ -4,7 +4,7 @@ module uart_tx(
     input start,                            // counter.v의 done과 연결
     output reg tx_data
     );
-    
+    //din이 들어오는 속도가 앞단의 tx_data가 모두 출력되는 속도보다 빠른 문제 해결 어떻게
     localparam IDLE = 0, START = 1, ST2 = 2, ST3 = 3, ST4 = 4, ST5 = 5, ST6 = 6, ST7 = 7, ST8 = 8, ST9 = 9, STOP = 10;
     
     reg [3:0] state;
