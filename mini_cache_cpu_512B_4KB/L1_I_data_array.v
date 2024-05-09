@@ -15,7 +15,7 @@ assign read_data_L1_C = DATA_ARR[{index_C_L1,way}][{offset[5:2],5'b00000} +: 32]
 genvar i;
 
 generate
-    for (i=0; i<8; i= i+1) begin
+    for (i=0; i<8; i= i+1) begin	: block4
         always@(posedge clk or negedge nrst)
         begin
 	    if(!nrst)

@@ -9,7 +9,7 @@ module L1_I_data_array (
     input refill, way,
     output [31:0] read_data_L1_C
 );
-reg [511:0] DATA_ARR [63:0];
+(* ram_style = "block" *) reg [511:0] DATA_ARR [63:0];
 
 assign read_data_L1_C = DATA_ARR[{index_C_L1,way}][{offset[5:2],5'b00000} +: 32];
 genvar i;

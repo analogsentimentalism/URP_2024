@@ -14,8 +14,8 @@ module L2_data_array (
 parameter cache_line_num = 11'd1024;
 
 
-reg [511:0] DATA_ARR [cache_line_num-1:0];
-assign write_data_L2_MEM = DATA_ARR[{index_L1_L2,way}];     //ìˆ˜ì •
+(* ram_style = "block" *) reg [511:0] DATA_ARR [cache_line_num-1:0];
+assign write_data_L2_MEM = DATA_ARR[{index_L1_L2,way}];     //?ˆ˜? •
 assign read_data_L2_L1 = DATA_ARR[{index_L1_L2,way}];
 genvar i;
 

@@ -24,7 +24,7 @@ parameter   S_ALLOCATE      =   2'b11;
 
 
 // define TAG_ARR
-reg [20:0] TAG_ARR [63:0];       //ìºì‹œ ë¼ì¸ë§ˆë‹¤
+(* ram_style = "block" *) reg [20:0] TAG_ARR [63:0];       //ìºì‹œ ?¼?¸ë§ˆë‹¤
 reg [63:0] valid;
 reg [63:0] dirty;
 
@@ -49,7 +49,7 @@ assign read_L1_L2 = read_L1_L2_reg;
 assign write_L1_L2 = write_L1_L2_reg;
 assign stall = (state != S_IDLE);
 assign tag_L1_L2 = tag_C_L1[20:3];
-assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}][20:3];          // write backí•  ì£¼ì†Œ tag
+assign write_tag_L1_L2 = TAG_ARR[{index_C_L1,way_reg}][20:3];          // write back?•  ì£¼ì†Œ tag
 assign write_index_L1_L2 = {TAG_ARR[{index_C_L1,way_reg}][2:0], index_C_L1};
 assign way = way_reg;
 assign index_L1_L2 = {tag_C_L1[2:0],index_C_L1};
@@ -88,7 +88,7 @@ end
 always @(posedge clk or negedge nrst) begin
     if(!nrst)
         way_reg <= 1'b0;
-    else if ((state == S_COMPARE) & !check) begin            //idle-->compare ìƒíƒœë¡œ ì™”ì„ ë•Œ
+    else if ((state == S_COMPARE) & !check) begin            //idle-->compare ?ƒ?ƒœë¡? ?™”?„ ?•Œ
         if (!valid[{index_C_L1,1'b0}])
             way_reg <= 1'b0;
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )
@@ -124,7 +124,7 @@ begin
         hit <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if (hit)                 //hitì„ í•œ í´ëŸ­ë§Œ ì£¼ê¸° ìœ„í•´ì„œ?
+        if (hit)                 //hit?„ ?•œ ?´?Ÿ­ë§? ì£¼ê¸° ?œ„?•´?„œ?
             hit <= 1'b0;
         else if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
             hit <= 1'b1;
@@ -161,7 +161,7 @@ begin
     else if((state == S_COMPARE) && hit && write_C_L1)
         dirty[{index_C_L1,way_reg}] <= 1'b1;
     else if((state == S_ALLOCATE) && ready_L2_L1)
-        dirty[{index_C_L1,way_reg}] <= 1'b0;            //readì¼ ë•ŒëŠ” ë§ìŒ. ê·¸ëŸ¼ writeì¼ ë•ŒëŠ” ë¡œë“œí•  ë• 0, ì“°ê³  ë‚˜ì„œ 1ë¡œ ë°”ê¿”ì¤€ë‹¤
+        dirty[{index_C_L1,way_reg}] <= 1'b0;            //read?¼ ?•Œ?Š” ë§ìŒ. ê·¸ëŸ¼ write?¼ ?•Œ?Š” ë¡œë“œ?•  ?• 0, ?“°ê³? ?‚˜?„œ 1ë¡? ë°”ê¿”ì¤??‹¤
     else
         dirty <= dirty;
 end
@@ -196,7 +196,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         refill_reg <= 1'b0;
-    else if((state == S_ALLOCATE) && ready_L2_L1)   //ìˆ˜ì •
+    else if((state == S_ALLOCATE) && ready_L2_L1)   //?ˆ˜? •
         refill_reg <= 1'b1;
     else
         refill_reg <= 1'b0;
@@ -206,7 +206,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         update_reg <= 1'b0;
-    else if ((state == S_COMPARE) && hit && write_C_L1)    // ìˆ˜ì •: hit ì¼ ë•Œë§Œ update=1ë¡œ ì˜¬ë ¤ì¤€ë‹¤
+    else if ((state == S_COMPARE) && hit && write_C_L1)    // ?ˆ˜? •: hit ?¼ ?•Œë§? update=1ë¡? ?˜¬? ¤ì¤??‹¤
         update_reg <= 1'b1;
     else
         update_reg <= 1'b0;

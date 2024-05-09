@@ -2,16 +2,16 @@
 module L2_controller (
     input clk,
     input nrst,
-    input [17:0] tag_L1_L2, 
-    input [7:0] index_L1_L2, 
+    input [20:0] tag_L1_L2, 
+    input [4:0] index_L1_L2, 
     input read_L1_L2, flush,
     input ready_MEM_L2,
     input write_L1_L2,
     output reg ready_L2_L1,
     output refill, update, read_L2_MEM, write_L2_MEM,
-    output [7:0] index_L2_MEM,
-    output [17:0] tag_L2_MEM,
-    output [17:0] write_tag_L2_MEM,
+    output [4:0] index_L2_MEM,
+    output [20:0] tag_L2_MEM,
+    output [20:0] write_tag_L2_MEM,
     output [1:0] way,
     output L2_miss_o
 );
@@ -21,11 +21,11 @@ parameter   S_COMPARE       =   2'b01;
 parameter   S_WRITE_BACK    =   2'b10;
 parameter   S_ALLOCATE      =   2'b11;
 
-parameter   cache_line_num  =   11'd1024;
-parameter   cache_set_num   =   9'd256;   
+parameter   cache_line_num  =   8'd128;
+parameter   cache_set_num   =   6'd32;   
 
 // define TAG_ARR
-(* ram_style = "block" *) reg [17:0] TAG_ARR [cache_line_num-1:0];       //ìºì‹œ ?¼?¸ë§ˆë‹¤
+reg [20:0] TAG_ARR [cache_line_num-1:0];       //ìºì‹œ ë¼ì¸ë§ˆë‹¤
 reg [cache_line_num-1:0] valid;
 reg [cache_line_num-1:0] dirty;
 
@@ -50,7 +50,7 @@ assign read_L2_MEM = read_L2_MEM_reg;
 assign write_L2_MEM = write_L2_MEM_reg;
 assign stall = (state != S_IDLE);
 assign tag_L2_MEM = tag_L1_L2;
-assign write_tag_L2_MEM = TAG_ARR[{index_L1_L2,way_reg}];          // write back?•  ì£¼ì†Œ tag
+assign write_tag_L2_MEM = TAG_ARR[{index_L1_L2,way_reg}];          // write backí•  ì£¼ì†Œ tag
 assign way = way_reg;
 assign index_L2_MEM = index_L1_L2;
 assign L2_miss_o = miss;
@@ -89,7 +89,7 @@ end
 always @(posedge clk or negedge nrst) begin
     if(!nrst)
         way_reg <= 2'b00;
-    else if ((state == S_COMPARE) & !check) begin            //idle-->compare ?ƒ?ƒœë¡? ?™”?„ ?•Œ
+    else if ((state == S_COMPARE) & !check) begin            //idle-->compare ìƒíƒœë¡œ ì™”ì„ ë•Œ
         
         
         if (!valid[{index_L1_L2,2'b00}])
@@ -290,7 +290,7 @@ begin
         hit <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if (hit)                 //hit?„ ?•œ ?´?Ÿ­ë§? ì£¼ê¸° ?œ„?•´?„œ?
+        if (hit)                 //hitì„ í•œ í´ëŸ­ë§Œ ì£¼ê¸° ìœ„í•´ì„œ?
             hit <= 1'b0;
         else if(read_L1_L2 && 
                 ((valid[{index_L1_L2,2'b00}] && (tag_L1_L2 == TAG_ARR[{index_L1_L2,2'b00}])) || 
@@ -343,11 +343,11 @@ end
 always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
-        dirty <= 1024'h0;
+        dirty <= 128'h0;
     else if((state == S_COMPARE) && hit && write_L1_L2)
         dirty[{index_L1_L2,way_reg}] <= 1'b1;
     else if((state == S_ALLOCATE) && ready_MEM_L2)
-        dirty[{index_L1_L2,way_reg}] <= 1'b0;            //read?¼ ?•Œ?Š” ë§ìŒ. ê·¸ëŸ¼ write?¼ ?•Œ?Š” ë¡œë“œ?•  ?• 0, ?“°ê³? ?‚˜?„œ 1ë¡? ë°”ê¿”ì¤??‹¤
+        dirty[{index_L1_L2,way_reg}] <= 1'b0;            //readì¼ ë•ŒëŠ” ë§ìŒ. ê·¸ëŸ¼ writeì¼ ë•ŒëŠ” ë¡œë“œí•  ë• 0, ì“°ê³  ë‚˜ì„œ 1ë¡œ ë°”ê¿”ì¤€ë‹¤
     else
         dirty <= dirty;
 end
@@ -355,9 +355,9 @@ end
 always@(posedge clk or negedge nrst)
 begin
     if (!nrst)
-        valid <= 1024'h0;
+        valid <= 128'h0;
     else if ((state == S_IDLE) && flush)
-        valid <= 1024'h0;
+        valid <= 128'h0;
     else if ((state == S_ALLOCATE) && ready_MEM_L2)
         valid[{index_L1_L2,way_reg}] <= 1'b1;
     else
@@ -369,7 +369,7 @@ generate
         always@(posedge clk or negedge nrst)
         begin
             if(!nrst)
-                TAG_ARR[i] <= 18'h0;
+                TAG_ARR[i] <= 21'h0;
             else if((state == S_ALLOCATE)&& ready_MEM_L2 && ({index_L1_L2,way_reg} == i))
                 TAG_ARR[i] <= tag_L1_L2;
             else
@@ -382,7 +382,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         refill_reg <= 1'b0;
-    else if((state == S_ALLOCATE) && ready_MEM_L2)   //?ˆ˜? •
+    else if((state == S_ALLOCATE) && ready_MEM_L2)   //ìˆ˜ì •
         refill_reg <= 1'b1;
     else
         refill_reg <= 1'b0;
@@ -392,7 +392,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         update_reg <= 1'b0;
-    else if ((state == S_COMPARE) && hit && write_L1_L2)    // ?ˆ˜? •: hit ?¼ ?•Œë§? update=1ë¡? ?˜¬? ¤ì¤??‹¤
+    else if ((state == S_COMPARE) && hit && write_L1_L2)    // ìˆ˜ì •: hit ì¼ ë•Œë§Œ update=1ë¡œ ì˜¬ë ¤ì¤€ë‹¤
         update_reg <= 1'b1;
     else
         update_reg <= 1'b0;

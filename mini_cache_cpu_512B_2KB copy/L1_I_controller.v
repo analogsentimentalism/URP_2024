@@ -20,7 +20,7 @@ parameter   S_ALLOCATE      =   2'b11;
 
 
 // define TAG_ARR
-reg [23:0] TAG_ARR [7:0];       //ìºì‹œ ë¼ì¸ë§ˆë‹¤
+(* ram_style = "block" *) reg [23:0] TAG_ARR [7:0];       //ìºì‹œ ?¼?¸ë§ˆë‹¤
 reg [7:0] valid;
 
 
@@ -78,7 +78,7 @@ end
 always @(posedge clk or negedge nrst) begin
     if(!nrst)
         way_reg <= 1'b0;
-    else if ((state == S_COMPARE) & !check) begin            //idle-->compare ìƒíƒœë¡œ ì™”ì„ ë•Œ
+    else if ((state == S_COMPARE) & !check) begin            //idle-->compare ?ƒ?ƒœë¡? ?™”?„ ?•Œ
         if (!valid[{index_C_L1,1'b0}])
             way_reg <= 1'b0;
         else if (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )
@@ -114,7 +114,7 @@ begin
         hit <= 1'b0;
     else if(state == S_COMPARE)
     begin
-        if (hit)                 //hitì„ í•œ í´ëŸ­ë§Œ ì£¼ê¸° ìœ„í•´ì„œ?
+        if (hit)                 //hit?„ ?•œ ?´?Ÿ­ë§? ì£¼ê¸° ?œ„?•´?„œ?
             hit <= 1'b0;
         else if((valid[{index_C_L1,1'b0}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b0}] )) || (valid[{index_C_L1,1'b1}] && (tag_C_L1 == TAG_ARR[{index_C_L1,1'b1}])))
             hit <= 1'b1;
@@ -175,7 +175,7 @@ always@(posedge clk or negedge nrst)
 begin
     if(!nrst)
         refill_reg <= 1'b0;
-    else if((state == S_ALLOCATE) && ready_L2_L1)   //ìˆ˜ì •
+    else if((state == S_ALLOCATE) && ready_L2_L1)   //?ˆ˜? •
         refill_reg <= 1'b1;
     else
         refill_reg <= 1'b0;
