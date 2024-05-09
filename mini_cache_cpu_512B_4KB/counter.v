@@ -12,7 +12,8 @@ module counter #(
 	input		read_L1_L2,
 	input		write_L1_L2,
 	input		miss_L2_L1,
-	output reg	[7:0] data_o
+	output reg	[7:0] data_o,
+	output reg  done                    //추가 : done이 1이면 uart의 tx module의 start가 1이 됨
 );
 
 reg	read_C_L1I_prev	;
@@ -107,10 +108,22 @@ always @(posedge clk) begin
 	end
 end
 
+
+always @(posedge clk) begin             //추가
+	if(done) begin
+		done <= 0;
+	end
+	else begin
+		done <= done;
+	end
+end
+
+
 always @(posedge clk) begin
 	if(~rstn) begin
 		j		<= 0;
 		data_o	<= 0;
+		done	<= 0;				//추가
 		
 		read_C_L1I_prev		<= 'b0;
 		miss_L1I_C_prev		<= 'b0;
@@ -143,26 +156,32 @@ always @(posedge clk) begin
 		end
 		else if(j == JCNT) begin
 			data_o	<= cnt_L1I_miss_reg;
+			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 2) begin
 			data_o	<= cnt_L1I_read_reg;
+			done 	<= 1;
 			j <= j + 1;
 		end
 		else if(j == JCNT*3) begin
 			data_o	<= cnt_L1D_miss_reg;
+			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 4) begin
 			data_o	<= cnt_L1D_read_reg + cnt_L1D_write_reg;
+			done 	<= 1;
 			j <= j + 1;
 		end
 		else if(j == JCNT*5) begin
 			data_o	<= cnt_L2_miss_reg;
+			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 6) begin
 			data_o	<= cnt_L2_read_reg + cnt_L2_write_reg;
+			done 	<= 1;
 			j <= 0;
 		end
 		else begin
