@@ -21,7 +21,7 @@ reg	flag;
 reg	flag_id;
 
 (* RAM_STYLE="BLOCK" *)
-reg	[31:0] mem_cell	[0:1023];
+reg	[31:0] mem_cell	[0:22965];
 
 reg read_L2_MEM_reg;
 reg write_L2_MEM_reg;
@@ -31,8 +31,6 @@ always @(posedge clk) begin
 	if (!rstn) begin
 		flag <= 0;
 		ready_MEM_L2 <= 0;
-		reg_cnt <= 0;
-		flag_id <= 'b0;
 	end
 	else begin
 		read_L2_MEM_reg <= read_L2_MEM;
@@ -67,6 +65,8 @@ end
 
 always @(*) begin
 	if (!rstn) begin
+		flag_id <= 'b0;
+		reg_cnt <= 0;
 		for (i=0;i<16;i=i+1) begin
 			read_data_MEM_L2[i*32+:32]	<= 'b0;
 		end
@@ -85,9 +85,13 @@ always @(*) begin
 					read_data_MEM_L2[i*32+:32]	<= 'b0;
 				end
 			end
+			else begin
+				read_data_MEM_L2	<= read_data_MEM_L2;
+			end
 		end
 		else begin
 			flag_id	<= 'b0;
+			read_data_MEM_L2	<= read_data_MEM_L2;
 		end
 	end
 end
