@@ -1,12 +1,12 @@
 module ALU(
     output [31:0] ALU_o,
-    input signed  [31:0] A, B,
+    input  [31:0] A, B,
     input  [3:0]  ALUSel
 );
 
-wire signed [31:0] ADD, SRA, SLL, SRL, XOR, AND, OR, SR;
-wire signed [31:0] B_compliment = ALUSel[3] ? ~B : B;
-wire signed [4:0] shamt = B[4:0];
+wire [31:0] ADD, SRA, SLL, SRL, XOR, AND, OR, SR;
+wire [31:0] B_compliment = ALUSel[3] ? ~B : B;
+wire [4:0] shamt = B[4:0];
 wire SLT;
 wire SLT_cond = (ALUSel == 3'b010);
 

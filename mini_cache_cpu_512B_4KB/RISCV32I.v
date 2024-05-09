@@ -1,5 +1,8 @@
 module riscV32I(
-    input clk, clk_mem, rst, enb
+    input clk, clk_mem, rst, enb,
+	output L2_miss_o, L1I_miss_o, L1D_miss_o,
+	output read_C_L1I_o, read_C_L1D_o, write_C_L1D_o,
+	output read_L1_L2, write_L1_L2
 );
 
 reg [8:0] PC;
@@ -28,13 +31,15 @@ reg [8:0] PC;
 wire [1:0] stall;
 reg [1:0] flush;
 
-wire		L2_miss_o;
-wire		L1I_miss_o;
-wire		L1D_miss_o;
-
 // for CORE
 reg				read_C_L1I					;
 reg				read_C_L1D					;
+reg				write_C_L1D					;
+
+assign	read_C_L1I_o = read_C_L1I;
+assign	read_C_L1D_o = read_C_L1D;
+assign	write_C_L1D_o = write_C_L1D;
+
 
 // for MEM
 wire		[511:0]	read_data_MEM_L2			;
@@ -42,9 +47,9 @@ wire				ready_MEM_L2				;
 
 wire			read_L2_MEM					;
 wire			write_L2_MEM				;
-wire	[7:0]	index_L2_MEM				;
-wire	[17:0]	tag_L2_MEM					;
-wire	[17:0]	write_tag_L2_MEM			;
+wire	[4:0]	index_L2_MEM				;
+wire	[20:0]	tag_L2_MEM					;
+wire	[20:0]	write_tag_L2_MEM			;
 wire	[511:0]	write_data_L2_MEM			;
 
 wire [31:0] Imm, instruction, WB, DataA, DataB, WB_cut;
@@ -54,11 +59,12 @@ wire [1:0]  WBSel;
 wire [2:0]  ImmSel, WordSizeSel;
 wire [3:0]  ALUSel;
 
-reg [8:0] PC_Next;
-wire [8:0] PCp4 = PC + 7'd4;
 
 wire [31:0] ALU_o, ALU_A, ALU_B;
 
+wire [8:0] PC_Next;
+wire [8:0] PCp4 = PC + 7'd4;
+assign PC_Next = PCsel ? ALU_o : PCp4;
 
 assign ALU_A = ASel ? PC : DataA;
 assign ALU_B = BSel ? Imm : DataB;
@@ -109,7 +115,7 @@ top u_top (
 	.flush_L1D			(	flush[1]			),
 	.read_C_L1I			(	read_C_L1I			),
 	.read_C_L1D			(	~MemRW & read_C_L1D	),
-	.write_C_L1D		(	MemRW				),
+	.write_C_L1D		(	MemRW & write_C_L1D	),
 	.write_data			(	DataB				),
 	.read_data_L1I_C	(	instruction			),
 
@@ -128,7 +134,10 @@ top u_top (
 	.write_data_L2_MEM	(	write_data_L2_MEM	),
 	.L2_miss_o			(	L2_miss_o			),
 	.L1I_miss_o			(	L1I_miss_o			),
-	.L1D_miss_o			(	L1D_miss_o			)
+	.L1D_miss_o			(	L1D_miss_o			),
+
+	.read_L1_L2			(	read_L1_L2			),
+	.write_L1_L2		(	write_L1_L2			)
 );
 
 mem u_mem (
@@ -140,7 +149,10 @@ mem u_mem (
 	.read_data_MEM_L2	(	read_data_MEM_L2	),
 	.index_L2_MEM		(	index_L2_MEM		),
 	.tag_L2_MEM			(	tag_L2_MEM			),
-	.read_C_L1			(	read_C_L1I			)
+	.opcode				(	instruction[6:2]	),
+	.read_C_L1I			(	read_C_L1I			),
+	.read_C_L1D			(	read_C_L1D			),
+	.write_C_L1D		(	write_C_L1D			)
 );
 
 
@@ -163,45 +175,83 @@ reg [1:0] stall_temp;
 
 reg [1:0] flag_stall;
 reg flag_clk;
+reg enb_reg;
+
+reg	[8:0] PC_Prev;
+reg	[31:0] inst_Prev;
 
 always @ (posedge clk) begin
     if (rst) begin
 		flush <= 'b0;
         PC <= 9'b0;
-		PC_Next <= 9'b0;
+		enb_reg <= 'b0;
     end
+	else if (~enb_reg & enb) begin
+		enb_reg <= 'b1;
+		PC	<= 'b0;
+	end
     else if (enb) begin
-        PC <= stall[0] ? PC : PC_Next;
-		PC_Next <= PCsel ? ALU_o : PCp4;
+        PC <= (stall) ? PC : PC_Next;
     end
 end
 
-always @(PC or stall[0] or rst or enb or flag_stall[0]) begin
+always @(posedge clk_mem) begin
 	if (rst) begin
-		read_C_L1I	<= 'b0;
-	end
-	else if (enb) begin
-		read_C_L1I	<= ~ ((stall[0] ^ flag_stall[0]) & ~stall[0]);
+		inst_Prev <= 'b0;
 	end
 	else begin
-		read_C_L1I	<= 'b0;
+		inst_Prev <= instruction;
 	end
 end
 
-always @(ALU_o or stall[1] or rst or enb or flag_stall[1]) begin
+always @(*) begin
 	if (rst) begin
-		read_C_L1D	<= 'b0;
+		read_C_L1I	<= 'b0;
 	end
-	else if (enb & ~ALU_o[31]) begin
-		read_C_L1D	<= ~ ((stall[1] ^ flag_stall[1]) & ~stall[1]);
+	else if ((enb_reg ^ enb) & enb) begin
+		read_C_L1I	<= 'b1;
+	end
+	else if (enb & (PC_Prev != PC)) begin
+		read_C_L1I	<= 'b1;
+	end
+	else if (enb & (stall[0] ^ flag_stall[0]) & ~stall[0]) begin
+		read_C_L1I	<= 'b0;
 	end
 	else begin
+		read_C_L1I	<= read_C_L1I;
+	end
+end
+
+always @(*) begin
+	if (rst) begin
 		read_C_L1D	<= 'b0;
+		write_C_L1D	<= 'b0;
+	end
+	else if (enb & (inst_Prev != instruction) & (instruction[6:2] == 5'b00000) & (instruction != 'b0)) begin
+		read_C_L1D	<= 'b1;
+	end
+	else if (enb & (inst_Prev != instruction) & (instruction[6:2] == 5'b01000) & (instruction != 'b0)) begin
+		write_C_L1D	<= 'b1;
+	end
+	else if (enb & (stall[1] ^ flag_stall[1]) & ~stall[1]) begin
+		read_C_L1D	<= 'b0;
+		write_C_L1D	<= 'b0;
+	end
+	else begin
+		read_C_L1D	<= read_C_L1D;
+		write_C_L1D	<= write_C_L1D;
 	end
 end
 
 always @(posedge clk_mem) begin
-	flag_stall	<= stall;
+	if (rst) begin
+		flag_stall	<= 'b0;
+		PC_Prev	<= 'b0;
+	end
+	else begin
+		flag_stall	<= stall;
+		PC_Prev	<= PC;
+	end
 end
 
 
