@@ -1,6 +1,6 @@
 module uart_tx(
     input clk,
-    input [7:0] din,                        // ASCII code로 입력: 그럼 din[4]==1, din[5]==1, din[6]==0, din[7]==0 고정?
+    input [7:0] din,                        // ASCII code로 입력이라면: 그럼 din[4]==1, din[5]==1, din[6]==0, din[7]==0 고정?
     input tx_start,                            // counter.v의 done과 연결
     output reg tx_data
     );

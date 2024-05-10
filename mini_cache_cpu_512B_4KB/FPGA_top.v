@@ -3,7 +3,7 @@ module FPGA_top (
 	input			start,
 	input		 	rst,
 	input			enb,
-	output 			tx_data
+	output reg 		tx_data
 );
 
 wire	L2_miss;
