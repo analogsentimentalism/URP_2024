@@ -4,31 +4,23 @@ module uart_tx(
     input tx_start,                            // counter.v의 done과 연결
     output reg tx_data
     );
-    //din이 들어오는 속도가 앞단의 tx_data가 모두 출력되는 속도보다 빠른 문제 해결 어떻게
+    
     localparam IDLE = 0, START = 1, ST2 = 2, ST3 = 3, ST4 = 4, ST5 = 5, ST6 = 6, ST7 = 7, ST8 = 8, ST9 = 9, STOP = 10;
     
     reg [3:0] state;
     reg [31:0] clk_count;
     reg	tx_start_prev	;
-
-
-    always @(posedge clk) begin
-        if((tx_start_prev ^ tx_start) & tx_start) begin       //rising edge of tx_start : initialize clk_count
-            clk_count <=0;
-        end
-        else begin
-            clk_count <= clk_count;
-        end
-    end
+    reg tx_start_prev_reg;
 
 
     always @(posedge clk) begin     
-        tx_start_prev <= tx_start;
+        tx_start_prev_reg <= tx_start;
+        tx_start_prev <= tx_start_prev_reg;
     end
     ///////////////state register///////////////
 
     always @(posedge clk) begin
-        if(clk_count == 868) begin                   //100MHz를 115,200Hz에 맞추기
+        if(clk_count == 868 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
             clk_count <= 0;
             case (state)
                 IDLE : if(tx_start==1) state <= START;
