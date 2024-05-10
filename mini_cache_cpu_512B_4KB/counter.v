@@ -1,6 +1,6 @@
 module counter #(
-	parameter ICNT = 600,
-	parameter JCNT = 100
+	parameter ICNT = 600,	//60000으로 실행
+	parameter JCNT = 100    //10000으로 실행
 ) (
 	input		clk,
 	input		rstn,
@@ -15,6 +15,8 @@ module counter #(
 	output reg	[7:0] data_o,
 	output reg  done                    //추가 : done이 1이면 uart의 tx module의 start가 1이 됨
 );
+
+reg [31:0] clk_count;                //done을 uart의 clk_cnt (0~867) 까지만 1, 나머지는 0
 
 reg	read_C_L1I_prev	;
 reg	miss_L1I_C_prev	;
@@ -108,11 +110,25 @@ always @(posedge clk) begin
 	end
 end
 
+//clk count 초기화 / +1
+always @(posedge clk) begin
+	if(~rstn || j == 0 || j == JCNT || j == 2*JCNT || j == 3*JCNT || j == 4*JCNT || j == 5*JCNT || j == 6*JCNT) begin
+		clk_count <= 0;
+	end
+	else clk_count <= clk_count +1;
+end
+	
 
-always @(posedge clk) begin             //추가
-	if(done) begin
+//done 신호 제어
+always @(posedge clk) begin             
+	if(~rstn) begin
 		done <= 0;
 	end
+	else if(done) begin
+		if(clk_count ==868) begin
+			done <= ~done;
+		end
+		else clk_count <= clk_count+1;
 	else begin
 		done <= done;
 	end
@@ -123,7 +139,6 @@ always @(posedge clk) begin
 	if(~rstn) begin
 		j		<= 0;
 		data_o	<= 0;
-		done	<= 0;				//추가
 		
 		read_C_L1I_prev		<= 'b0;
 		miss_L1I_C_prev		<= 'b0;

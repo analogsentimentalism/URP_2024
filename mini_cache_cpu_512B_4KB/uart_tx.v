@@ -17,6 +17,7 @@ module uart_tx(
         tx_start_prev_reg <= tx_start;
         tx_start_prev <= tx_start_prev_reg;
     end
+    
     ///////////////state register///////////////
 
     always @(posedge clk) begin
