@@ -16,7 +16,7 @@ uart_tx u_tx(
 );
 
 
-initial clk=0;
+initial clk=1;
 always #5 clk = ~clk;
 
 
@@ -29,22 +29,22 @@ initial begin
     #100 
     tx_start =1;
     din = 'b01101110;
-    #10 tx_start =0;
+    #8680 tx_start =0;
 
     #100000
     tx_start =1;
     din = 'b00000110;
-    #10 tx_start =0;
+    #8680 tx_start =0;
 
     #100000
     tx_start =1;
     din = 'b11000011;
-    #10 tx_start =0;
+    #8680 tx_start =0;
 
     #100000 
     tx_start =1;
     din = 'b11110000;
-    #10 tx_start =0;
+    #8680 tx_start =0;
 
     #20000 $stop;
 end
