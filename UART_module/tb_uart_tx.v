@@ -23,23 +23,29 @@ always #5 clk = ~clk;
 initial begin
     tx_start =0;
     din =0;
+    u_tx.clk_count =0;
+    u_tx.state = 0;
     
     #100 
     tx_start =1;
     din = 'b01101110;
+    #10 tx_start =0;
 
-    #1000
+    #100000
     tx_start =1;
     din = 'b00000110;
+    #10 tx_start =0;
 
-    #1000 
+    #100000
     tx_start =1;
     din = 'b11000011;
+    #10 tx_start =0;
 
-    #1000 
+    #100000 
     tx_start =1;
     din = 'b11110000;
+    #10 tx_start =0;
 
-    #2000 $stop;
+    #20000 $stop;
 end
 endmodule

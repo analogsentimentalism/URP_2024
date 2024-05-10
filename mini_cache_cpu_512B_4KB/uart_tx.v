@@ -9,8 +9,22 @@ module uart_tx(
     
     reg [3:0] state;
     reg [31:0] clk_count;
+    reg	tx_start_prev	;
 
-    
+
+    always @(posedge clk) begin
+        if((tx_start_prev ^ tx_start) & tx_start) begin       //rising edge of tx_start : initialize clk_count
+            clk_count <=0;
+        end
+        else begin
+            clk_count <= clk_count;
+        end
+    end
+
+
+    always @(posedge clk) begin     
+        tx_start_prev <= tx_start;
+    end
     ///////////////state register///////////////
 
     always @(posedge clk) begin
