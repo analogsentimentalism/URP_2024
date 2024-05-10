@@ -3,12 +3,14 @@ module FPGA_top (
 	input			start,
 	input		 	rst,
 	input			enb,
-	output	[7:0]	data_o
+	output 			tx_data
 );
 
 wire	L2_miss;
 wire	L1I_miss;
 wire	L1D_miss;
+wire 	[7:0] data_o;
+wire 	done;
 reg		clk;
 reg		[3:0] clk_cnt;
 
@@ -38,7 +40,15 @@ counter u_counter (
 	.read_L1_L2(read_L1_L2),
 	.write_L1_L2(write_L1_L2),
 	.miss_L2_L1(L2_miss),
-	.data_o(data_o)
+	.data_o(data_o),
+	.done(done)
+);
+
+uart_tx u_tx (
+	.clk(clk_mem),
+	.din(data_o),
+	.tx_start(done),
+	.tx_data(tx_data)
 );
 
 // clock gen

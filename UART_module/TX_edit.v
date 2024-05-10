@@ -1,7 +1,7 @@
 module uart_tx(
     input clk,
     input [7:0] din,                        // ASCII code로 입력: 그럼 din[4]==1, din[5]==1, din[6]==0, din[7]==0 고정?
-    input start,                            // counter.v의 done과 연결
+    input tx_start,                            // counter.v의 done과 연결
     output reg tx_data
     );
     //din이 들어오는 속도가 앞단의 tx_data가 모두 출력되는 속도보다 빠른 문제 해결 어떻게
@@ -17,7 +17,7 @@ module uart_tx(
         if(clk_count == 868) begin                   //100MHz를 115,200Hz에 맞추기
             clk_count <= 0;
             case (state)
-                IDLE : if(start==1) state <= START;
+                IDLE : if(tx_start==1) state <= START;
                        else state <= IDLE;
                 START  : state <= ST2;
                 ST2  : state <= ST3;
