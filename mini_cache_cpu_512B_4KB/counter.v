@@ -59,7 +59,7 @@ always @(posedge clk) begin
 		cnt_L2_miss		<= 'b0;
 	end
 	else begin
-		if((read_C_L1I_prev ^ read_C_L1I) & read_C_L1I) begin
+		if((read_C_L1I_prev ^ read_C_L1I) & read_C_L1I) begin            //  MISS RATE:   cnt_L1I_miss / cnt_L1I_read
 			cnt_L1I_read	<= cnt_L1I_read + 1;
 		end
 		else begin
@@ -71,7 +71,9 @@ always @(posedge clk) begin
 		else begin
 			cnt_L1I_miss	<= cnt_L1I_miss;
 		end
-		if((read_C_L1D_prev ^ read_C_L1D) & read_C_L1D) begin
+		
+		
+		if((read_C_L1D_prev ^ read_C_L1D) & read_C_L1D) begin            //  MISS RATE:   cnt_L1D_miss / (cnt_L1D_read + cnt_L1D_write)
 			cnt_L1D_read	<= cnt_L1D_read + 1;
 		end
 		else begin
@@ -89,7 +91,9 @@ always @(posedge clk) begin
 		else begin
 			cnt_L1D_miss	<= cnt_L1D_miss;
 		end
-		if((read_L1_L2_prev ^ read_L1_L2) & read_L1_L2) begin
+		
+		
+		if((read_L1_L2_prev ^ read_L1_L2) & read_L1_L2) begin            //  MISS RATE:   cnt_L2_miss / (cnt_L2_read + cnt_L2_write)
 			cnt_L2_read	<= cnt_L2_read + 1;
 		end
 		else begin
@@ -180,6 +184,8 @@ always @(posedge clk) begin
 			done 	<= 1;
 			j <= j + 1;
 		end
+
+
 		else if(j == JCNT*3) begin
 			data_o	<= cnt_L1D_miss_reg;
 			done 	<= 1;
@@ -190,6 +196,8 @@ always @(posedge clk) begin
 			done 	<= 1;
 			j <= j + 1;
 		end
+
+		
 		else if(j == JCNT*5) begin
 			data_o	<= cnt_L2_miss_reg;
 			done 	<= 1;
