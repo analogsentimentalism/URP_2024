@@ -129,6 +129,7 @@ always @(posedge clk) begin
 			done <= ~done;
 		end
 		else clk_count <= clk_count+1;
+	end
 	else begin
 		done <= done;
 	end
