@@ -10,7 +10,7 @@ module counter_tx_top(
 	input		write_L1_L2,
 	input		miss_L2_L1,
 
-    output reg  tx_data
+  output  tx_data
 );
 
 

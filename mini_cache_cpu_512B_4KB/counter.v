@@ -1,6 +1,6 @@
 module counter #(
-	parameter ICNT = 600,	//60000으로 실행
-	parameter JCNT = 100    //10000으로 실행
+	parameter ICNT = 60000,	//60000으로 실행
+	parameter JCNT = 10000    //10000으로 실행
 ) (
 	input		clk,
 	input		rstn,
@@ -197,7 +197,7 @@ always @(posedge clk) begin
 			j <= j + 1;
 		end
 
-		
+
 		else if(j == JCNT*5) begin
 			data_o	<= cnt_L2_miss_reg;
 			done 	<= 1;

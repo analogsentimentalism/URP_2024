@@ -54,7 +54,7 @@ miss_L1D_C = 0;
 read_L1_L2 = 0;
 write_L1_L2 = 0;
 miss_L2_L1 = 0;
-u_counter.data_o = 0;
+u_counter_tx_top.u_counter.data_o = 0;
 
 repeat(10)	@(posedge clk)
 
@@ -133,7 +133,13 @@ read_C_L1D = 0;
 miss_L1D_C = 0;
 read_L1_L2 = 0;
 
+repeat(100)	@(posedge clk)
+$stop;
 
+end
+
+
+endmodule
 
 
 
