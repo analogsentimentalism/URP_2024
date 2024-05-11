@@ -1,11 +1,12 @@
 module riscV32I(
     input clk, clk_mem, rst, enb,
+	input [31:0]	PC_in,
 	output L2_miss_o, L1I_miss_o, L1D_miss_o,
 	output read_C_L1I_o, read_C_L1D_o, write_C_L1D_o,
 	output read_L1_L2, write_L1_L2
 );
 
-reg [8:0] PC;
+reg [31:0] PC;
 
 // reg clk;
 // reg [3:0] clk_cnt;
@@ -62,8 +63,8 @@ wire [3:0]  ALUSel;
 
 wire [31:0] ALU_o, ALU_A, ALU_B;
 
-wire [8:0] PC_Next;
-wire [8:0] PCp4 = PC + 7'd4;
+wire [31:0] PC_Next;
+wire [31:0] PCp4 = PC + 'd4;
 assign PC_Next = PCsel ? ALU_o : PCp4;
 
 assign ALU_A = ASel ? PC : DataA;
@@ -109,7 +110,7 @@ top u_top (
 	.clk				(	clk_mem				),
 	.nrst				(	~rst				),
 
-	.address_L1I		(	{23'b0, PC}			),
+	.address_L1I		(	PC					),
 	.address_L1D		(	ALU_o				),
 	.flush_L1I			(	flush[0]			),
 	.flush_L1D			(	flush[1]			),
@@ -140,20 +141,37 @@ top u_top (
 	.write_L1_L2		(	write_L1_L2			)
 );
 
-mem u_mem (
+L2_bram_connect #(
+	.RAM_WIDTH	(	32				),
+	.RAM_DEPTH	(	32'h4000_0000	)
+)
+u_bram (
 	.clk				(	clk_mem				),
 	.rstn				(	~rst				),
 	.read_L2_MEM		(	read_L2_MEM			),
 	.write_L2_MEM		(	write_L2_MEM		),
 	.ready_MEM_L2		(	ready_MEM_L2		),
 	.read_data_MEM_L2	(	read_data_MEM_L2	),
-	.index_L2_MEM		(	index_L2_MEM		),
 	.tag_L2_MEM			(	tag_L2_MEM			),
-	.opcode				(	instruction[6:2]	),
-	.read_C_L1I			(	read_C_L1I			),
-	.read_C_L1D			(	read_C_L1D			),
-	.write_C_L1D		(	write_C_L1D			)
+	.index_L2_MEM		(	index_L2_MEM		),
+	.write_tag_L2_MEM	(	write_tag_L2_MEM	),
+	.write_data_L2_MEM	(	write_data_L2_MEM	)
 );
+
+// mem u_mem (
+// 	.clk				(	clk_mem				),
+// 	.rstn				(	~rst				),
+// 	.read_L2_MEM		(	read_L2_MEM			),
+// 	.write_L2_MEM		(	write_L2_MEM		),
+// 	.ready_MEM_L2		(	ready_MEM_L2		),
+// 	.read_data_MEM_L2	(	read_data_MEM_L2	),
+// 	.index_L2_MEM		(	index_L2_MEM		),
+// 	.tag_L2_MEM			(	tag_L2_MEM			),
+// 	.opcode				(	instruction[6:2]	),
+// 	.read_C_L1I			(	read_C_L1I			),
+// 	.read_C_L1D			(	read_C_L1D			),
+// 	.write_C_L1D		(	write_C_L1D			)
+// );
 
 
 control CTRL(
@@ -177,18 +195,20 @@ reg [1:0] flag_stall;
 reg flag_clk;
 reg enb_reg;
 
-reg	[8:0] PC_Prev;
+reg	[31:0] PC_Prev;
 reg	[31:0] inst_Prev;
 
 always @ (posedge clk) begin
     if (rst) begin
 		flush <= 'b0;
-        PC <= 9'b0;
+        PC <= 'b0;
 		enb_reg <= 'b0;
     end
+	else if (~enb) begin
+		PC	<= PC_in	;
+	end
 	else if (~enb_reg & enb) begin
 		enb_reg <= 'b1;
-		PC	<= 'b0;
 	end
     else if (enb) begin
         PC <= (stall) ? PC : PC_Next;
