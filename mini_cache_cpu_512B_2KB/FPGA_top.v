@@ -3,7 +3,7 @@ module FPGA_top (
 	input			start,
 	input		 	rst,
 	input			enb,
-	output reg 		tx_data
+	output  		tx_data
 );
 
 wire	L2_miss;
@@ -13,7 +13,7 @@ wire 	[7:0] data_o;
 wire 	done;
 reg		clk;
 reg		[3:0] clk_cnt;
-wire	tx_data;
+
 
 riscV32I u_cpu (
 	.clk(clk),
