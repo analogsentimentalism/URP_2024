@@ -46,6 +46,7 @@ counter u_counter (
 
 uart_tx u_tx (
 	.clk(clk_mem),
+	.rstn(~rst),
 	.din(data_o),
 	.tx_start(done),
 	.tx_data(tx_data)
