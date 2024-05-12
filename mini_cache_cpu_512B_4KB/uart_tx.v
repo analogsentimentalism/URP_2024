@@ -1,5 +1,6 @@
 module uart_tx(
     input clk,
+    input rstn,
     input [7:0] din,                        // ASCII code로 입력이라면: 그럼 din[4]==1, din[5]==1, din[6]==0, din[7]==0 고정?
     input tx_start,                            // counter.v의 done과 연결
     output reg tx_data
@@ -9,19 +10,17 @@ module uart_tx(
     
     reg [3:0] state;
     reg [31:0] clk_count;
-    reg	tx_start_prev	;
-    reg tx_start_prev_reg;
-
+    reg	tx_start_prev;
+    
 
     always @(posedge clk) begin     
-        tx_start_prev_reg <= tx_start;
-        tx_start_prev <= tx_start_prev_reg;
+        tx_start_prev <= tx_start;
     end
     
     ///////////////state register///////////////
 
     always @(posedge clk) begin
-        if(clk_count == 868 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
+        if(!rstn || clk_count == 868 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
             clk_count <= 0;
             case (state)
                 IDLE : if(tx_start==1) state <= START;

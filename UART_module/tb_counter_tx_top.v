@@ -59,7 +59,7 @@ u_counter_tx_top.u_counter.data_o = 0;
 repeat(10)	@(posedge clk)
 
 rstn = 0;
-repeat(10)	@(posedge clk)
+repeat(100)	@(posedge clk)
 
 
 // j==0

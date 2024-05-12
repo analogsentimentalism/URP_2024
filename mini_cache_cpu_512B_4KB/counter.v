@@ -174,7 +174,7 @@ always @(posedge clk) begin
 			cnt_L2_miss_reg		<= cnt_L2_miss;
 			j <= j + 1;
 		end
-		else if(j == JCNT) begin
+		else if(j == JCNT) begin	
 			data_o	<= cnt_L1I_miss_reg;
 			done 	<= 1;
 			j <= j + 1;
