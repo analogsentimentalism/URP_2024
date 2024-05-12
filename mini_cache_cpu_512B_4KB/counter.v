@@ -131,6 +131,9 @@ always @(posedge clk) begin
 	if(~rstn) begin
 		done <= 0;
 	end
+	else if (j==JCNT || j== 2*JCNT || j== 3*JCNT || j== 4*JCNT || j== 5*JCNT || j== 6*JCNT) begin
+		done <= 1;
+	end
 	else if(done) begin
 		if(clk_count ==867) begin
 			done <= ~done;
@@ -178,36 +181,30 @@ always @(posedge clk) begin
 		end
 		else if(j == JCNT) begin	
 			data_o	<= cnt_L1I_miss_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 2) begin
 			data_o	<= cnt_L1I_read_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 
 
 		else if(j == JCNT*3) begin
 			data_o	<= cnt_L1D_miss_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 4) begin
 			data_o	<= cnt_L1D_read_reg + cnt_L1D_write_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 
 
 		else if(j == JCNT*5) begin
 			data_o	<= cnt_L2_miss_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 6) begin
 			data_o	<= cnt_L2_read_reg + cnt_L2_write_reg;
-			done 	<= 1;
 			j <= 0;
 		end
 		else begin
