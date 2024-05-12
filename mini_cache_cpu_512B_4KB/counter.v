@@ -116,10 +116,13 @@ end
 
 //clk count 초기화 / +1
 always @(posedge clk) begin
-	if(~rstn || j == 0 || j == JCNT || j == 2*JCNT || j == 3*JCNT || j == 4*JCNT || j == 5*JCNT || j == 6*JCNT) begin
+	if(~rstn || j == 0 || j == JCNT || j == 2*JCNT || j == 3*JCNT || j == 4*JCNT || j == 5*JCNT || j == 6*JCNT || clk_count == 867) begin
 		clk_count <= 0;
 	end
-	else clk_count <= clk_count +1;
+	else if (done) begin
+	clk_count <= clk_count +1;
+	end
+	else clk_count <= clk_count;
 end
 	
 
@@ -129,10 +132,9 @@ always @(posedge clk) begin
 		done <= 0;
 	end
 	else if(done) begin
-		if(clk_count ==868) begin
+		if(clk_count ==867) begin
 			done <= ~done;
 		end
-		else clk_count <= clk_count+1;
 	end
 	else begin
 		done <= done;
