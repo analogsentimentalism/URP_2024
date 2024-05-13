@@ -29,9 +29,9 @@
 
 module xilinx_true_dual_port_no_change_2_clock_ram #(
   parameter RAM_WIDTH = 32,                       // Specify RAM data width
-  parameter RAM_DEPTH = 32'h2_0000,           // Specify RAM depth (number of entries)
+  parameter RAM_DEPTH = 32'h20_0000,           // Specify RAM depth (number of entries)
   parameter RAM_PERFORMANCE = "HIGH_PERFORMANCE", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
-  parameter INIT_FILE = "test_code.txt"                        // Specify name/location of RAM initialization file if using one (leave blank if not)
+  parameter INIT_FILE = "captcha.txt"                        // Specify name/location of RAM initialization file if using one (leave blank if not)
 ) (
   input [29:0] addra,  // Port A address bus, width determined from RAM_DEPTH
   input [29:0] addrb,  // Port B address bus, width determined from RAM_DEPTH

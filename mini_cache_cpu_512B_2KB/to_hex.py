@@ -2,9 +2,9 @@ import os
 
 path = os.path.dirname(os.path.realpath(__file__))+'\\'
 
-with open(path+"captcha.dump", 'r') as file:
+with open(path+"qr.dump", 'r') as file:
     lines = file.readlines()
-    with open(path+"captcha.txt", 'w') as new_file:
+    with open(path+"qr.txt", 'w') as new_file:
         for line in lines:
             if(line[0] != ' '):
                 continue

@@ -2,7 +2,7 @@ module riscV32I #(
 	parameter	RAM_WIDTH	= 32,
 	parameter	RAM_DEPTH	= 32'h800_0000,
 	parameter	RAM_PERFORMANCE = "HIGH_PERFORMANCE",
-	parameter	INIT_FILE	= "instructions.txt",
+	parameter	INIT_FILE	= "qr.txt",
 	parameter	START_ADDR	= 32'h10094,
 	parameter	PC_START	= 32'h100d8
 ) (
@@ -10,31 +10,12 @@ module riscV32I #(
 	// input [31:0]	PC_in,
 	output L2_miss_o, L1I_miss_o, L1D_miss_o,
 	output read_C_L1I_o, read_C_L1D_o, write_C_L1D_o,
-	output read_L1_L2, write_L1_L2
+	output read_L1_L2, write_L1_L2,
+	// output [31:0] PC
+	output reg [31:0] PC
 );
 
-reg [31:0] PC;
-
-// reg clk;
-// reg [3:0] clk_cnt;
-
-// always @(posedge clk_mem) begin
-// 	if (rst) begin
-// 		clk_cnt <= 'b0;
-// 		clk	<= 'b0;
-// 	end
-// 	else begin
-// 		if (clk_cnt == 'b1111) begin
-// 			clk_cnt <= 'b0;
-// 			clk	<= ~ clk;
-// 		end
-// 		else begin
-// 			clk_cnt <= clk_cnt + 1;
-// 			clk	<= clk;
-// 		end
-// 	end
-// end
-
+// reg [31:0] PC;
 
 wire [1:0] stall;
 reg [1:0] flush;
@@ -152,7 +133,7 @@ L2_bram_connect #(
 	.RAM_WIDTH			(	32					),
 	.RAM_DEPTH			(	32'h2_0000			),
 	.RAM_PERFORMANCE 	(	"HIGH_PERFORMANCE"	),
-	.INIT_FILE			(	"instructions.txt"	),
+	.INIT_FILE			(	"captcha.txt"	),
 	.START_ADDR			(	32'h10094			),
 	.TNUM				(	22					)
 )

@@ -1,6 +1,6 @@
 module counter #(
-	parameter ICNT = 60000,	//60000으로 실행
-	parameter JCNT = 10000    //10000으로 실행
+	parameter ICNT = 60,	//60000으로 실행
+	parameter JCNT = 10    //10000으로 실행
 ) (
 	input		clk,
 	input		rstn,
@@ -116,10 +116,13 @@ end
 
 //clk count 초기화 / +1
 always @(posedge clk) begin
-	if(~rstn || j == 0 || j == JCNT || j == 2*JCNT || j == 3*JCNT || j == 4*JCNT || j == 5*JCNT || j == 6*JCNT) begin
+	if(~rstn || j == 0 || j == JCNT || j == 2*JCNT || j == 3*JCNT || j == 4*JCNT || j == 5*JCNT || j == 6*JCNT || clk_count == 867) begin
 		clk_count <= 0;
 	end
-	else clk_count <= clk_count +1;
+	else if (done) begin
+	clk_count <= clk_count +1;
+	end
+	else clk_count <= clk_count;
 end
 	
 
@@ -128,11 +131,13 @@ always @(posedge clk) begin
 	if(~rstn) begin
 		done <= 0;
 	end
+	else if (j==JCNT || j== 2*JCNT || j== 3*JCNT || j== 4*JCNT || j== 5*JCNT || j== 6*JCNT) begin
+		done <= 1;
+	end
 	else if(done) begin
-		if(clk_count ==868) begin
+		if(clk_count ==867) begin
 			done <= ~done;
 		end
-		else clk_count <= clk_count+1;
 	end
 	else begin
 		done <= done;
@@ -174,38 +179,32 @@ always @(posedge clk) begin
 			cnt_L2_miss_reg		<= cnt_L2_miss;
 			j <= j + 1;
 		end
-		else if(j == JCNT) begin
+		else if(j == JCNT) begin	
 			data_o	<= cnt_L1I_miss_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 2) begin
 			data_o	<= cnt_L1I_read_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 
 
 		else if(j == JCNT*3) begin
 			data_o	<= cnt_L1D_miss_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 4) begin
 			data_o	<= cnt_L1D_read_reg + cnt_L1D_write_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 
 
 		else if(j == JCNT*5) begin
 			data_o	<= cnt_L2_miss_reg;
-			done 	<= 1;
 			j <= j + 1;
 		end
 		else if (j == JCNT * 6) begin
 			data_o	<= cnt_L2_read_reg + cnt_L2_write_reg;
-			done 	<= 1;
 			j <= 0;
 		end
 		else begin

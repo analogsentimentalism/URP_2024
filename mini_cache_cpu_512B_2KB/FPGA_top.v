@@ -1,21 +1,41 @@
-module FPGA_top (
+module FPGA_top #(
+	parameter	RAM_WIDTH	= 32,
+	parameter	RAM_DEPTH	= 32'h200_0000,
+	parameter	RAM_PERFORMANCE = "HIGH_PERFORMANCE",
+	parameter	INIT_FILE	= "instructions.txt",
+	parameter	START_ADDR	= 32'h10094,
+	parameter	PC_START	= 32'h100d8
+) (
 	input 			clk_mem,
+	input			clk,
 	input			start,
 	input		 	rst,
 	input			enb,
-	output reg 		tx_data
+	output reg 		tx_data,
+	output	[3:0]	test_led
 );
 
 wire	L2_miss;
 wire	L1I_miss;
 wire	L1D_miss;
+wire	read_C_L1I, read_C_L1D, write_C_L1D, read_L1_L2, write_L1_L2;
 wire 	[7:0] data_o;
 wire 	done;
-reg		clk;
-reg		[3:0] clk_cnt;
 wire	tx_data;
 
-riscV32I u_cpu (
+assign	test_led[0]	= done		;
+assign	test_led[1]	= tx_data	;
+assign	test_led[2]	= data_o[1]	;
+assign	test_led[3]	= data_o[0]	;
+
+riscV32I #(
+	.RAM_WIDTH			(	RAM_WIDTH			),
+	.RAM_DEPTH			(	RAM_DEPTH			),
+	.RAM_PERFORMANCE 	(	RAM_PERFORMANCE		),
+	.INIT_FILE			(	INIT_FILE			),
+	.START_ADDR			(	START_ADDR			),
+	.PC_START			(	PC_START			)
+) u_cpu (
 	.clk(clk),
 	.clk_mem(clk_mem),
 	.rst(rst),
@@ -51,20 +71,5 @@ uart_tx u_tx (
 	.tx_start(done),
 	.tx_data(tx_data)
 );
-
-// clock gen
-always @(posedge clk_mem) begin
-	if (~start) begin
-		clk_cnt	<= 'b0;
-		clk	<= 'b0;
-	end
-	else begin
-		clk_cnt	<= clk_cnt + 1;
-		if(clk_cnt == 'b1111) begin
-			clk	<= ~clk;
-		end
-	end
-end
-
 
 endmodule
