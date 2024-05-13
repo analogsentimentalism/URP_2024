@@ -11,7 +11,6 @@ module FPGA_top #(
 	input			start,
 	input		 	rst,
 	input			enb,
-<<<<<<< HEAD
 	output reg 		tx_data,
 	output	[3:0]	test_led
 );
@@ -22,13 +21,7 @@ wire	L1D_miss;
 wire	read_C_L1I, read_C_L1D, write_C_L1D, read_L1_L2, write_L1_L2;
 wire 	[7:0] data_o;
 wire 	done;
-<<<<<<< HEAD
 wire	tx_data;
-=======
-reg		clk;
-reg		[3:0] clk_cnt;
-
->>>>>>> 1139d8c31a76914098b53a571d9c4905e6b4350b
 
 assign	test_led[0]	= done		;
 assign	test_led[1]	= tx_data	;
