@@ -12,10 +12,13 @@ module counter #(
 	input		read_L1_L2,
 	input		write_L1_L2,
 	input		miss_L2_L1,
-	output reg	[7:0] data_o,
+    input       cpu_done,               // cpu에서 명령어 주소가 끝에 도달하거나 더 이상 수행할 명령어가 없다면 counter로 신호를 보냄
+	
+    output reg	[7:0] data_o,
 	output reg  done                    //추가 : done이 1이면 uart의 tx module의 start가 1이 됨
 );
 
+reg cpu_done_prev;
 reg [31:0] clk_count;                //done을 uart의 clk_cnt (0~867) 까지만 1, 나머지는 0
 
 reg	read_C_L1I_prev	;
@@ -26,6 +29,7 @@ reg	miss_L1D_C_prev	;
 reg	read_L1_L2_prev	;
 reg	write_L1_L2_prev;
 reg	miss_L2_L1_prev	;
+
 
 reg	[11:0] cnt_L1I_read;
 reg	[11:0] cnt_L1I_miss;
@@ -48,6 +52,10 @@ reg	[11:0] cnt_L2_miss_reg;
 
 integer j;
 
+
+ always @(posedge clk) begin     
+        cpu_done_prev <= cpu_done;
+    end
 
 
 always @(posedge clk) begin
@@ -117,24 +125,31 @@ always @(posedge clk) begin
 	end
 end
 
+
+
+
+
 //clk count 초기화 / +1
 always @(posedge clk) begin
-	if(~rstn || j == 0 || j == JCNT || j == 2*JCNT || j == 3*JCNT || j == 4*JCNT || j == 5*JCNT || j == 6*JCNT || clk_count == 867) begin
+	if(~rstn || ((cpu_done_prev ^ cpu_done) & cpu_done) || j % JCNT==0 || clk_count == 867) begin
 		clk_count <= 0;
 	end
 	else if (done) begin
-	clk_count <= clk_count +1;
+	    clk_count <= clk_count +1;
 	end
 	else clk_count <= clk_count;
 end
 	
+
+
+
 
 //done 신호 제어
 always @(posedge clk) begin             
 	if(~rstn) begin
 		done <= 0;
 	end
-	else if (j==JCNT || j== 2*JCNT || j== 3*JCNT || j== 4*JCNT || j== 5*JCNT || j== 6*JCNT) begin
+	else if (((cpu_done_prev ^ cpu_done) & cpu_done) || j % JCNT ==0) begin
 		done <= 1;
 	end
 	else if(done) begin
@@ -146,6 +161,10 @@ always @(posedge clk) begin
 		done <= done;
 	end
 end
+
+
+
+
 
 
 always @(posedge clk) begin
@@ -171,49 +190,176 @@ always @(posedge clk) begin
 		read_L1_L2_prev		<= read_L1_L2;
 		write_L1_L2_prev	<= write_L1_L2;
 		miss_L2_L1_prev		<= miss_L2_L1;
-		if (j == 'b0) begin
-			cnt_L1I_read_reg	<= cnt_L1I_read;
-			cnt_L1I_miss_reg	<= cnt_L1I_miss;
-			cnt_L1D_read_reg	<= cnt_L1D_read;
-			cnt_L1D_write_reg	<= cnt_L1D_write;
-			cnt_L1D_miss_reg	<= cnt_L1D_miss;
-			cnt_L2_read_reg		<= cnt_L2_read;
-			cnt_L2_write_reg	<= cnt_L2_write;
-			cnt_L2_miss_reg		<= cnt_L2_miss;
-			j <= j + 1;
-		end
-		else if(j == JCNT) begin	
-			data_o	<= cnt_L1I_miss_reg;
-			j <= j + 1;
-		end
-		else if (j == JCNT * 2) begin
-			data_o	<= cnt_L1I_read_reg;
-			j <= j + 1;
-		end
+
+        cnt_L1I_read_reg	<= cnt_L1I_read;
+		cnt_L1I_miss_reg	<= cnt_L1I_miss;
+		cnt_L1D_read_reg	<= cnt_L1D_read;
+		cnt_L1D_write_reg	<= cnt_L1D_write;
+		cnt_L1D_miss_reg	<= cnt_L1D_miss;
+		cnt_L2_read_reg		<= cnt_L2_read;
+		cnt_L2_write_reg	<= cnt_L2_write;
+		cnt_L2_miss_reg		<= cnt_L2_miss;
+		
+		if((cpu_done_prev ^ cpu_done) & cpu_done) begin 
+            j <= 0;
+        end
+
+        else if (cpu_done) begin
+            
+            // L1 I count
+            if (j == 0) begin
+                data_o	<= 'a';
+			    j <= j + 1;
+		    end
+            else if(j == JCNT) begin	
+                if(cnt_L1I_miss_reg[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1I_miss_reg[11:8]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1I_miss_reg[11:8]};
+                j <= j + 1;
+		    end
+		    else if(j == JCNT*2) begin	
+			    if(cnt_L1I_miss_reg[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1I_miss_reg[7:4]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1I_miss_reg[7:4]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*3) begin	
+			    if(cnt_L1I_miss_reg[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1I_miss_reg[3:0]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1I_miss_reg[3:0]};
+			    j <= j + 1;
+		    end
+            
+            else if(j == JCNT*4) begin	
+                if(cnt_L1I_read_reg[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1I_read_reg[11:8]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1I_read_reg[11:8]};
+                j <= j + 1;
+		    end
+		    else if(j == JCNT*5) begin	
+			    if(cnt_L1I_read_reg[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1I_read_reg[7:4]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1I_read_reg[7:4]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*6) begin	
+			    if(cnt_L1I_read_reg[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1I_read_reg[3:0]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1I_read_reg[3:0]};
+			    j <= j + 1;
+		    end
 
 
-		else if(j == JCNT*3) begin
-			data_o	<= cnt_L1D_miss_reg;
-			j <= j + 1;
-		end
-		else if (j == JCNT * 4) begin
-			data_o	<= cnt_L1D_read_reg + cnt_L1D_write_reg;
-			j <= j + 1;
-		end
 
 
-		else if(j == JCNT*5) begin
-			data_o	<= cnt_L2_miss_reg;
-			j <= j + 1;
-		end
-		else if (j == JCNT * 6) begin
-			data_o	<= cnt_L2_read_reg + cnt_L2_write_reg;
-			j <= 0;
-		end
-		else begin
-			j <= j + 1;
-		end
-	end
+            //L1 D count
+            else if (j == JCNT*7) begin
+                data_o	<= 'b';
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*8) begin	
+                if(cnt_L1D_miss_reg[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1D_miss_reg[11:8]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1D_miss_reg[11:8]};
+                j <= j + 1;
+		    end
+		    else if(j == JCNT*9) begin	
+			    if(cnt_L1D_miss_reg[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1D_miss_reg[7:4]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1D_miss_reg[7:4]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*10) begin	
+			    if(cnt_L1D_miss_reg[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1D_miss_reg[3:0]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L1D_miss_reg[3:0]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*11) begin	
+                if((cnt_L1D_read_reg + cnt_L1D_write_reg)[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, (cnt_L1D_read_reg + cnt_L1D_write_reg)[11:8]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, (cnt_L1D_read_reg + cnt_L1D_write_reg)[11:8]};
+                j <= j + 1;
+		    end
+		    else if(j == JCNT*12) begin	
+			    if((cnt_L1D_read_reg + cnt_L1D_write_reg)[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, (cnt_L1D_read_reg + cnt_L1D_write_reg)[7:4]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, (cnt_L1D_read_reg + cnt_L1D_write_reg)[7:4]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*13) begin	
+			    if((cnt_L1D_read_reg + cnt_L1D_write_reg)[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, (cnt_L1D_read_reg + cnt_L1D_write_reg)[3:0]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, (cnt_L1D_read_reg + cnt_L1D_write_reg)[3:0]};
+			    j <= j + 1;
+		    end
+
+
+            //L2 count
+            else if (j == JCNT*14) begin
+                data_o	<= 'c';
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*15) begin	
+			    if(cnt_L2_miss_reg[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L2_miss_reg[11:8]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L2_miss_reg[11:8]};
+			    j <= j + 1;
+		    end
+		    else if(j == JCNT*16) begin	
+			    if(cnt_L2_miss_reg[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L2_miss_reg[7:4]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L2_miss_reg[7:4]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*17) begin	
+			    if(cnt_L2_miss_reg[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L2_miss_reg[3:0]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, cnt_L2_miss_reg[3:0]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*18) begin	
+			    if((cnt_L2_read_reg + cnt_L2_write_reg)[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, (cnt_L2_read_reg + cnt_L2_write_reg)[11:8]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, (cnt_L2_read_reg + cnt_L2_write_reg)[11:8]};
+			    j <= j + 1;
+		    end
+		    else if(j == JCNT*19) begin	
+			    if((cnt_L2_read_reg + cnt_L2_write_reg)[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, (cnt_L2_read_reg + cnt_L2_write_reg)[7:4]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, (cnt_L2_read_reg + cnt_L2_write_reg)[7:4]};
+			    j <= j + 1;
+		    end
+            else if(j == JCNT*20) begin	
+			   if((cnt_L2_read_reg + cnt_L2_write_reg)[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, (cnt_L2_read_reg + cnt_L2_write_reg)[3:0]-4'b1001};
+                end
+			    else data_o	<= {4'b0011, (cnt_L2_read_reg + cnt_L2_write_reg)[3:0]};
+			    j <= j + 1;
+		    end
+
+
+		    else begin
+			    j <= j + 1;
+		    end
+	    end
 end
 
 endmodule
