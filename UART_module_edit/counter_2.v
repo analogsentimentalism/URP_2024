@@ -1,4 +1,4 @@
-module counter #(
+module counter_2 #(
 	parameter ICNT = 60000,	//60000으로 실행
 	parameter JCNT = 10000    //10000으로 실행
 ) (

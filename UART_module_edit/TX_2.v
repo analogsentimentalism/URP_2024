@@ -1,4 +1,4 @@
-module uart_tx(
+module TX_2(
     input clk,
     input rstn,
     input [7:0] din,                        // ASCII code로 입력이라면: 그럼 din[4]==1, din[5]==1, din[6]==0, din[7]==0 고정?
@@ -20,18 +20,6 @@ module uart_tx(
     end
     
 
-    /*always @(posedge clk) begin
-        if(!rstn) begin
-            data_count <= 'b0;
-        end
-        else if ((tx_start_prev ^ tx_start) & tx_start) begin
-            data_count <= data_count +1;
-        end
-        else data_count <= data_count;
-    end*/
-
-
-    ///////////////state register///////////////
 
     always @(posedge clk) begin
         if(!rstn || clk_count == 867 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기

@@ -1,6 +1,6 @@
     `timescale 1ns/1ns
 
-    module tb_counter_tx_top();
+    module tb_counter_tx_top_2();
 
     reg		clk;
     reg		rstn;
@@ -19,7 +19,7 @@
 
 
 
-    counter_tx_top u_counter_tx_top(
+    counter_tx_top_2 u_counter_tx_top(
         .clk(clk),
         .rstn(rstn),
         .read_C_L1I(read_C_L1I),
