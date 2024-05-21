@@ -9,8 +9,9 @@ module counter_tx_top(
 	input		read_L1_L2,
 	input		write_L1_L2,
 	input		miss_L2_L1,
+    input       cpu_done,
 
-  output  tx_data
+    output  tx_data
 );
 
 
@@ -29,6 +30,7 @@ counter u_counter(
     .read_L1_L2(read_L1_L2),
     .write_L1_L2(write_L1_L2),
     .miss_L2_L1(miss_L2_L1),
+    .cpu_done(cpu_done),
     .data_o(data_o),
     .done(done)
 );

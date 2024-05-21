@@ -3,6 +3,7 @@ module uart_tx(
     input rstn,
     input [7:0] din,                        // ASCII code로 입력이라면: 그럼 din[4]==1, din[5]==1, din[6]==0, din[7]==0 고정?
     input tx_start,                            // counter.v의 done과 연결
+    
     output reg tx_data
     );
     
@@ -11,7 +12,7 @@ module uart_tx(
     reg [3:0] state;
     reg [31:0] clk_count;
     reg	tx_start_prev;
-    reg [2:0] data_count;   // L1Imiss-L1request-L1Dmiss-L1Drequest-L2miss-L2request 에 따라 accessport로 내보낼 문자열을 정해주기 위해
+   
     
 
     always @(posedge clk) begin     
@@ -19,7 +20,7 @@ module uart_tx(
     end
     
 
-    always @(posedge clk) begin
+    /*always @(posedge clk) begin
         if(!rstn) begin
             data_count <= 'b0;
         end
@@ -27,13 +28,13 @@ module uart_tx(
             data_count <= data_count +1;
         end
         else data_count <= data_count;
-    end
+    end*/
 
 
     ///////////////state register///////////////
 
     always @(posedge clk) begin
-        if(!rstn || clk_count == 868 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
+        if(!rstn || clk_count == 867 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
             clk_count <= 0;
             case (state)
                 IDLE : if(tx_start==1) state <= START;
@@ -77,23 +78,5 @@ module uart_tx(
 
 
 
-    // 문자열 출력 //
-     always @(posedge clk) begin
-        if(data_count==1) begin
-            case (state)
-            IDLE  : tx_data <= 1; 
-            START : tx_data <= 0;       // start bit(1'b0)
-            ST2   : tx_data <= 'L';
-            ST3   : tx_data <= '1';
-            ST4   : tx_data <= ;
-            ST5   : tx_data <= din[3];
-            ST6   : tx_data <= din[4];
-            ST7   : tx_data <= din[5];
-            ST8   : tx_data <= din[6];
-            ST9   : tx_data <= din[7];
-            STOP  : tx_data <= 1;      // stop bit(1'b1)
-            default: tx_data <= 1; 
-        endcase
-    end
 
 endmodule
