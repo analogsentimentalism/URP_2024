@@ -58,32 +58,36 @@
     write_L1_L2 = 0;
     miss_L2_L1 = 0;
     u_counter_tx_top.u_counter.data_o = 0;
-
     repeat(100)	@(posedge clk)
+
 
     rstn = 0;
     repeat(100)	@(posedge clk)
 
 
     // j==0
+    
     rstn = 1;
-
     read_C_L1I = 1;
     repeat(10)	@(posedge clk)
+
 
     read_C_L1I = 0;
     read_C_L1D = 1;
     miss_L1D_C = 1;
     repeat(10)	@(posedge clk)
 
+
     read_C_L1D = 0;
     miss_L1D_C = 0;
     repeat(10)	@(posedge clk)
+
 
     write_C_L1D = 1;
     miss_L1D_C = 1;
     write_L1_L2 = 1;
     repeat(10)	@(posedge clk)
+
 
     write_C_L1D = 0;
     miss_L1D_C = 0;
@@ -94,6 +98,7 @@
     read_L1_L2 = 1;
     repeat(10)	@(posedge clk)
 
+
     read_C_L1D = 0;
     miss_L1D_C = 0;
     read_L1_L2 = 0;
@@ -102,13 +107,16 @@
     miss_L1I_C = 1;
     repeat(10)	@(posedge clk)
 
+
     read_C_L1I = 0;
     miss_L1I_C = 0;
     repeat(10)	@(posedge clk)
 
+
     read_C_L1I = 1;
     miss_L1I_C = 1;
     repeat(10)	@(posedge clk)
+
 
     read_C_L1I = 0;
     miss_L1I_C = 0;
@@ -118,12 +126,14 @@
     write_L1_L2 = 1;
     repeat(10)	@(posedge clk)
 
+
     write_C_L1D = 0;
     miss_L1D_C = 0;
     write_L1_L2 = 0;
 
     read_C_L1I = 1;
     repeat(10)	@(posedge clk)
+
 
     read_C_L1I = 0;
 
@@ -132,14 +142,14 @@
     read_L1_L2 = 1;
     repeat(10)	@(posedge clk)
 
+
     read_C_L1D = 0;
     miss_L1D_C = 0;
     read_L1_L2 = 0;
-
     repeat(10)	@(posedge clk)
+
 
     cpu_done = 1;
-
     repeat(25000) @(posedge clk);
 
     $stop;
