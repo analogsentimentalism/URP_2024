@@ -20,11 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module instruction_bram(
+module bram_instruction(
         input [31:0] addra,
         input en,
         input clk,
-        output [31:0]dout
+        output [31:0] dout
     );
    rom #(
     .RAM_WIDTH(32),                       // Specify RAM data width
@@ -36,4 +36,5 @@ module instruction_bram(
     .en(en),       // Port A RAM Enable, for additional power savings, disable port when not in use
     .dout(dout)   // Port A RAM output data, width determined from RAM_WIDTH
   );
+
 endmodule
