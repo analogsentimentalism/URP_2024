@@ -1,4 +1,4 @@
-module counter_tx_top(
+module counter_tx_top_2(
     input		clk,
 	input		rstn,
 	input		read_C_L1I,
@@ -19,7 +19,7 @@ wire [7:0]      data_o;
 wire            done;
 
 
-counter u_counter(
+counter_2 u_counter(
     .clk(clk),
     .rstn(rstn),
     .read_C_L1I(read_C_L1I),
@@ -36,7 +36,7 @@ counter u_counter(
 );
 
 
-uart_tx u_tx(
+TX_2 u_tx(
     .clk(clk),
     .rstn(rstn),
     .din(data_o),

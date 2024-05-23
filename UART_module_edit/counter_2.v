@@ -1,4 +1,4 @@
-module counter #(
+module counter_2 #(
 	parameter ICNT = 60000,	//60000으로 실행
 	parameter JCNT = 10000    //10000으로 실행
 ) (
@@ -49,6 +49,11 @@ reg	[11:0] cnt_L2_read_reg;
 reg	[11:0] cnt_L2_write_reg;
 reg	[11:0] cnt_L2_miss_reg;
 
+reg [11:0] cnt_L1D_reg;
+reg [11:0] cnt_L2_reg;
+
+assign cnt_L1D_reg = (cnt_L1D_read_reg + cnt_L1D_write_reg);
+assign cnt_L2_reg = (cnt_L2_read_reg + cnt_L2_write_reg);
 
 integer j;
 
@@ -149,7 +154,7 @@ always @(posedge clk) begin
 	if(~rstn) begin
 		done <= 0;
 	end
-	else if (((cpu_done_prev ^ cpu_done) & cpu_done) || j % JCNT ==0) begin
+	else if (((cpu_done_prev ^ cpu_done) & cpu_done) || ((j % JCNT ==0) && (j>0))) begin
 		done <= 1;
 	end
 	else if(done) begin
@@ -208,7 +213,7 @@ always @(posedge clk) begin
             
             // L1 I count
             if (j == 0) begin
-                data_o	<= 'a';
+                data_o	<= 8'b0110_0001; //a 출력
 			    j <= j + 1;
 		    end
             else if(j == JCNT) begin	
@@ -260,7 +265,7 @@ always @(posedge clk) begin
 
             //L1 D count
             else if (j == JCNT*7) begin
-                data_o	<= 'b';
+                data_o	<= 8'b0110_0010;  //b 출력
 			    j <= j + 1;
 		    end
             else if(j == JCNT*8) begin	
@@ -285,31 +290,31 @@ always @(posedge clk) begin
 			    j <= j + 1;
 		    end
             else if(j == JCNT*11) begin	
-                if((cnt_L1D_read_reg + cnt_L1D_write_reg)[11:8] > 4'b1001) begin
-			        data_o	<= {4'b0100, (cnt_L1D_read_reg + cnt_L1D_write_reg)[11:8]-4'b1001};
+                if(cnt_L1D_reg[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1D_reg[11:8]-4'b1001};
                 end
-			    else data_o	<= {4'b0011, (cnt_L1D_read_reg + cnt_L1D_write_reg)[11:8]};
+			    else data_o	<= {4'b0011, cnt_L1D_reg[11:8]};
                 j <= j + 1;
 		    end
 		    else if(j == JCNT*12) begin	
-			    if((cnt_L1D_read_reg + cnt_L1D_write_reg)[7:4] > 4'b1001) begin
-			        data_o	<= {4'b0100, (cnt_L1D_read_reg + cnt_L1D_write_reg)[7:4]-4'b1001};
+			    if(cnt_L1D_reg[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1D_reg[7:4]-4'b1001};
                 end
-			    else data_o	<= {4'b0011, (cnt_L1D_read_reg + cnt_L1D_write_reg)[7:4]};
+			    else data_o	<= {4'b0011, cnt_L1D_reg[7:4]};
 			    j <= j + 1;
 		    end
             else if(j == JCNT*13) begin	
-			    if((cnt_L1D_read_reg + cnt_L1D_write_reg)[3:0] > 4'b1001) begin
-			        data_o	<= {4'b0100, (cnt_L1D_read_reg + cnt_L1D_write_reg)[3:0]-4'b1001};
+			    if(cnt_L1D_reg[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L1D_reg[3:0]-4'b1001};
                 end
-			    else data_o	<= {4'b0011, (cnt_L1D_read_reg + cnt_L1D_write_reg)[3:0]};
+			    else data_o	<= {4'b0011, cnt_L1D_reg[3:0]};
 			    j <= j + 1;
 		    end
 
 
             //L2 count
             else if (j == JCNT*14) begin
-                data_o	<= 'c';
+                data_o	<= 8'b0110_0011;  //c 출력
 			    j <= j + 1;
 		    end
             else if(j == JCNT*15) begin	
@@ -334,24 +339,24 @@ always @(posedge clk) begin
 			    j <= j + 1;
 		    end
             else if(j == JCNT*18) begin	
-			    if((cnt_L2_read_reg + cnt_L2_write_reg)[11:8] > 4'b1001) begin
-			        data_o	<= {4'b0100, (cnt_L2_read_reg + cnt_L2_write_reg)[11:8]-4'b1001};
+			    if(cnt_L2_reg[11:8] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L2_reg[11:8]-4'b1001};
                 end
-			    else data_o	<= {4'b0011, (cnt_L2_read_reg + cnt_L2_write_reg)[11:8]};
+			    else data_o	<= {4'b0011, cnt_L2_reg[11:8]};
 			    j <= j + 1;
 		    end
 		    else if(j == JCNT*19) begin	
-			    if((cnt_L2_read_reg + cnt_L2_write_reg)[7:4] > 4'b1001) begin
-			        data_o	<= {4'b0100, (cnt_L2_read_reg + cnt_L2_write_reg)[7:4]-4'b1001};
+			    if(cnt_L2_reg[7:4] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L2_reg[7:4]-4'b1001};
                 end
-			    else data_o	<= {4'b0011, (cnt_L2_read_reg + cnt_L2_write_reg)[7:4]};
+			    else data_o	<= {4'b0011, cnt_L2_reg[7:4]};
 			    j <= j + 1;
 		    end
             else if(j == JCNT*20) begin	
-			   if((cnt_L2_read_reg + cnt_L2_write_reg)[3:0] > 4'b1001) begin
-			        data_o	<= {4'b0100, (cnt_L2_read_reg + cnt_L2_write_reg)[3:0]-4'b1001};
+			   if(cnt_L2_reg[3:0] > 4'b1001) begin
+			        data_o	<= {4'b0100, cnt_L2_reg[3:0]-4'b1001};
                 end
-			    else data_o	<= {4'b0011, (cnt_L2_read_reg + cnt_L2_write_reg)[3:0]};
+			    else data_o	<= {4'b0011, cnt_L2_reg[3:0]};
 			    j <= j + 1;
 		    end
 
@@ -360,6 +365,7 @@ always @(posedge clk) begin
 			    j <= j + 1;
 		    end
 	    end
+	end
 end
 
 endmodule
