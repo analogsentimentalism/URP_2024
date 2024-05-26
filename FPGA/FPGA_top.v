@@ -1,6 +1,6 @@
 module FPGA_top #(
 	parameter	RAM_WIDTH	= 32,
-	parameter	RAM_DEPTH	= 32'h1_0000,
+	parameter	RAM_DEPTH	= 32'h40_0000,
 	parameter	RAM_PERFORMANCE = "LOW_LATENCY",
 	parameter	INIT_FILE	= "test.txt",
 	parameter	START_ADDR	= 32'h10094,

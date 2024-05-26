@@ -76,12 +76,6 @@ assign WB_Half = WordSizeSel[2] ? {16'b0, WB[15:0]} : {{16{WB[15]}}, WB[15:0]};
 assign WB_Byte = WordSizeSel[2] ? {24'b0, WB[7:0]}  : {{24{WB[7]}},  WB[7:0]};
 assign WB_cut = (WordSizeSel[1:0] == 2'b0) ? WB_Byte : ((WordSizeSel[1:0] == 2'b1) ? WB_Half : WB);
 
-// inst_mem IMEM(.inst(instruction),
-//     .inst_data(inst_data),
-//     .PC(PC[8 -: 7]), .inst_addr(inst_addr),
-//     .clk(clk), .rst(rst), .inst_wen(inst_wen)
-// );
-
 register_file REGFILE(
     .RD1(DataA), .RD2(DataB),   
     .RR1(instruction[19:15]), .RR2(instruction[24:20]), .WR(instruction[11:7]),
@@ -100,12 +94,6 @@ ImmGen IMMGEN(
     .inst_Imm(instruction[31:7]),
     .ImmSel(ImmSel)
 );
-
-// data_mem DATAMEM(
-//     .ReadData(DMEM),
-//     .ADDR(ALU_o), .WriteData(DataB),
-//     .clk(clk), .rst(rst), .MemWrite(MemRW)
-// );
 
 top #(
 	.TNUM			(	TNUM			),
@@ -176,22 +164,6 @@ u_bram (
 	.write_data_L2_MEM	(	write_data_L2_MEM	)
 );
 
-// mem u_mem (
-// 	.clk				(	clk_mem				),
-// 	.rstn				(	~rst				),
-// 	.read_L2_MEM		(	read_L2_MEM			),
-// 	.write_L2_MEM		(	write_L2_MEM		),
-// 	.ready_MEM_L2		(	ready_MEM_L2		),
-// 	.read_data_MEM_L2	(	read_data_MEM_L2	),
-// 	.index_L2_MEM		(	index_L2_MEM		),
-// 	.tag_L2_MEM			(	tag_L2_MEM			),
-// 	.opcode				(	instruction[6:2]	),
-// 	.read_C_L1I			(	read_C_L1I			),
-// 	.read_C_L1D			(	read_C_L1D			),
-// 	.write_C_L1D		(	write_C_L1D			)
-// );
-
-
 control CTRL(
     .PCsel(PCsel), .RegWEn(RegWEn), .BrUn(BrUn),
     .ImmSel(ImmSel), .WordSizeSel(WordSizeSel),
@@ -218,10 +190,10 @@ reg	[31:0] inst_Prev;
 
 always @ (posedge clk) begin
     if (rst) begin
-		flush <= 'b0;
+		flush <= 1'b0;
         // PC <= 'b0;
         PC <= PC_START;
-		enb_reg <= 'b0;
+		enb_reg <= 1'b0;
     end
 	// else if (~enb) begin
 	// 	PC	<= PC_in	;

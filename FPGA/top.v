@@ -44,10 +44,6 @@ module top #(
 	output write_L1_L2
 );
 
-wire [TNUM-1:0] tag_C_L1;
-wire [INUM-1:0] index_C_L1;
-wire [5:0] offset;
-
 wire [BIT_WIDTH_low-1:0] read_data_L2_L1;
 wire [BIT_WIDTH_low-1:0] write_data_L1_L2;
 wire read_L1D_L2, read_L1I_L2;
@@ -57,6 +53,20 @@ wire [TNUM2-1:0] tag_L1D_L2, write_tag_L1D_L2, tag_L1I_L2;
 wire [TNUM2-1:0] tag_L1_L2;
 wire [INUM2-1:0] index_L1D_L2, index_L1I_L2, write_index_L1D_L2;
 wire [INUM2-1:0] index_L1_L2;
+
+wire [TNUM-1:0] tag_C_L1D;
+wire [INUM-1:0] index_C_L1D;
+wire [5:0] offset_C_L1D;
+wire [TNUM-1:0] tag_C_L1I;
+wire [INUM-1:0] index_C_L1I;
+wire [5:0] offset_C_L1I;
+
+assign tag_C_L1D = address_L1D[31-:TNUM];
+assign index_C_L1D = address_L1D[6+:INUM];
+assign offset_C_L1D = address_L1D[5:0];
+assign tag_C_L1I = address_L1I[31-:TNUM];
+assign index_C_L1I = address_L1I[6+:INUM];
+assign offset_C_L1I = address_L1I[5:0];
 
 L1_D_top #(
 	.TNUM			(	TNUM			),
@@ -70,9 +80,9 @@ L1_D_top #(
 ) u_L1_D_top (
     .clk(clk),
     .nrst(nrst),
-    .tag_C_L1(address_L1D[31-:TNUM]),
-    .index_C_L1(address_L1D[6+:INUM]),
-    .offset(address_L1D[5:0]),
+    .tag_C_L1(tag_C_L1D),
+    .index_C_L1(index_C_L1D),
+    .offset(offset_C_L1D),
     .write_C_L1(write_C_L1D),
     .flush(flush_L1D),
     .stall(stall_L1D),
@@ -103,9 +113,9 @@ L1_I_top #(
 ) u_L1_I_top(
     .clk(clk),
     .nrst(nrst),
-    .tag_C_L1(address_L1I[31-:TNUM]),
-    .index_C_L1(address_L1I[6+:INUM]),
-    .offset(address_L1I[5:0]),
+    .tag_C_L1(tag_C_L1I),
+    .index_C_L1(index_C_L1I),
+    .offset(offset_C_L1I),
     .flush(flush_L1I),
     .stall(stall_L1I),
     .read_data_L1_C(read_data_L1I_C),

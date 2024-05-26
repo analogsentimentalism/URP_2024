@@ -43,22 +43,22 @@ xilinx_true_dual_port_no_change_2_clock_ram #(
     .RAM_PERFORMANCE(RAM_PERFORMANCE), // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
     .INIT_FILE(INIT_FILE)                        // Specify name/location of RAM initialization file if using one (leave blank if not)
 ) u_2port_bram (
-    .addra({addra + (cnt >= START_ADDR[5:2]), rear}),   // Port A address bus, width determined from RAM_DEPTH
-    .addrb('b0),   // Port B address bus, width determined from RAM_DEPTH
+    .addra({addra[0+:18] + (cnt >= START_ADDR[5:2]), rear}),   // Port A address bus, width determined from RAM_DEPTH
+    .addrb(),   // Port B address bus, width determined from RAM_DEPTH
     .dina(dina),     // Port A RAM input data, width determined from RAM_WIDTH
-    .dinb('b0),     // Port B RAM input data, width determined from RAM_WIDTH
+    .dinb(),     // Port B RAM input data, width determined from RAM_WIDTH
     .clka(clk),     // Port A clock
-    .clkb('b0),     // Port B clock
+    .clkb(1'b0),     // Port B clock
     .wea(write_L2_MEM),       // Port A write enable
-    .web('b0),       // Port B write enable
-    .ena('b1),       // Port A RAM Enable, for additional power savings, disable port when not in use
-    .enb('b0),       // Port B RAM Enable, for additional power savings, disable port when not in use
+    .web(1'b0),       // Port B write enable
+    .ena(1'b1),       // Port A RAM Enable, for additional power savings, disable port when not in use
+    .enb(1'b0),       // Port B RAM Enable, for additional power savings, disable port when not in use
     .rsta(~rstn),     // Port A output reset (does not affect memory contents)
-    .rstb('b0),     // Port B output reset (does not affect memory contents)
-    .regcea('b1), // Port A output register enable
-    .regceb('b0), // Port B output register enable
+    .rstb(1'b0),     // Port B output reset (does not affect memory contents)
+    .regcea(1'b1), // Port A output register enable
+    .regceb(1'b0), // Port B output register enable
     .douta(douta),   // Port A RAM output data, width determined from RAM_WIDTH
-    .doutb(doutb)    // Port B RAM output data, width determined from RAM_WIDTH
+    .doutb()    // Port B RAM output data, width determined from RAM_WIDTH
 );
 
 reg	[1:0]	state;

@@ -14,7 +14,7 @@
         if (rst) begin
             Register_file[0]  <= 32'b0; // $zero
             Register_file[1]  <= 32'b0; // $ra
-            Register_file[2]  <= 32'b0; // $sp
+            Register_file[2]  <= 32'h10094+32'hFFC; // $sp
             Register_file[3]  <= 32'b0; // $gp
             Register_file[4]  <= 32'b0; // $tp
             Register_file[5]  <= 32'b0; // $t0

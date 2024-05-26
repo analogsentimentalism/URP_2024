@@ -28,7 +28,7 @@ parameter   S_ALLOCATE      =   2'b11;
 
 // define TAG_ARR
 reg [TNUM-1:0] TAG_ARR [DEPTH-1:0];       //캐시 ?��?��마다
-reg [clogb2(DEPTH-1)-1:0] valid;
+reg [DEPTH-1:0] valid;
 
 
 reg [1:0] state, next_state;
