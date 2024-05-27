@@ -1,4 +1,4 @@
-`timescale 1us / 10ps
+`timescale 1ns / 10ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -21,7 +21,7 @@
 
 
 module bram_instruction(
-        input [31:0] addra,
+        input [26:0] addra,
         input en,
         input clk,
         output [31:0] dout
