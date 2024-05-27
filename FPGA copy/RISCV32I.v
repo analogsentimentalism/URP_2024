@@ -143,17 +143,9 @@ top #(
 	.write_L1_L2		(	write_L1_L2			)
 );
 
-L2_bram_connect #(
-	.RAM_WIDTH			(	RAM_WIDTH			),
-	.RAM_DEPTH			(	RAM_DEPTH			),
-	.RAM_PERFORMANCE 	(	RAM_PERFORMANCE		),
-	.INIT_FILE			(	INIT_FILE			),
-	.START_ADDR			(	START_ADDR			),
-	.TNUM				(	TNUM2				)
-)
-u_bram (
-	.clk				(	clk_mem				),
-	.rstn				(	~rst				),
+mig_example_top u_dram (
+	.CLK100MHZ				(	clk_mem				),
+	.CPU_RESETN				(	~rst				),
 	.read_L2_MEM		(	read_L2_MEM			),
 	.write_L2_MEM		(	write_L2_MEM		),
 	.ready_MEM_L2		(	ready_MEM_L2		),
@@ -161,7 +153,21 @@ u_bram (
 	.tag_L2_MEM			(	tag_L2_MEM			),
 	.index_L2_MEM		(	index_L2_MEM		),
 	.write_tag_L2_MEM	(	write_tag_L2_MEM	),
-	.write_data_L2_MEM	(	write_data_L2_MEM	)
+	.write_data_L2_MEM	(	write_data_L2_MEM	),
+	.ddr2_dq(),
+	.ddr2_dqs_n(),
+	.ddr2_dqs_p(),
+	.ddr2_addr(),
+	.ddr2_ba(),
+	.ddr2_ras_n(),
+	.ddr2_cas_n(),
+	.ddr2_we_n(),
+	.ddr2_ck_p(),
+	.ddr2_ck_n(),
+	.ddr2_cke(),
+	.ddr2_cs_n(),
+	ddr2_dm(),.
+	ddr2_odt()
 );
 
 control CTRL(
