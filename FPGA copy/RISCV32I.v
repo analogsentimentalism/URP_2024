@@ -143,6 +143,28 @@ top #(
 	.write_L1_L2		(	write_L1_L2			)
 );
 
+L2_bram_connect #(
+	.RAM_WIDTH			(	RAM_WIDTH			),
+	.RAM_DEPTH			(	RAM_DEPTH			),
+	.RAM_PERFORMANCE 	(	RAM_PERFORMANCE		),
+	.INIT_FILE			(	INIT_FILE			),
+	.START_ADDR			(	START_ADDR			),
+	.TNUM				(	TNUM2				)
+)
+u_bram (
+	.clk				(	clk_mem				),
+	.rstn				(	~rst				),
+	.read_L2_MEM		(	read_L2_MEM			),
+	.write_L2_MEM		(	write_L2_MEM		),
+	.ready_MEM_L2		(	ready_MEM_L2		),
+	.read_data_MEM_L2	(	read_data_MEM_L2	),
+	.tag_L2_MEM			(	tag_L2_MEM			),
+	.index_L2_MEM		(	index_L2_MEM		),
+	.write_tag_L2_MEM	(	write_tag_L2_MEM	),
+	.write_data_L2_MEM	(	write_data_L2_MEM	)
+);
+
+
 mig_example_top u_dram (
 	.CLK100MHZ				(	clk_mem				),
 	.CPU_RESETN				(	~rst				),
