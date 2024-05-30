@@ -17,6 +17,7 @@ module L1_I_controller #(
     output [INUM2-1:0] index_L1_L2,
     output [TNUM2-1:0] tag_L1_L2,
     output [clogb2(WAY-1)-1:0]	way,
+    output ready_L1_C,
     output L1I_miss_o
 );
 
@@ -52,6 +53,8 @@ assign tag_L1_L2 = tag_C_L1[TNUM-1-:TNUM2];
 assign way = way_reg;
 assign index_L1_L2 = {tag_C_L1[TNUM-TNUM2-1:0], index_C_L1};
 assign L1I_miss_o = miss;
+
+assign ready_L1_C = hit;
 // FSM
 always@(posedge clk or negedge nrst)
 begin

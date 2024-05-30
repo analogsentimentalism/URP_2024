@@ -30,6 +30,7 @@ module L1_D_top #(
     output [TNUM2-1:0] write_tag_L1_L2,
     output [INUM2-1:0] index_L1_L2,
     output [INUM2-1:0] write_index_L1_L2,
+    output ready_L1_C,
     output L1D_miss_o
 );
 
@@ -63,7 +64,8 @@ L1_D_controller #(
     .tag_L1_L2(tag_L1_L2),
     .way(way),
 	.flush(flush),
-    .L1D_miss_o(L1D_miss_o)
+    .L1D_miss_o(L1D_miss_o),
+    .ready_L1_C(ready_L1_C)
 );
 
 L1_D_bram #(

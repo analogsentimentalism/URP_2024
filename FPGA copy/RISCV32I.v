@@ -66,6 +66,8 @@ wire [31:0] ALU_o, ALU_A, ALU_B;
 
 wire [31:0] PC_Next;
 wire [31:0] PCp4 = PC + 'd4;
+
+wire ready_L1D_C, ready_L1I_C;
 assign PC_Next = PCsel ? ALU_o : PCp4;
 
 assign ALU_A = ASel ? PC : DataA;
@@ -140,7 +142,9 @@ top #(
 	.L1D_miss_o			(	L1D_miss_o			),
 
 	.read_L1_L2			(	read_L1_L2			),
-	.write_L1_L2		(	write_L1_L2			)
+	.write_L1_L2		(	write_L1_L2			),
+	.ready_L1D_C		(	ready_L1D_C			),
+	.ready_L1I_C		(	ready_L1I_C			)
 );
 
 L2_bram_connect #(

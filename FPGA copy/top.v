@@ -41,7 +41,8 @@ module top #(
     output [BIT_WIDTH_low-1:0] write_data_L2_MEM,
     output L2_miss_o, L1I_miss_o, L1D_miss_o,
 	output read_L1_L2,
-	output write_L1_L2
+	output write_L1_L2,
+    output ready_L1D_C, ready_L1I_C;
 );
 
 wire [BIT_WIDTH_low-1:0] read_data_L2_L1;
@@ -60,6 +61,7 @@ wire [5:0] offset_C_L1D;
 wire [TNUM-1:0] tag_C_L1I;
 wire [INUM-1:0] index_C_L1I;
 wire [5:0] offset_C_L1I;
+
 
 assign tag_C_L1D = address_L1D[31-:TNUM];
 assign index_C_L1D = address_L1D[6+:INUM];
@@ -98,7 +100,8 @@ L1_D_top #(
     .write_tag_L1_L2(write_tag_L1D_L2),
     .index_L1_L2(index_L1D_L2),
     .write_index_L1_L2(write_index_L1D_L2),
-    .L1D_miss_o(L1D_miss_o)
+    .L1D_miss_o(L1D_miss_o),
+    .ready_L1_C(ready_L1D_C)
 );
 
 L1_I_top #(
@@ -125,7 +128,8 @@ L1_I_top #(
     .read_C_L1(read_C_L1I),
     .tag_L1_L2(tag_L1I_L2),
     .index_L1_L2(index_L1I_L2),
-    .L1I_miss_o(L1I_miss_o)
+    .L1I_miss_o(L1I_miss_o),
+    .ready_L1_C(ready_L1I_C)
 );
 
 L1_L2_connect #(
