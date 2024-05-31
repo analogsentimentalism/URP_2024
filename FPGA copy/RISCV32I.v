@@ -68,6 +68,13 @@ wire [31:0] PC_Next;
 wire [31:0] PCp4 = PC + 'd4;
 
 wire ready_L1D_C, ready_L1I_C;
+wire read_L2_MEM_bram, read_L2_MEM_dram, write_L2_MEM_bram ,write_L2_MEM_dram; 
+
+assign read_L2_MEM_bram = (tag_L2_MEM < 8'd1000) ? read_L2_MEM : 'h0;
+assign read_L2_MEM_dram = (tag_L2_MEM >= 8'd1000) ? read_L2_MEM : 'h0;
+assign write_L2_MEM_bram = (write_tag_L2_MEM < 8'd1000) ? write_L2_MEM : 'h0;
+assign write_L2_MEM_dram = (write_tag_L2_MEM >= 8'd1000) ? write_L2_MEM : 'h0;
+
 assign PC_Next = PCsel ? ALU_o : PCp4;
 
 assign ALU_A = ASel ? PC : DataA;
@@ -147,6 +154,7 @@ top #(
 	.ready_L1I_C		(	ready_L1I_C			)
 );
 
+
 L2_bram_connect #(
 	.RAM_WIDTH			(	RAM_WIDTH			),
 	.RAM_DEPTH			(	RAM_DEPTH			),
@@ -158,8 +166,8 @@ L2_bram_connect #(
 u_bram (
 	.clk				(	clk_mem				),
 	.rstn				(	~rst				),
-	.read_L2_MEM		(	read_L2_MEM			),
-	.write_L2_MEM		(	write_L2_MEM		),
+	.read_L2_MEM		(	read_L2_MEM_bram			),
+	.write_L2_MEM		(	write_L2_MEM_bram		),
 	.ready_MEM_L2		(	ready_MEM_L2		),
 	.read_data_MEM_L2	(	read_data_MEM_L2	),
 	.tag_L2_MEM			(	tag_L2_MEM			),
@@ -172,8 +180,8 @@ u_bram (
 mig_example_top u_dram (
 	.CLK100MHZ				(	clk_mem				),
 	.CPU_RESETN				(	~rst				),
-	.read_L2_MEM		(	read_L2_MEM			),
-	.write_L2_MEM		(	write_L2_MEM		),
+	.read_L2_MEM		(	read_L2_MEM_dram			),
+	.write_L2_MEM		(	write_L2_MEM_dram		),
 	.ready_MEM_L2		(	ready_MEM_L2		),
 	.read_data_MEM_L2	(	read_data_MEM_L2	),
 	.tag_L2_MEM			(	tag_L2_MEM			),
