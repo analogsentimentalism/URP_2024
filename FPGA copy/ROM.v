@@ -27,7 +27,8 @@ endgenerate
 
 always @(posedge clk) begin
 	if (en) begin
-		temp	<= ROM[addra];
+		if(addra>=RAM_DEPTH) temp	<= {RAM_WIDTH{1'b0}};
+		else temp	<= ROM[addra];
 	end
 end
 

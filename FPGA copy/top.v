@@ -42,7 +42,8 @@ module top #(
     output L2_miss_o, L1I_miss_o, L1D_miss_o,
 	output read_L1_L2,
 	output write_L1_L2,
-    output ready_L1D_C, ready_L1I_C;
+    output ready_L1D_C, ready_L1I_C,
+	output write_response
 );
 
 wire [BIT_WIDTH_low-1:0] read_data_L2_L1;
@@ -101,7 +102,8 @@ L1_D_top #(
     .index_L1_L2(index_L1D_L2),
     .write_index_L1_L2(write_index_L1D_L2),
     .L1D_miss_o(L1D_miss_o),
-    .ready_L1_C(ready_L1D_C)
+    .ready_L1_C(ready_L1D_C),
+	.write_done_L1_C(write_response)
 );
 
 L1_I_top #(
