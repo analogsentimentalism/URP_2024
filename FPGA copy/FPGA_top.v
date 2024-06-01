@@ -89,6 +89,11 @@ rvsteel_core #(
 
 assign read_C_L1I		= read_request & (rw_address <= END_INST);
 assign read_C_L1D		= read_request & (rw_address > END_INST);
+assign read_response	= ((rw_address <= END_INST) & ready_L1I_C) | 
+						  ((rw_address > END_INST) & ready_L1D_C);
+
+assign read_data		= ((rw_address <= END_INST) & read_data_L1I_C) | 
+						  ((rw_address > END_INST) & read_data_L1D_C);
 
 assign write_data_C_L1	= write_strobe == 4'b0001 ? read_data_L1D_C & ~32'h000F | write_data :
 						  (write_strobe == 4'b0010 ? read_data_L1D_C & ~32'h00F0 | write_data :
@@ -140,7 +145,7 @@ top u_top (
 
 instruction_rom #(
 	.RAM_WIDTH			(	32							),
-	.RAM_DEPTH			(	(END_INST-START_ADDR)/32	),
+	.RAM_DEPTH			(	(END_INST-START_ADDR)/4+1	),
 	.INIT_FILE			(	"test.txt"					),
 	.START_ADDR			(	START_ADDR					),
 	.TNUM				(	18							),

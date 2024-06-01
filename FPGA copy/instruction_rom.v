@@ -37,7 +37,7 @@ rom #(
 	.INIT_FILE		(	INIT_FILE	)
 ) u_rom (
 	.clk			(	clk												),
-	.addra			(	{addra[0+:4] + (cnt >= START_ADDR[5:2]), rear}	),
+	.addra			(	{addra[0+:7] + (cnt >= START_ADDR[5:2]), rear}	),
 	.en				(	1'b1											),
 	.dout			(	douta											)
 );
