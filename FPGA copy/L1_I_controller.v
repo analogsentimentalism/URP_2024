@@ -35,7 +35,7 @@ reg [DEPTH-1:0] valid;
 reg [1:0] state, next_state;
 
 reg miss;
-reg hit;
+reg hit, hit_n;
 reg read_C_L1_reg;
 reg refill_reg;                      //controller asserts refill, and the data array accepts the memory data
 reg read_L1_L2_reg;
@@ -55,6 +55,16 @@ assign index_L1_L2 = {tag_C_L1[TNUM-TNUM2-1:0], index_C_L1};
 assign L1I_miss_o = miss;
 
 assign ready_L1_C = hit;
+
+always@(posedge clk) begin
+	if(~nrst) begin
+		hit_n	<= 1'b0;
+	end
+	else begin
+		hit_n	<= hit;
+	end
+end
+
 // FSM
 always@(posedge clk or negedge nrst)
 begin

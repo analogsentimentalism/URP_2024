@@ -28,8 +28,10 @@ module L1_I_bram #(
 );
 
 wire	[RAM_WIDTH-1:0]		read_data_temp;
+reg							refill_n;
 
-assign	read_data_L1_C		= read_data_temp[{offset[5:2],5'b00000} +: BIT_WIDTH_high];
+assign	read_data_L1_C		= refill_n ? read_data_L2_L1[{offset[5:2],5'b00000} +: BIT_WIDTH_high] :
+								read_data_temp[{offset[5:2],5'b00000} +: BIT_WIDTH_high];
 
 xilinx_true_dual_port_no_change_2_clock_ram #(
     .RAM_WIDTH(RAM_WIDTH),                       // Specify RAM data width
@@ -54,6 +56,15 @@ xilinx_true_dual_port_no_change_2_clock_ram #(
     .douta(read_data_temp),   // Port A RAM output data, width determined from RAM_WIDTH
     .doutb()    // Port B RAM output data, width determined from RAM_WIDTH
 );
+
+always @(posedge clk) begin
+	if(~nrst) begin
+		refill_n	<= 1'b0;
+	end
+	else begin
+		refill_n	<= refill;
+	end
+end
 
 function integer clogb2;
 input integer depth;

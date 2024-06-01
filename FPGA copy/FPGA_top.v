@@ -41,6 +41,9 @@ wire	[7:0]	index_L2_MEM;
 wire	[17:0]	tag_L2_MEM;
 wire	[17:0]	write_tag_L2_MEM;
 
+reg		[31:0]	rw_address_n;
+reg				read_C_L1I_n;
+
 wire			read_L1_L2;
 wire			write_L1_L2;
 wire			L2_miss;
@@ -104,15 +107,26 @@ assign write_data_C_L1	= write_strobe == 4'b0001 ? read_data_L1D_C & ~32'h000F |
 						  (write_strobe == 4'b1111 ? write_data : 32'b0
 						  ))))));
 
+always @(posedge clk) begin
+	if (rst) begin
+		rw_address_n	<= 32'b0;
+		read_C_L1I_n	<= 1'b0;
+	end
+	else begin
+		rw_address_n	<= rw_address;
+		read_C_L1I_n	<= read_C_L1I;
+	end
+end
+
 top u_top (
-	.clk				(	clk_mem				),
+	.clk				(	clk					),
 	.nrst				(	~rst				),
 
-	.address_L1I		(	rw_address			),
-	.address_L1D		(	rw_address			),
+	.address_L1I		(	rw_address_n		),
+	.address_L1D		(	rw_address_n		),
 	.flush_L1I			(	1'b0				),
 	.flush_L1D			(	1'b0				),
-	.read_C_L1I			(	read_C_L1I			),
+	.read_C_L1I			(	read_C_L1I_n		),
 	.read_C_L1D			(	read_C_L1D			),
 	.write_C_L1D		(	write_request		),
 	.write_data			(	write_data_C_L1		),
@@ -152,7 +166,7 @@ instruction_rom #(
 	.INUM				(	26 - 18						)
 ) u_inst_rom (
 	.read_L2_MEM		(	read_L2_MEM					),
-	.clk				(	clk_mem						),
+	.clk				(	clk							),
 	.rstn				(	~rst						),
 	.tag_L2_MEM			(	tag_L2_MEM					),
 	.index_L2_MEM		(	index_L2_MEM				),
