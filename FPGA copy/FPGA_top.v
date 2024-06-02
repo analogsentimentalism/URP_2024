@@ -1,11 +1,11 @@
 module FPGA_top #(
 	parameter	RAM_WIDTH	= 32,
-	parameter	RAM_DEPTH	= 32'h40_0000,
 	parameter	RAM_PERFORMANCE = "LOW_LATENCY",
 	parameter	INIT_FILE	= "test.txt",
 	parameter	START_ADDR	= 32'h10094,
 	parameter	PC_START	= 32'h100d8,
-	parameter	END_INST	= 32'h11fd8
+	parameter	NUM_INST	= 32'd2002,
+	parameter	END_INST	= START_ADDR + (NUM_INST - 1) << 2
 ) (
 	input 			clk_mem,
 	input			clk,
@@ -35,7 +35,7 @@ wire			ready_L1D_C;
 wire	[511:0]	read_data_MEM_L2;
 wire	[511:0]	write_data_L2_MEM;
 wire			ready_MEM_L2;
-wire			read_MEM_L2;
+wire			read_L2_MEM;
 wire			write_L2_MEM;
 wire	[7:0]	index_L2_MEM;
 wire	[17:0]	tag_L2_MEM;
@@ -43,6 +43,7 @@ wire	[17:0]	write_tag_L2_MEM;
 
 reg		[31:0]	rw_address_n;
 reg				read_C_L1I_n;
+reg				read_C_L1D_n;
 
 wire			read_L1_L2;
 wire			write_L1_L2;
@@ -52,6 +53,9 @@ wire			L1D_miss;
 
 wire			done;
 wire	[7:0]	data_o;
+
+wire			read_inst;
+wire			read_MEM;
 
 rvsteel_core #(
 	.BOOT_ADDRESS			(	PC_START		)
@@ -90,13 +94,13 @@ rvsteel_core #(
 
 );
 
-assign read_C_L1I		= read_request & (rw_address <= END_INST);
-assign read_C_L1D		= read_request & (rw_address > END_INST);
-assign read_response	= ((rw_address <= END_INST) & ready_L1I_C) | 
-						  ((rw_address > END_INST) & ready_L1D_C);
+assign read_C_L1I		= read_request & (rw_address_n <= END_INST);
+assign read_C_L1D		= read_request & (rw_address_n > END_INST);
+assign read_response	= ((rw_address_n <= END_INST) & ready_L1I_C) | 
+						  ((rw_address_n > END_INST) & ready_L1D_C);
 
-assign read_data		= rw_address <= END_INST ? read_data_L1I_C : (
-						  rw_address > END_INST ? read_data_L1D_C : 32'b0);
+assign read_data		= rw_address_n <= END_INST ? read_data_L1I_C : (
+						  rw_address_n > END_INST ? read_data_L1D_C : 32'b0);
 
 assign write_data_C_L1	= write_strobe == 4'b0001 ? read_data_L1D_C & ~32'h000F | write_data :
 						  (write_strobe == 4'b0010 ? read_data_L1D_C & ~32'h00F0 | write_data :
@@ -107,14 +111,18 @@ assign write_data_C_L1	= write_strobe == 4'b0001 ? read_data_L1D_C & ~32'h000F |
 						  (write_strobe == 4'b1111 ? write_data : 32'b0
 						  ))))));
 
+assign write_data_C_L1	= write_data;
+
 always @(posedge clk) begin
 	if (rst) begin
 		rw_address_n	<= 32'b0;
 		read_C_L1I_n	<= 1'b0;
+		read_C_L1D_n	<= 1'b0;
 	end
 	else begin
 		rw_address_n	<= rw_address;
 		read_C_L1I_n	<= read_C_L1I;
+		read_C_L1D_n	<= read_C_L1D;
 	end
 end
 
@@ -127,7 +135,7 @@ top u_top (
 	.flush_L1I			(	1'b0				),
 	.flush_L1D			(	1'b0				),
 	.read_C_L1I			(	read_C_L1I_n		),
-	.read_C_L1D			(	read_C_L1D			),
+	.read_C_L1D			(	read_C_L1D_n		),
 	.write_C_L1D		(	write_request		),
 	.write_data			(	write_data_C_L1		),
 	.read_data_L1I_C	(	read_data_L1I_C		),
@@ -157,6 +165,9 @@ top u_top (
 	.L1D_miss_o			(	L1D_miss			)
 );
 
+assign	read_inst	= read_L2_MEM & read_C_L1I;
+assign	read_MEM	= read_L2_MEM & read_C_L1D;
+
 instruction_rom #(
 	.RAM_WIDTH			(	32							),
 	.RAM_DEPTH			(	(END_INST-START_ADDR)/4+1	),
@@ -165,7 +176,7 @@ instruction_rom #(
 	.TNUM				(	18							),
 	.INUM				(	26 - 18						)
 ) u_inst_rom (
-	.read_L2_MEM		(	read_L2_MEM					),
+	.read_L2_MEM		(	read_inst					),
 	.clk				(	clk							),
 	.rstn				(	~rst						),
 	.tag_L2_MEM			(	tag_L2_MEM					),
