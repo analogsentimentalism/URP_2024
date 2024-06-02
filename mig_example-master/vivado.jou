@@ -1,0 +1,23 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Sun Jun  2 21:15:28 2024
+# Process ID: 27768
+# Current directory: C:/Users/82108/Downloads/mig_example-master_origin/mig_example-master
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent25448 C:\Users\82108\Downloads\mig_example-master_origin\mig_example-master\mig_example.xpr
+# Log file: C:/Users/82108/Downloads/mig_example-master_origin/mig_example-master/vivado.log
+# Journal file: C:/Users/82108/Downloads/mig_example-master_origin/mig_example-master\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/82108/Downloads/mig_example-master_origin/mig_example-master/mig_example.xpr
+update_compile_order -fileset sources_1
+launch_simulation
+source mig_example_tb.tcl
+run 60 us
+close_sim
+launch_simulation
+source mig_example_tb.tcl
+run 60 us
+run all
+close_sim
