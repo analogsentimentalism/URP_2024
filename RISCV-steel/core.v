@@ -12,25 +12,29 @@ module rvsteel_core #(
 
   // IO interface
 
-  output wire   [31:0]  rw_address,
   input  wire   [31:0]  read_data,
-  output wire           read_request,
   input  wire           read_response,
-  output wire   [31:0]  write_data,
-  output wire   [3:0 ]  write_strobe,
-  output wire           write_request,
   input  wire           write_response,
+
+  output wire   [31:0]  rw_address,
+  output wire           read_request,
+  output wire   [31:0]  write_data,
+  output wire   [3:0 ]  write_strobe,      // 0001 0011 0111 1111
+  output wire           write_request,
+  
 
   // Interrupt signals (hardwire inputs to zero if unused)
 
-  input  wire           irq_external,
-  output wire           irq_external_response,
-  input  wire           irq_timer,
-  output wire           irq_timer_response,
-  input  wire           irq_software,
-  output wire           irq_software_response,
   input  wire   [15:0]  irq_fast,
+  input  wire           irq_external,
+  input  wire           irq_timer,
+  input  wire           irq_software,
+
   output wire   [15:0]  irq_fast_response,
+  output wire           irq_external_response,
+  output wire           irq_timer_response,
+  output wire           irq_software_response,
+  
 
   // Real Time Clock (hardwire to zero if unused)
 
@@ -458,8 +462,8 @@ module rvsteel_core #(
   always @* begin : next_program_counter_mux
     case (program_counter_source)
       PC_BOOT: next_program_counter = BOOT_ADDRESS;
-      PC_EPC:  next_program_counter = csr_mepc;
-      PC_TRAP: next_program_counter = trap_address;
+      PC_EPC:  next_program_counter = csr_mepc;       // 실행 중이던 instruction 주소
+      PC_TRAP: next_program_counter = trap_address;   // when interrupt or exception occurs
       PC_NEXT: next_program_counter = next_address;
     endcase
   end

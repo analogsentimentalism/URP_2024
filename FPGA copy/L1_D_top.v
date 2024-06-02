@@ -31,7 +31,8 @@ module L1_D_top #(
     output [INUM2-1:0] index_L1_L2,
     output [INUM2-1:0] write_index_L1_L2,
     output ready_L1_C,
-    output L1D_miss_o
+    output L1D_miss_o,
+	output write_done_L1_C
 );
 
 wire refill;
@@ -65,7 +66,8 @@ L1_D_controller #(
     .way(way),
 	.flush(flush),
     .L1D_miss_o(L1D_miss_o),
-    .ready_L1_C(ready_L1_C)
+    .ready_L1_C(ready_L1_C),
+	.write_done_L1_C(write_done_L1_C)
 );
 
 L1_D_bram #(

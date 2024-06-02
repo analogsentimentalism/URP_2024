@@ -21,14 +21,14 @@ module L1_D_controller #(
     output [INUM2-1:0] write_index_L1_L2,
     output [clogb2(WAY-1)-1:0] way,
     output ready_L1_C,
-    output L1D_miss_o
+    output L1D_miss_o,
+	output reg write_done_L1_C
 );
 
 parameter   S_IDLE          =   2'b00;
 parameter   S_COMPARE       =   2'b01;
 parameter   S_WRITE_BACK    =   2'b10;
 parameter   S_ALLOCATE      =   2'b11;
-
 
 
 // define TAG_ARR
@@ -248,5 +248,14 @@ input integer depth;
 	for (clogb2=0; depth>0; clogb2=clogb2+1)
 	depth = depth >> 1;
 endfunction
+
+always @(posedge clk) begin
+	if (~nrst) begin
+		write_done_L1_C	<= 1'b0;
+	end
+	else begin
+		write_done_L1_C	<= update_reg;
+	end
+end
 
 endmodule
