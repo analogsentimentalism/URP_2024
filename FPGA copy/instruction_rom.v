@@ -11,7 +11,7 @@ module instruction_rom #(
 	input					rstn,
 	input		[TNUM-1:0]	tag_L2_MEM,
 	input		[INUM-1:0]	index_L2_MEM,
-	output	reg				ready_MEM_L2,
+	output					ready_MEM_L2,
 	output	reg	[511:0]		read_data_MEM_L2			
 );
 
@@ -75,8 +75,10 @@ always @(posedge clk) begin
 	end
 end
 
-always @(posedge clk) begin
-	ready_MEM_L2	<= ready_temp	;
-end
+assign	ready_MEM_L2	= ready_temp;
+
+// always @(posedge clk) begin
+// 	ready_MEM_L2	<= ready_temp	;
+// end
 
 endmodule
