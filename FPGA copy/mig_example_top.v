@@ -1,8 +1,8 @@
 module mig_example_top(
     input CLK100MHZ,
     input CPU_RESETN,
-    
- //   output[15:0] LED,
+   
+   output[15:0] LED,
     input read_L2_MEM,
     input write_L2_MEM,
     input [15:0] tag_L2_MEM,
@@ -58,7 +58,7 @@ module mig_example_top(
     reg[1:0] mem_transaction_width;
     reg mem_wstrobe, mem_rstrobe;
     
-    reg [1:0] counter;
+    reg [2:0] counter;
     
     mem_example mem_ex(
         .clk_mem(clk_mem),
@@ -93,9 +93,9 @@ module mig_example_top(
     reg[31:0] lfsr;
     always @(posedge clk_cpu or negedge rst_n) begin
         if(~rst_n) 
-            counter <= 2'h0;
+            counter <= 3'h0;
         else if (mem_transaction_complete)
-            counter <= counter + 2'h1;
+            counter <= counter + 3'h1;
     end
   //  always @(posedge clk_cpu or negedge rst_n) begin
    //     if(~rst_n) lfsr <= 32'h0;
@@ -113,7 +113,14 @@ module mig_example_top(
     
     reg[2:0] tgen_state;
     //Data read from RAM equals data written
-        
+    always @ (posedge clk_cpu or negedge rst_n) begin
+        if (~rst_n) 
+            read_data_MEM_L2 <= 512'h0;
+        else if ((tgen_state == TGEN_RWAIT) & mem_transaction_complete)
+            read_data_MEM_L2[counter * 64 +: 64] <= mem_d_from_ram;
+        else
+            read_data_MEM_L2 <= read_data_MEM_L2;
+    end
     always @(posedge clk_cpu or negedge rst_n) begin
         if(~rst_n) begin
             tgen_state <= TGEN_GEN_AD;
@@ -122,10 +129,12 @@ module mig_example_top(
             mem_addr <= 28'h0;
             mem_d_to_ram <= 64'h0;
             mem_transaction_width <= 2'h0;
+
             ready_MEM_L2 <= 1'b0;
         end else begin
             case(tgen_state)
             TGEN_GEN_AD: begin
+                    ready_MEM_L2 <= 1'b0;
                     if (read_L2_MEM)
                     tgen_state <= TGEN_READ;
 
@@ -147,7 +156,7 @@ module mig_example_top(
                     mem_wstrobe <= 0;
                     if(mem_transaction_complete) begin
                         tgen_state <= (counter == 2'd3) ? TGEN_GEN_AD : TGEN_WRITE;
-                        ready_MEM_L2 <= (counter == 2'd3) ? 1'b1 : 1'b0;
+                        ready_MEM_L2 <= (counter == 3'd7) ? 1'b1 : 1'b0;
                     end
                 end
             TGEN_READ: begin
@@ -163,8 +172,7 @@ module mig_example_top(
                     mem_rstrobe <= 0;
                     if(mem_transaction_complete) begin
                         tgen_state <= (counter == 2'd3) ? TGEN_GEN_AD : TGEN_READ;  
-                        read_data_MEM_L2[counter* 64 +: 64] <=  mem_d_from_ram;
-                        ready_MEM_L2 <= (counter == 2'd3) ? 1'b1: 1'b0;
+                        ready_MEM_L2 <= (counter == 3'd7) ? 1'b1: 1'b0;
                     end
                 end
             endcase

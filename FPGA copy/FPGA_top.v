@@ -173,7 +173,31 @@ instruction_rom #(
 	.ready_MEM_L2		(	ready_MEM_L2				),
 	.read_data_MEM_L2	(	read_data_MEM_L2			)
 );
-
+mig_example_top u_mig_example_top(
+	.CLK100MHZ(clk),
+	.CPU_RESETN(~rst),
+	.LED(),
+	.tag_L2_MEM(tag_L2_MEM),
+	.index_L2_MEM(index_L2_MEM),
+	.write_tag_L2_MEM(write_tag_L2_MEM),
+	.write_data_L2_MEM(write_data_L2_MEM),
+	.read_data_MEM_L2(read_data_MEM_L2),
+	.ready_MEM_L2(ready_MEM_L2),
+	.ddr2_dq(),
+	.ddr2_dqs_n(),
+	.ddr2_dqs_p(),
+	.ddr2_addr(),
+	.ddr2_ba(),
+	.ddr2_ras_n(),
+	.ddr2_cas_n(),
+	.ddr2_we_n(),
+	.ddr2_ck_p(),
+	.ddr2_ck_n(),
+	.ddr2_cke(),
+	.ddr2_cs_n(),
+	.ddr2_dm(),
+	.ddr2_odt()
+);
 counter u_counter (
 	.clk(clk_mem),
 	.rstn(~rst),
