@@ -11,7 +11,21 @@ module FPGA_top #(
 	input			clk,
 	input		 	rst,
 	output	 		tx_data,
-	output	[3:0]	test_led
+	output	[3:0]	test_led,
+	output	[15:0]	ddr2_dq,
+	output 	[1:0]	ddr2_dqs_n,
+	output	[1:0]ddr2_dqs_p,
+	output	[12:0]ddr2_addr,
+	output	[7:0]ddr2_ba,
+	output	ddr2_ras_n,
+	output	ddr2_cas_n,
+	output	ddr2_we_n,
+	output	ddr2_ck_p,
+	output	ddr2_ck_n,
+	output	ddr2_cke,
+	output	ddr2_cs_n,
+	output	[1:0]ddr2_dm,
+	output	ddr2_odt
 );
 
 wire	[31:0]	rw_address;
@@ -59,8 +73,6 @@ wire			L1D_miss;
 wire			done;
 wire	[7:0]	data_o;
 
-wire			read_inst;
-wire			read_MEM;
 
 rvsteel_core #(
 	.BOOT_ADDRESS			(	PC_START		)
@@ -116,7 +128,6 @@ assign write_data_C_L1	= write_strobe == 4'b0001 ? read_data_L1D_C & ~32'h000F |
 						  (write_strobe == 4'b1111 ? write_data : 32'b0
 						  ))))));
 
-assign write_data_C_L1	= write_data;
 
 always @(posedge clk) begin
 	if (rst) begin
@@ -202,20 +213,20 @@ mig_example_top u_mig_example_top(
 	.write_data_L2_MEM(write_data_L2_MEM),
 	.read_data_MEM_L2(read_data_MEM_L2_dram),
 	.ready_MEM_L2(ready_MEM_L2_dram),
-	.ddr2_dq(),
-	.ddr2_dqs_n(),
-	.ddr2_dqs_p(),
-	.ddr2_addr(),
-	.ddr2_ba(),
-	.ddr2_ras_n(),
-	.ddr2_cas_n(),
-	.ddr2_we_n(),
-	.ddr2_ck_p(),
-	.ddr2_ck_n(),
-	.ddr2_cke(),
-	.ddr2_cs_n(),
-	.ddr2_dm(),
-	.ddr2_odt()
+	.ddr2_dq(ddr2_dq),
+	.ddr2_dqs_n(ddr2_dqs_n),
+	.ddr2_dqs_p(ddr2_dqs_p),
+	.ddr2_addr(ddr2_addr),
+	.ddr2_ba(ddr2_ba),
+	.ddr2_ras_n(ddr2_ras_n),
+	.ddr2_cas_n(ddr2_cas_n),
+	.ddr2_we_n(ddr2_we_n),
+	.ddr2_ck_p(ddr2_ck_p),
+	.ddr2_ck_n(ddr2_ck_n),
+	.ddr2_cke(ddr2_cke),
+	.ddr2_cs_n(ddr2_cs_n),
+	.ddr2_dm(ddr2_dm),
+	.ddr2_odt(ddr2_odt)
 );
 counter u_counter (
 	.clk(clk_mem),
