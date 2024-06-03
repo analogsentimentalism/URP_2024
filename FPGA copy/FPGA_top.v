@@ -188,6 +188,8 @@ mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
 	.CPU_RESETN(~rst),
 	.LED(),
+	.read_L2_MEM(read_L2_MEM),
+	.write_L2_MEM(write_L2_MEM),
 	.tag_L2_MEM(tag_L2_MEM),
 	.index_L2_MEM(index_L2_MEM),
 	.write_tag_L2_MEM(write_tag_L2_MEM),
