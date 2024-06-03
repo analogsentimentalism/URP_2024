@@ -16,30 +16,24 @@ module instruction_rom #(
 );
 
 wire	[RAM_WIDTH-1:0]	douta		;
-reg		[4:0]			cnt			;
-wire	[25:0]			addra		;
-wire	[31:0]			addra_temp	;
+reg		[3:0]			cnt			;
 wire	[25:0]			addra_r		;
-wire	[25:0]			addra_w		;
+wire	[29:0]			addra		;
 
 reg		ready_temp	;
-wire	[3:0]	rear;
 
-assign	addra_r	= {tag_L2_MEM, index_L2_MEM}		;
-assign	addra_temp	= {addra_r, 6'b0} - START_ADDR;
-assign	addra	= addra_temp [31:6];
-assign	rear	= cnt[3:0] - START_ADDR[5:2];
-
+assign	addra_r	= {tag_L2_MEM, index_L2_MEM};
+assign	addra	= {addra_r - START_ADDR[6+:26], cnt} - START_ADDR[5:2];
 
 rom #(
 	.RAM_WIDTH		(	RAM_WIDTH	),
 	.RAM_DEPTH		(	RAM_DEPTH	),
 	.INIT_FILE		(	INIT_FILE	)
 ) u_rom (
-	.clk			(	clk												),
-	.addra			(	{addra[0+:7] + (cnt >= START_ADDR[5:2]), rear}	),
-	.en				(	1'b1											),
-	.dout			(	douta											)
+	.clk			(	clk			),
+	.addra			(	addra		),
+	.en				(	1'b1		),
+	.dout			(	douta		)
 );
 
 reg	[1:0]	state;
@@ -55,30 +49,27 @@ always @(posedge clk) begin
 		if (read_L2_MEM) begin
 			state	<= state + 1;
 			if (~state[1]) begin
-				cnt	<= cnt;
-				read_data_MEM_L2	<= read_data_MEM_L2		;
 				ready_temp	<= 'b0	;
 			end
 			else begin
 				state	<= 'b0;
-				cnt	<= cnt + 1;
+				if(cnt == 'd15) begin
+					ready_temp	<= 'b1;
+					cnt	<= 'b0;
+				end
+				else begin
+					cnt	<= cnt + 1;
+				end
 				read_data_MEM_L2[cnt*RAM_WIDTH+:RAM_WIDTH]	<= douta		;
-				ready_temp	<= (cnt == 'd15);
+				
 			end
 		end
 		else begin
-			ready_temp	<= 'b0	;
-			cnt	<= cnt	;
-			read_data_MEM_L2	<= read_data_MEM_L2	;
-			state	<= state	;
+			ready_temp	<= 'b0;
 		end
 	end
 end
 
 assign	ready_MEM_L2	= ready_temp;
-
-// always @(posedge clk) begin
-// 	ready_MEM_L2	<= ready_temp	;
-// end
 
 endmodule
