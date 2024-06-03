@@ -34,6 +34,11 @@ wire			ready_L1D_C;
 
 wire	[511:0]	read_data_MEM_L2;
 wire	[511:0]	write_data_L2_MEM;
+wire 	[511:0] read_data_MEM_L2_bram;
+wire 	[511:0] read_data_MEM_L2_dram;
+wire 	ready_MEM_L2_bram;
+wire 	ready_MEM_L2_dram;
+
 wire			ready_MEM_L2;
 wire			read_L2_MEM;
 wire			write_L2_MEM;
@@ -167,7 +172,8 @@ top u_top (
 
 assign	read_inst	= read_L2_MEM & read_C_L1I;
 assign	read_MEM	= read_L2_MEM & read_C_L1D;
-
+assign read_data_MEM_L2 = (read_inst) ? read_data_MEM_L2_bram : (read_MEM) ? read_data_MEM_L2_dram : 512'h0;
+assign ready_MEM_L2 = (read_inst) ? ready_MEM_L2_bram : ready_MEM_L2_dram
 instruction_rom #(
 	.RAM_WIDTH			(	32							),
 	.RAM_DEPTH			(	(END_INST-START_ADDR)/4+1	),
@@ -181,8 +187,8 @@ instruction_rom #(
 	.rstn				(	~rst						),
 	.tag_L2_MEM			(	tag_L2_MEM					),
 	.index_L2_MEM		(	index_L2_MEM				),
-	.ready_MEM_L2		(	ready_MEM_L2				),
-	.read_data_MEM_L2	(	read_data_MEM_L2			)
+	.ready_MEM_L2		(	ready_MEM_L2_bram				),
+	.read_data_MEM_L2	(	read_data_MEM_L2_bram			)
 );
 mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
@@ -194,8 +200,8 @@ mig_example_top u_mig_example_top(
 	.index_L2_MEM(index_L2_MEM),
 	.write_tag_L2_MEM(write_tag_L2_MEM),
 	.write_data_L2_MEM(write_data_L2_MEM),
-	.read_data_MEM_L2(read_data_MEM_L2),
-	.ready_MEM_L2(ready_MEM_L2),
+	.read_data_MEM_L2(read_data_MEM_L2_dram),
+	.ready_MEM_L2(ready_MEM_L2_dram),
 	.ddr2_dq(),
 	.ddr2_dqs_n(),
 	.ddr2_dqs_p(),
