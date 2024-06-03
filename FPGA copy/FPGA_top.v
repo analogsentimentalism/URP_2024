@@ -173,7 +173,7 @@ top u_top (
 assign	read_inst	= read_L2_MEM & read_C_L1I;
 assign	read_MEM	= read_L2_MEM & read_C_L1D;
 assign read_data_MEM_L2 = (read_inst) ? read_data_MEM_L2_bram : (read_MEM) ? read_data_MEM_L2_dram : 512'h0;
-assign ready_MEM_L2 = (read_inst) ? ready_MEM_L2_bram : ready_MEM_L2_dram
+assign ready_MEM_L2 = (read_inst) ? ready_MEM_L2_bram : ready_MEM_L2_dram;
 instruction_rom #(
 	.RAM_WIDTH			(	32							),
 	.RAM_DEPTH			(	(END_INST-START_ADDR)/4+1	),
