@@ -7,7 +7,6 @@ module FPGA_top #(
 	parameter	NUM_INST	= 32'd2002,
 	parameter	END_INST	= START_ADDR + (NUM_INST - 1) << 2
 ) (
-	input 			clk_mem,
 	input			clk,
 	input		 	rst,
 	output	 		tx_data,
@@ -72,14 +71,14 @@ wire			L1D_miss;
 
 wire			done;
 wire	[7:0]	data_o;
-
+wire 			clk_cpu;
 
 rvsteel_core #(
 	.BOOT_ADDRESS			(	PC_START		)
 ) u_cpu (
   // Global signals
 
-	.clock					(	clk				),
+	.clock					(	clk_cpu				),
 	.reset					(	rst				),
 	.halt					(	1'b0			),
 
@@ -129,7 +128,7 @@ assign write_data_C_L1	= write_strobe == 4'b0001 ? read_data_L1D_C & ~32'h000F |
 						  ))))));
 
 
-always @(posedge clk) begin
+always @(posedge clk_cpu) begin
 	if (rst) begin
 		rw_address_n	<= 32'b0;
 		read_C_L1I_n	<= 1'b0;
@@ -143,7 +142,7 @@ always @(posedge clk) begin
 end
 
 top u_top (
-	.clk				(	clk					),
+	.clk				(	clk_cpu					),
 	.nrst				(	~rst				),
 
 	.address_L1I		(	rw_address_n		),
@@ -194,7 +193,7 @@ instruction_rom #(
 	.INUM				(	26 - 18						)
 ) u_inst_rom (
 	.read_L2_MEM		(	read_inst					),
-	.clk				(	clk							),
+	.clk				(	clk_cpu							),
 	.rstn				(	~rst						),
 	.tag_L2_MEM			(	tag_L2_MEM					),
 	.index_L2_MEM		(	index_L2_MEM				),
@@ -226,10 +225,11 @@ mig_example_top u_mig_example_top(
 	.ddr2_cke(ddr2_cke),
 	.ddr2_cs_n(ddr2_cs_n),
 	.ddr2_dm(ddr2_dm),
-	.ddr2_odt(ddr2_odt)
+	.ddr2_odt(ddr2_odt),
+	.clk_cpu(clk_cpu)
 );
 counter u_counter (
-	.clk(clk_mem),
+	.clk(clk_cpu),
 	.rstn(~rst),
 	.read_C_L1I(read_C_L1I),
 	.miss_L1I_C(L1I_miss),
@@ -245,7 +245,7 @@ counter u_counter (
 
 uart_tx u_tx (
 	.rstn(~rst),
-	.clk(clk_mem),
+	.clk(clk_cpu),
 	.din(data_o),
 	.tx_start(done),
 	.tx_data(tx_data_wire)

@@ -25,11 +25,12 @@ module mig_example_top(
     output ddr2_cke,
     output ddr2_cs_n,
     output[1:0] ddr2_dm,
-    output ddr2_odt
+    output ddr2_odt,
+    output clk_cpu
     );
 
     //////////  Clock Generation  //////////
-    wire clk_cpu, clk_mem;
+    wire clk_mem;
     wire pll_locked;
 
     pll pll1(
