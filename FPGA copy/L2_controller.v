@@ -2,7 +2,7 @@
 module L2_controller #(
 	parameter	TNUM	= 18,
 	parameter	INUM	= 26 - TNUM,
-	parameter	TNUM2	= 16,
+	parameter	TNUM2	= 18,
 	parameter	INUM2	= 26 - TNUM2,
 	parameter	WAY		= 4,
 	parameter	DEPTH	= 1 << (INUM + clogb2(WAY-1))
@@ -51,14 +51,17 @@ reg [1:0] way_reg;                         //Way
 reg check;                           //Check
 genvar i;
 
+wire [25:0]	address;
+assign address = {tag_L1_L2, index_L1_L2};
+
 assign update = update_reg;
 assign refill = refill_reg;
 assign read_L2_MEM = read_L2_MEM_reg;
 assign write_L2_MEM = write_L2_MEM_reg;
-assign tag_L2_MEM = tag_L1_L2;
+assign tag_L2_MEM = address[0+:TNUM2];
 assign write_tag_L2_MEM = TAG_ARR[{index_L1_L2,way_reg}];          // write back?�� 주소 tag
 assign way = way_reg;
-assign index_L2_MEM = index_L1_L2;
+assign index_L2_MEM = address[0+:INUM2];
 assign L2_miss_o = miss;
 // FSM
 always@(posedge clk or negedge nrst)

@@ -7,7 +7,7 @@ module mig_example_top(
     input write_L2_MEM,
     input [17:0] tag_L2_MEM,
     input [7:0] index_L2_MEM,
-    input [15:0] write_tag_L2_MEM,
+    input [17:0] write_tag_L2_MEM,
     input [511:0] write_data_L2_MEM,
     output reg [511:0] read_data_MEM_L2,
     output reg ready_MEM_L2,
