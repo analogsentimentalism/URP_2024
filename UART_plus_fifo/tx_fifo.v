@@ -22,7 +22,7 @@ module TX_2(
 
 
     always @(posedge clk) begin
-        if(!rstn || clk_count == 867 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
+        if(!rstn || clk_count == 2604 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
             clk_count <= 0;
             case (state)
                 IDLE : if(tx_start==1) state <= START;

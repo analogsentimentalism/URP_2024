@@ -12,10 +12,10 @@ module counter_2 #(
 	input		read_L1_L2,
 	input		write_L1_L2,
 	input		miss_L2_L1,
-    input       from_cpu,               // cpu에서 일정 count 마다 from_cpu 신호를 counter에 전달하면 그 때의 정보들을 data_o에 담아 넘김
+    
 	
     output reg	[7:0] data_o,
-	output reg  done                    //추가 : done이 1이면 uart의 tx module의 start가 1이 됨
+	output reg  wr_en
 );
 
 reg signal;							// clk count 값이 time 1,2,3 중 하나일 떄 high로 올라가고, 모든 데이터를 보내면 다시 Low
@@ -59,11 +59,6 @@ assign cnt_L2 = (cnt_L2_read + cnt_L2_write);
 
 
 integer j;
-
-
-always @(posedge clk) begin     
-    cpu_done_prev <= cpu_done;
-end
 
 
 
@@ -161,6 +156,7 @@ always @(posedge clk) begin
 		j		<= 0;
 		data_o	<= 0;
 		signal  <= 0;
+		wr_en	<= 0;
 		
 		read_C_L1I_prev		<= 'b0;
 		miss_L1I_C_prev		<= 'b0;
@@ -195,12 +191,14 @@ always @(posedge clk) begin
 			cnt_L1D_reg			<= cnt_L1D;
 			cnt_L2_reg 			<= cnt_L2;
 			signal				<= 1;
+			wr_en				<= 1;
 			j 					<= 0;
 		end
 
 		else begin
 			if (signal) begin 
-            	// L1 I count
+
+				// L1 I count
             	if (j == 0) begin
                 	data_o	<= 8'b0110_0001; //a 출력
 			    	j <= j + 1;
@@ -382,7 +380,12 @@ always @(posedge clk) begin
 					else begin
 						data_o	<= {4'b0011, cnt_L2_reg[3:0]};
 					end
+					j <= j+1;
+				end
+
+				else begin
 					signal <= 0;
+					wr_en  <= 0;
 				end
 
 			end

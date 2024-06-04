@@ -1,11 +1,9 @@
-//FIFO to Transmitter
-//Sends a byte of data to Transmitter from buffer one by one
-
 module fifo(
-
        input [7:0] data_in,
        input clk,
        input rstn,
+       input wr_en,
+       input cpu_done,     // cpu에서 주는 신호
        
        output reg [7:0] data_out
 );
@@ -15,9 +13,10 @@ reg [63:0] fifo_tx_mem [7:0];  // time 1,2,3 에 해당하는 miss rate를 fifo�
 reg [5:0] wr_pt;
 reg [5:0] rd_pt;
 
-reg wr_en;
 reg rd_en;
-       
+reg [11:0] count;             // baud rate와 clk speed 맞춤용
+
+
 
 
 // pointer
@@ -34,7 +33,44 @@ always @(posedge clk)
   end
 
 
+// count
+always (posedge clk) begin
+  if(!rstn) begin
+    count <= 'b0;
+  end
+  else if(rd_en) begin
+    count <= count +1;
+  end
+  else if(count == 2604) begin
+    count <= 'b0;
+  end
+  else count <= count;
+end
 
+
+// wr_en
+always @(posedge clk) begin
+  if(!rstn) begin
+    wr_en <= 0;
+  end
+end
+
+
+
+
+// rd_en
+always @(posedge clk) begin
+  if (!rstn) begin
+    rd_en <= 0;
+  end
+  else if(cpu_done) begin
+    rd_en <=1;
+  end
+end
+
+
+
+// write
 always @(posedge clk)
   begin
     if(wr_en)
@@ -46,10 +82,10 @@ always @(posedge clk)
              
               
 
-         
+// read   
 always@(posedge clk)
   begin
-    if(rd_en)
+    if(rd_en & count == 2604)
     begin
       data_out <= fifo_tx_mem[rd_Pt];
       rd_pt <= rd_pt+1;
