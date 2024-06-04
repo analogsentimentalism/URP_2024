@@ -195,56 +195,69 @@ always @(posedge clk) begin
 			cnt_L1D_reg			<= cnt_L1D;
 			cnt_L2_reg 			<= cnt_L2;
 			signal				<= 1;
+			j 					<= 0;
+		end
 
-
-		else
+		else begin
 			if (signal) begin 
             	// L1 I count
-            	if (j == 0 && signal) begin
+            	if (j == 0) begin
                 	data_o	<= 8'b0110_0001; //a 출력
 			    	j <= j + 1;
 		    	end
-            	else if(j == 1 && signal) begin	
+            	else if(j == 1) begin	
                 	if(cnt_L1I_miss_reg[11:8] > 4'b1001) begin
 			        	data_o	<= {4'b0100, cnt_L1I_miss_reg[11:8]-4'b1001};
                 	end
-			   	 	else data_o	<= {4'b0011, cnt_L1I_miss_reg[11:8]};
+			   	 	else begin
+						data_o	<= {4'b0011, cnt_L1I_miss_reg[11:8]};
+					end
                 	j <= j + 1;
 		    	end
-		    	else if(j == JCNT*2) begin	
+		    	else if(j == 2) begin	
 			    	if(cnt_L1I_miss_reg[7:4] > 4'b1001) begin
 			        	data_o	<= {4'b0100, cnt_L1I_miss_reg[7:4]-4'b1001};
                 	end
-			    	else data_o	<= {4'b0011, cnt_L1I_miss_reg[7:4]};
+			    	else begin 
+						data_o	<= {4'b0011, cnt_L1I_miss_reg[7:4]};
+					end
 			    	j <= j + 1;
 		    	end
-            	else if(j == JCNT*3) begin	
+            	else if(j == 3) begin	
 			    	if(cnt_L1I_miss_reg[3:0] > 4'b1001) begin
 			        	data_o	<= {4'b0100, cnt_L1I_miss_reg[3:0]-4'b1001};
                 	end
-			    	else data_o	<= {4'b0011, cnt_L1I_miss_reg[3:0]};
+			    	else begin 
+						data_o	<= {4'b0011, cnt_L1I_miss_reg[3:0]};
+					end
 			    	j <= j + 1;
 		    	end
             
-            	else if(j == JCNT*4) begin	
+            	else if(j == 4) begin	
                 	if(cnt_L1I_read_reg[11:8] > 4'b1001) begin
 			        	data_o	<= {4'b0100, cnt_L1I_read_reg[11:8]-4'b1001};
                 	end
-			    	else data_o	<= {4'b0011, cnt_L1I_read_reg[11:8]};
+			    	else begin
+						data_o	<= {4'b0011, cnt_L1I_read_reg[11:8]};
+					end
                 	j <= j + 1;
 		    	end
-		    	else if(j == JCNT*5) begin	
+		    	else if(j == 5) begin	
 			    	if(cnt_L1I_read_reg[7:4] > 4'b1001) begin
 			        	data_o	<= {4'b0100, cnt_L1I_read_reg[7:4]-4'b1001};
                 	end
-			    	else data_o	<= {4'b0011, cnt_L1I_read_reg[7:4]};
+			    	else begin 
+						data_o	<= {4'b0011, cnt_L1I_read_reg[7:4]};
+					end
 			    	j <= j + 1;
 		    	end
-            	else if(j == JCNT*6) begin	
+            	else if(j == 6) begin	
 			    	if(cnt_L1I_read_reg[3:0] > 4'b1001) begin
 			        	data_o	<= {4'b0100, cnt_L1I_read_reg[3:0]-4'b1001};
                 	end
-			    	else data_o	<= {4'b0011, cnt_L1I_read_reg[3:0]};
+			    	else begin
+						data_o	<= {4'b0011, cnt_L1I_read_reg[3:0]};
+					end
 			    	j <= j + 1;
 		    	end
 
@@ -252,108 +265,130 @@ always @(posedge clk) begin
 
 
 				//L1 D count
-				else if (j == JCNT*7) begin
+				else if (j == 7) begin
 					data_o	<= 8'b0110_0010;  //b 출력
 					j <= j + 1;
 				end
-				else if(j == JCNT*8) begin	
+				else if(j == 8) begin	
 					if(cnt_L1D_miss_reg[11:8] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L1D_miss_reg[11:8]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L1D_miss_reg[11:8]};
+					else begin 	
+						data_o	<= {4'b0011, cnt_L1D_miss_reg[11:8]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*9) begin	
+				else if(j == 9) begin	
 					if(cnt_L1D_miss_reg[7:4] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L1D_miss_reg[7:4]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L1D_miss_reg[7:4]};
+					else begin
+						data_o	<= {4'b0011, cnt_L1D_miss_reg[7:4]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*10) begin	
+				else if(j == 10) begin	
 					if(cnt_L1D_miss_reg[3:0] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L1D_miss_reg[3:0]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L1D_miss_reg[3:0]};
+					else begin
+						data_o	<= {4'b0011, cnt_L1D_miss_reg[3:0]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*11) begin	
+				else if(j == 11) begin	
 					if(cnt_L1D_reg[11:8] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L1D_reg[11:8]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L1D_reg[11:8]};
+					else begin
+						data_o	<= {4'b0011, cnt_L1D_reg[11:8]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*12) begin	
+				else if(j == 12) begin	
 					if(cnt_L1D_reg[7:4] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L1D_reg[7:4]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L1D_reg[7:4]};
+					else begin
+						data_o	<= {4'b0011, cnt_L1D_reg[7:4]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*13) begin	
+				else if(j == 13) begin	
 					if(cnt_L1D_reg[3:0] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L1D_reg[3:0]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L1D_reg[3:0]};
+					else begin
+						data_o	<= {4'b0011, cnt_L1D_reg[3:0]};
+					end
 					j <= j + 1;
 				end
 
 
 				//L2 count
-				else if (j == JCNT*14) begin
+				else if (j == 14) begin
 					data_o	<= 8'b0110_0011;  //c 출력
 					j <= j + 1;
 				end
-				else if(j == JCNT*15) begin	
+				else if(j == 15) begin	
 					if(cnt_L2_miss_reg[11:8] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L2_miss_reg[11:8]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L2_miss_reg[11:8]};
+					else begin
+						data_o	<= {4'b0011, cnt_L2_miss_reg[11:8]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*16) begin	
+				else if(j == 16) begin	
 					if(cnt_L2_miss_reg[7:4] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L2_miss_reg[7:4]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L2_miss_reg[7:4]};
+					else begin
+						data_o	<= {4'b0011, cnt_L2_miss_reg[7:4]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*17) begin	
+				else if(j == 17) begin	
 					if(cnt_L2_miss_reg[3:0] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L2_miss_reg[3:0]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L2_miss_reg[3:0]};
+					else begin
+						data_o	<= {4'b0011, cnt_L2_miss_reg[3:0]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*18) begin	
+				else if(j == 18) begin	
 					if(cnt_L2_reg[11:8] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L2_reg[11:8]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L2_reg[11:8]};
+					else begin
+						data_o	<= {4'b0011, cnt_L2_reg[11:8]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*19) begin	
+				else if(j == 19) begin	
 					if(cnt_L2_reg[7:4] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L2_reg[7:4]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L2_reg[7:4]};
+					else begin
+						data_o	<= {4'b0011, cnt_L2_reg[7:4]};
+					end
 					j <= j + 1;
 				end
-				else if(j == JCNT*20) begin	
-				if(cnt_L2_reg[3:0] > 4'b1001) begin
+				else if(j == 20) begin	
+					if(cnt_L2_reg[3:0] > 4'b1001) begin
 						data_o	<= {4'b0100, cnt_L2_reg[3:0]-4'b1001};
 					end
-					else data_o	<= {4'b0011, cnt_L2_reg[3:0]};
-					j <= j + 1;
+					else begin
+						data_o	<= {4'b0011, cnt_L2_reg[3:0]};
+					end
+					signal <= 0;
 				end
 
-
-				else begin
-					j <= j + 1;
-				end
 			end
 		end
 	end
+end
+	
 
 endmodule
