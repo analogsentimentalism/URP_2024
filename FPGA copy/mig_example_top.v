@@ -156,7 +156,7 @@ module mig_example_top(
             TGEN_WWAIT: begin
                     mem_wstrobe <= 0;
                     if(mem_transaction_complete) begin
-                        tgen_state <= (counter == 2'd3) ? TGEN_GEN_AD : TGEN_WRITE;
+                        tgen_state <= (counter == 3'd7) ? TGEN_GEN_AD : TGEN_WRITE;
                         ready_MEM_L2 <= (counter == 3'd7) ? 1'b1 : 1'b0;
                     end
                 end
@@ -172,7 +172,7 @@ module mig_example_top(
             TGEN_RWAIT: begin
                     mem_rstrobe <= 0;
                     if(mem_transaction_complete) begin
-                        tgen_state <= (counter == 2'd3) ? TGEN_GEN_AD : TGEN_READ;  
+                        tgen_state <= (counter == 3'd7) ? TGEN_GEN_AD : TGEN_READ;  
                         ready_MEM_L2 <= (counter == 3'd7) ? 1'b1: 1'b0;
                     end
                 end
