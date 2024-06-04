@@ -146,7 +146,7 @@ module mig_example_top(
             TGEN_WRITE: begin
                     if(mem_ready) begin
                         mem_wstrobe <= 1;
-                        mem_addr <= {write_tag_L2_MEM[11:0], index_L2_MEM};
+                        mem_addr <= {write_tag_L2_MEM[11:0], index_L2_MEM} + {counter, 3'b000};
                         mem_d_to_ram <= write_data_L2_MEM[counter*64 +: 64];
                         //Write the entire 64-bit word
                         mem_transaction_width <= `RAM_WIDTH64;
@@ -164,7 +164,7 @@ module mig_example_top(
                     if(mem_ready) begin
                         mem_rstrobe <= 1;
                         //Load only the single byte at that address
-                        mem_addr <= {tag_L2_MEM[11:0], index_L2_MEM};
+                        mem_addr <= {tag_L2_MEM[11:0], index_L2_MEM} + {counter, 3'b000};
                         mem_transaction_width <= `RAM_WIDTH64;
                         tgen_state <= TGEN_RWAIT;
                     end
