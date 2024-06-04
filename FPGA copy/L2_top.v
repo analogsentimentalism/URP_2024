@@ -1,7 +1,7 @@
 module L2_top #(
 	parameter	TNUM	= 18,
 	parameter	INUM	= 26 - TNUM,
-	parameter	TNUM2	= 16,
+	parameter	TNUM2	= 18,
 	parameter	INUM2	= 26 - TNUM2,
 	parameter	WAY		= 4,
 	parameter	DEPTH	= 1 << (INUM + clogb2(WAY-1)),

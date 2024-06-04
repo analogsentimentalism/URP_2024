@@ -5,9 +5,9 @@ module mig_example_top(
    output[15:0] LED,
     input read_L2_MEM,
     input write_L2_MEM,
-    input [15:0] tag_L2_MEM,
-    input [9:0] index_L2_MEM,
-    input [15:0] write_tag_L2_MEM,
+    input [17:0] tag_L2_MEM,
+    input [7:0] index_L2_MEM,
+    input [17:0] write_tag_L2_MEM,
     input [511:0] write_data_L2_MEM,
     output reg [511:0] read_data_MEM_L2,
     output reg ready_MEM_L2,
@@ -146,7 +146,7 @@ module mig_example_top(
             TGEN_WRITE: begin
                     if(mem_ready) begin
                         mem_wstrobe <= 1;
-                        mem_addr <= {write_tag_L2_MEM[11:0], index_L2_MEM} + {counter, 3'b000};
+                        mem_addr <= {write_tag_L2_MEM[13:0], index_L2_MEM, 6'h0} + {counter, 3'b000};
                         mem_d_to_ram <= write_data_L2_MEM[counter*64 +: 64];
                         //Write the entire 64-bit word
                         mem_transaction_width <= `RAM_WIDTH64;
@@ -156,7 +156,7 @@ module mig_example_top(
             TGEN_WWAIT: begin
                     mem_wstrobe <= 0;
                     if(mem_transaction_complete) begin
-                        tgen_state <= (counter == 2'd3) ? TGEN_GEN_AD : TGEN_WRITE;
+                        tgen_state <= (counter == 3'd7) ? TGEN_GEN_AD : TGEN_WRITE;
                         ready_MEM_L2 <= (counter == 3'd7) ? 1'b1 : 1'b0;
                     end
                 end
@@ -164,7 +164,7 @@ module mig_example_top(
                     if(mem_ready) begin
                         mem_rstrobe <= 1;
                         //Load only the single byte at that address
-                        mem_addr <= {tag_L2_MEM[11:0], index_L2_MEM} + {counter, 3'b000};
+                        mem_addr <= {tag_L2_MEM[13:0], index_L2_MEM, 6'h0} + {counter, 3'b000};
                         mem_transaction_width <= `RAM_WIDTH64;
                         tgen_state <= TGEN_RWAIT;
                     end
@@ -172,7 +172,7 @@ module mig_example_top(
             TGEN_RWAIT: begin
                     mem_rstrobe <= 0;
                     if(mem_transaction_complete) begin
-                        tgen_state <= (counter == 2'd3) ? TGEN_GEN_AD : TGEN_READ;  
+                        tgen_state <= (counter == 3'd7) ? TGEN_GEN_AD : TGEN_READ;  
                         ready_MEM_L2 <= (counter == 3'd7) ? 1'b1: 1'b0;
                     end
                 end

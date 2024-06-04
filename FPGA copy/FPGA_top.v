@@ -2,20 +2,21 @@ module FPGA_top #(
 	parameter	RAM_WIDTH	= 32,
 	parameter	RAM_PERFORMANCE = "LOW_LATENCY",
 	parameter	INIT_FILE	= "test.txt",
-	parameter	START_ADDR	= 32'h10094,
-	parameter	PC_START	= 32'h100d8,
-	parameter	NUM_INST	= 32'd2002,
+	parameter	START_ADDR	= 32'h0,
+	parameter	PC_START	= 32'h0,
+	parameter	NUM_INST	= 32'd677,
 	parameter	END_INST	= START_ADDR + (NUM_INST - 1) << 2
 ) (
 	input			clk,
 	input		 	rst,
+	input			enb,
 	output	 		tx_data,
 	output	[3:0]	test_led,
 	inout	[15:0]	ddr2_dq,
 	inout 	[1:0]	ddr2_dqs_n,
 	inout	[1:0]ddr2_dqs_p,
 	output	[12:0]ddr2_addr,
-	output	[7:0]ddr2_ba,
+	output	[2:0]ddr2_ba,
 	output	ddr2_ras_n,
 	output	ddr2_cas_n,
 	output	ddr2_we_n,
@@ -69,6 +70,12 @@ wire			L2_miss;
 wire			L1I_miss;
 wire			L1D_miss;
 
+wire	[25:0]	init_address;
+wire	[7:0]	dram_index;
+wire	[17:0]	write_dram_tag;
+wire			wire_dram;
+wire	[511:0]	write_data_MEM;
+
 wire			done;
 wire	[7:0]	data_o;
 wire 			clk_cpu;
@@ -78,7 +85,7 @@ rvsteel_core #(
 ) u_cpu (
   // Global signals
 
-	.clock					(	clk_cpu				),
+	.clock					(	clk_cpu	& enb	),
 	.reset					(	rst				),
 	.halt					(	1'b0			),
 
@@ -180,36 +187,38 @@ top u_top (
 	.L1D_miss_o			(	L1D_miss			)
 );
 
-assign	read_inst	= read_L2_MEM & read_C_L1I;
-assign	read_MEM	= read_L2_MEM & read_C_L1D;
-assign read_data_MEM_L2 = (read_inst) ? read_data_MEM_L2_bram : (read_MEM) ? read_data_MEM_L2_dram : 512'h0;
-assign ready_MEM_L2 = (read_inst) ? ready_MEM_L2_bram : ready_MEM_L2_dram;
 instruction_rom #(
 	.RAM_WIDTH			(	32							),
 	.RAM_DEPTH			(	(END_INST-START_ADDR)/4+1	),
 	.INIT_FILE			(	"test.txt"					),
-	.START_ADDR			(	START_ADDR					),
-	.TNUM				(	18							),
-	.INUM				(	26 - 18						)
+	.START_ADDR			(	START_ADDR					)
 ) u_inst_rom (
-	.read_L2_MEM		(	read_inst					),
-	.clk				(	clk_cpu							),
+	.clk				(	clk_cpu						),
+	.enb				(	enb							),
 	.rstn				(	~rst						),
-	.tag_L2_MEM			(	tag_L2_MEM					),
-	.index_L2_MEM		(	index_L2_MEM				),
-	.ready_MEM_L2		(	ready_MEM_L2_bram				),
-	.read_data_MEM_L2	(	read_data_MEM_L2_bram			)
+	.init_address		(	init_address				),
+	.ready_MEM_L2		(	ready_MEM_L2_bram			),
+	.read_data_MEM_L2	(	read_data_MEM_L2_bram		),
+	.ready_MEM			(	ready_MEM_L2_dram			)
 );
+
+assign	write_dram_tag		= enb ? write_tag_L2_MEM		:	init_address[25-:18	];
+assign	dram_index			= enb ? index_L2_MEM			:	init_address[0+:8	];
+assign	write_data_MEM		= enb ? write_data_L2_MEM		:	read_data_MEM_L2_bram;
+assign	write_dram			= enb ? write_L2_MEM			:	ready_MEM_L2_bram;
+assign	read_data_MEM_L2	= enb ? read_data_MEM_L2_dram	:	512'h0;
+assign	ready_MEM_L2 		= enb & ready_MEM_L2_dram;
+
 mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
 	.CPU_RESETN(~rst),
 	.LED(),
-	.read_L2_MEM(read_MEM),
-	.write_L2_MEM(write_L2_MEM),
+	.read_L2_MEM(read_L2_MEM),
+	.write_L2_MEM(write_dram),
 	.tag_L2_MEM(tag_L2_MEM),
-	.index_L2_MEM(index_L2_MEM),
-	.write_tag_L2_MEM(write_tag_L2_MEM),
-	.write_data_L2_MEM(write_data_L2_MEM),
+	.index_L2_MEM(dram_index),
+	.write_tag_L2_MEM(write_dram_tag),
+	.write_data_L2_MEM(write_data_MEM),
 	.read_data_MEM_L2(read_data_MEM_L2_dram),
 	.ready_MEM_L2(ready_MEM_L2_dram),
 	.ddr2_dq(ddr2_dq),
@@ -248,7 +257,7 @@ uart_tx u_tx (
 	.clk(clk_cpu),
 	.din(data_o),
 	.tx_start(done),
-	.tx_data(tx_data_wire)
+	.tx_data(tx_data)
 );
 
 endmodule
