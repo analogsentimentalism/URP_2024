@@ -196,7 +196,7 @@ top u_top (
 
 instruction_rom #(
 	.RAM_WIDTH			(	32							),
-	.RAM_DEPTH			(	(END_INST-START_ADDR)/4+1	),
+	.RAM_DEPTH			(	32'd3000	),
 	.INIT_FILE			(	"test.txt"					),
 	.START_ADDR			(	START_ADDR					)
 ) u_inst_rom (
