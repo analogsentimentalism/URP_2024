@@ -67,14 +67,6 @@ end
 
 
 
-// wr_en
-always @(posedge clk) begin
-  if(!rstn) begin
-    wr_en <= 0;
-  end
-end
-
-
 
 
 // rd_en
