@@ -244,29 +244,40 @@ mig_example_top u_mig_example_top(
 	.ddr2_odt(ddr2_odt),
 	.clk_cpu(clk_cpu)
 );
-counter u_counter (
-	.clk(clk_cpu),
-	.rstn(~rst),
-	.read_C_L1I(read_C_L1I),
-	.miss_L1I_C(L1I_miss),
-	.read_C_L1D(read_C_L1D),
-	.write_C_L1D(write_request),
-	.miss_L1D_C(L1D_miss),
-	.read_L1_L2(read_L1_L2),
-	.write_L1_L2(write_L1_L2),
-	.miss_L2_L1(L2_miss),
-	.data_o(data_o),
-	.done(done)
+
+
+counter_2 u_counter(
+    .clk(clk),
+    .rstn(rstn),
+    .read_C_L1I(read_C_L1I),
+    .miss_L1I_C(miss_L1I_C),
+    .read_C_L1D(read_C_L1D),
+    .write_C_L1D(write_C_L1D),
+    .miss_L1D_C(miss_L1D_C),
+    .read_L1_L2(read_L1_L2),
+    .write_L1_L2(write_L1_L2),
+    .miss_L2_L1(miss_L2_L1),
+    .data_o(data_o),
+    .wr_en(wr_en)
 );
 
 
+TX_2 u_tx(
+    .clk(clk),
+    .rstn(rstn),
+    .din(data_out),
+    .tx_start(rd_en),
+    .tx_data(tx_data)
+);
 
-uart_tx u_tx (
-	.rstn(~rst),
-	.clk(clk_cpu),
-	.din(data_o),
-	.tx_start(done),
-	.tx_data(tx_data)
+
+fifo u_fifo(
+    .data_in(data_o),
+    .clk(clk),
+    .rstn(rstn),
+    .wr_en(wr_en),        
+    .data_out(data_out),
+    .rd_en(rd_en)
 );
 
 endmodule
