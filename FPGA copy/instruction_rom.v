@@ -54,7 +54,8 @@ always @(posedge clk) begin
    end
    else begin
       ready_MEM_prev   <= ready_MEM;
-      if (~enb & ((ready_MEM & ~ready_MEM_prev) | flag)) begin
+      if (~enb) begin
+		if ((~ready_MEM_prev & ready_MEM) | (cnt != 4'b0)) begin
          state   <= ~state;
          if (~state) begin
             ready_temp   <= 1'b0;
@@ -72,6 +73,7 @@ always @(posedge clk) begin
                read_data_MEM_L2[cnt*RAM_WIDTH+:RAM_WIDTH]   <= douta      ;
             end
          end
+		end
       end
       else begin
          ready_temp   <= 1'b0;

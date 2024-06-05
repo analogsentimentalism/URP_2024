@@ -11,7 +11,6 @@ module FPGA_top #(
 	input		 	rst,
 	input			enb,
 	output	 		tx_data,
-	output	[3:0]	test_led,
 	inout	[15:0]	ddr2_dq,
 	inout 	[1:0]	ddr2_dqs_n,
 	inout	[1:0]ddr2_dqs_p,
