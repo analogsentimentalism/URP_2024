@@ -39,19 +39,10 @@ end
 
 
 
-// pointer
-always @(posedge clk)
-  begin
-    if(!rstn) begin
-      wr_pt <= 5'b00000;
-      rd_pt <= 5'b00000;
-    end
-  end
-
 
 
 // count
-always (posedge clk) begin
+always @(posedge clk) begin
   if(!rstn) begin
     count <= 'b0;
   end
@@ -84,7 +75,10 @@ end
 // write
 always @(posedge clk)
   begin
-    if(wr_en)
+	if(!rstn) begin
+      wr_pt <= 5'b00000;
+    end
+    else if(wr_en)
       begin
         fifo_tx_mem[wr_pt] <= data_in;
         wr_pt <= wr_pt+1;
@@ -96,7 +90,10 @@ always @(posedge clk)
 // read   
 always@(posedge clk)
   begin
-    if(rd_en_reg && count == 26100)
+	if(!rstn) begin
+		rd_pt <= 5'b00000;
+	end
+    else if(rd_en_reg && count == 26100)
     begin
       data_out <= fifo_tx_mem[rd_pt];
       rd_pt <= rd_pt+1;

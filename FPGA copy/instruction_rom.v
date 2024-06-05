@@ -53,9 +53,10 @@ always @(posedge clk) begin
       flag            <= 1'b0;
    end
    else begin
+	  flag	<= rstn;
       ready_MEM_prev   <= ready_MEM;
       if (~enb) begin
-		if ((~ready_MEM_prev & ready_MEM) | (cnt != 4'b0)) begin
+		if ((~flag & rstn) | (~ready_MEM_prev & ready_MEM) | (cnt != 4'b0)) begin
          state   <= ~state;
          if (~state) begin
             ready_temp   <= 1'b0;
