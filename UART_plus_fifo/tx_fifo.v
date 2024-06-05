@@ -13,7 +13,8 @@ module TX_2(
     .clk(clk),
     .rstn(rstn),
     .wr_en(wr_en),        
-    .data_out(data_out)
+    .data_out(data_out),
+    .rd_en(rd_en)
     );
 
 
@@ -22,20 +23,34 @@ module TX_2(
     reg [3:0] state;
     reg [31:0] clk_count; // 2604*10= 26040
     reg	tx_start_prev;
-   
+    reg [7:0] din_prev;
+
     
 
-    always @(posedge clk) begin     
+    always @(posedge clk) begin
+        din_prev <= din;
         tx_start_prev <= tx_start;
     end
+    
     
 
 
     always @(posedge clk) begin
-        if(!rstn || clk_count == 2604 || ((tx_start_prev ^ tx_start) & tx_start)) begin                   //100MHz를 115,200Hz에 맞추기
-            clk_count <= 0;
+        if(!rstn || (rd_en && !(din == din_prev))) begin
+            clk_count <= 'b0;
+        end
+        else if (rd_en) begin
+            clk_count <= clk_count +1;
+        end
+        
+    end
+
+
+
+    always @(posedge clk) begin
+        if(clk_count == 2604) begin                   //25MHz를 9600Hz에 맞추기
             case (state)
-                IDLE : if(tx_start==1) state <= START;
+                IDLE : if((tx_start_prev ^ tx_start) & tx_start) state <= START;
                        else state <= IDLE;
                 START  : state <= ST2;
                 ST2  : state <= ST3;
@@ -50,7 +65,6 @@ module TX_2(
                 default : state <= IDLE;
             endcase
         end
-        else clk_count <= clk_count +1;
     end
 
 
@@ -58,20 +72,22 @@ module TX_2(
     //////////output logic///////////////
 
     always @(posedge clk) begin
-        case (state)
-            IDLE  : tx_data <= 1; 
-            START : tx_data <= 0;       // start bit(1'b0)
-            ST2   : tx_data <= din[0];
-            ST3   : tx_data <= din[1];
-            ST4   : tx_data <= din[2];
-            ST5   : tx_data <= din[3];
-            ST6   : tx_data <= din[4];
-            ST7   : tx_data <= din[5];
-            ST8   : tx_data <= din[6];
-            ST9   : tx_data <= din[7];
-            STOP  : tx_data <= 1;      // stop bit(1'b1)
-            default: tx_data <= 1; 
-        endcase
+        if(clk_count == 2604) begin   
+            case (state)
+                IDLE  : tx_data <= 1; 
+                START : tx_data <= 0;       // start bit(1'b0)
+                ST2   : tx_data <= din[0];
+                ST3   : tx_data <= din[1];
+                ST4   : tx_data <= din[2];
+                ST5   : tx_data <= din[3];
+                ST6   : tx_data <= din[4];
+                ST7   : tx_data <= din[5];
+                ST8   : tx_data <= din[6];
+                ST9   : tx_data <= din[7];
+                STOP  : tx_data <= 1;      // stop bit(1'b1)
+                default: tx_data <= 1; 
+            endcase
+        end
     end
 
 

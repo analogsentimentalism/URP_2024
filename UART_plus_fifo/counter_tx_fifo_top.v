@@ -16,7 +16,7 @@ module counter_tx_top_2(
 
 
 wire [7:0]      data_o;
-wire            done;
+wire            wr_en;
 
 
 counter_2 u_counter(
@@ -39,7 +39,7 @@ TX_2 u_tx(
     .clk(clk),
     .rstn(rstn),
     .din(data_out),
-    .tx_start(done),
+    .tx_start(rd_en),
     .tx_data(tx_data)
 );
 
@@ -49,6 +49,7 @@ fifo u_fifo(
     .clk(clk),
     .rstn(rstn),
     .wr_en(wr_en),        
-    .data_out(data_out)
+    .data_out(data_out),
+    .rd_en(rd_en)
 );
 endmodule
