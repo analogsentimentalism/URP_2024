@@ -9,7 +9,7 @@ module counter_tx_top_2(
 	input		read_L1_L2,
 	input		write_L1_L2,
 	input		miss_L2_L1,
-    input       cpu_done,
+    
 
     output  tx_data
 );
@@ -17,6 +17,8 @@ module counter_tx_top_2(
 
 wire [7:0]      data_o;
 wire            wr_en;
+wire [7:0]      data_out;
+wire            rd_en;
 
 
 counter_2 u_counter(
