@@ -30,23 +30,25 @@ counter_2 u_counter(
     .read_L1_L2(read_L1_L2),
     .write_L1_L2(write_L1_L2),
     .miss_L2_L1(miss_L2_L1),
-    .cpu_done(cpu_done),
     .data_o(data_o),
-    .done(done)
+    .wr_en(wr_en)
 );
 
 
 TX_2 u_tx(
     .clk(clk),
     .rstn(rstn),
-    .din(data_o),
+    .din(data_out),
     .tx_start(done),
     .tx_data(tx_data)
 );
 
 
 fifo u_fifo(
-
-
+    .data_in(data_o),
+    .clk(clk),
+    .rstn(rstn),
+    .wr_en(wr_en),        
+    .data_out(data_out)
 );
 endmodule
