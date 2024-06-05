@@ -32,7 +32,7 @@ always @(posedge clk) begin
   if((!fifo_empty && rd_pt==0) || (!fifo_empty && (rd_pt!= rd_pt_prev))) begin
     rd_en <= rd_en_reg;
   end
-  else if (rd_en) begin
+  else if (rd_en) begin    // 한사이클만 rd_en high 만들기
     rd_en <= ~rd_en;
   end
 end
