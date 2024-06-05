@@ -51,7 +51,7 @@ always @(posedge clk)
 
 
 // count
-always (posedge clk) begin
+always @(posedge clk) begin
   if(!rstn) begin
     count <= 'b0;
   end
@@ -84,6 +84,7 @@ end
 // write
 always @(posedge clk)
   begin
+    
     if(wr_en)
       begin
         fifo_tx_mem[wr_pt] <= data_in;
