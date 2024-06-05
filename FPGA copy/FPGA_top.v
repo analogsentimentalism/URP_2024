@@ -78,6 +78,7 @@ wire	[511:0]	write_data_MEM;
 
 wire			done;
 wire	[7:0]	data_o;
+wire	[7:0]	data_out;
 wire 			clk_cpu;
 
 rvsteel_core #(
