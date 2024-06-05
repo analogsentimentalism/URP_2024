@@ -25,7 +25,8 @@ module FPGA_top #(
 	output	ddr2_cke,
 	output	ddr2_cs_n,
 	output	[1:0]ddr2_dm,
-	output	ddr2_odt
+	output	ddr2_odt,
+	output [15:0] LED
 );
 
 wire	[31:0]	rw_address;
