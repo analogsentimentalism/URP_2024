@@ -39,8 +39,8 @@ reg	[11:0] cnt_L1D_miss;
 reg	[11:0] cnt_L2_read;
 reg	[11:0] cnt_L2_write;
 reg	[11:0] cnt_L2_miss;
-reg [11:0] cnt_L1D;
-reg [11:0] cnt_L2;
+wire [11:0] cnt_L1D;
+wire [11:0] cnt_L2;
 
 reg	[11:0] cnt_L1I_read_reg;
 reg	[11:0] cnt_L1I_miss_reg;

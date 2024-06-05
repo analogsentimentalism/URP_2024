@@ -26,10 +26,10 @@ module TX_2(
 
 
     always @(posedge clk) begin
-        if(!rstn || (rd_en && !(din == din_prev))) begin
+        if(!rstn || ((tx_start_prev ^ tx_start) & tx_start)) begin
             clk_count <= 'b0;
         end
-        else if (rd_en) begin
+        else begin
             clk_count <= clk_count +1;
         end
         
