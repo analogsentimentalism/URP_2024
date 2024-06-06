@@ -178,7 +178,7 @@ always @(posedge clk) begin
 		miss_L2_L1_prev		<= miss_L2_L1;
 
         	
-        if (clk_count == 300 || clk_count == 600 || clk_count == 900) begin
+        if (clk_count == 120 || clk_count == 240 || clk_count == 360) begin
             
 			cnt_L1I_read_reg	<= cnt_L1I_read;
 			cnt_L1I_miss_reg	<= cnt_L1I_miss;

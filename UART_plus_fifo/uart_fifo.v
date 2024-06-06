@@ -16,11 +16,13 @@ reg [5:0] rd_pt_prev;
 
 reg [11:0] count;             // baud rate와 clk speed 맞춤용
 wire fifo_empty;
-reg rd_en_reg;
+wire rd_en_reg;
 reg wr_enable;
 
-assign fifo_empty = (wr_pt == rd_pt);
 
+
+assign fifo_empty = (wr_pt == rd_pt);
+assign rd_en_reg = !fifo_empty;
 
 
 always @(posedge clk) begin
@@ -67,19 +69,6 @@ always @(posedge clk) begin
 end
 
 
-
-
-
-
-// rd_en
-always @(posedge clk) begin
-  if (!rstn) begin
-    rd_en_reg <= 0;
-  end
-  else if(!fifo_empty) begin
-    rd_en_reg <=1;
-  end
-end
 
 
 
