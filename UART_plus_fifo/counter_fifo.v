@@ -178,7 +178,7 @@ always @(posedge clk) begin
 		miss_L2_L1_prev		<= miss_L2_L1;
 
         	
-        if (clk_count == ??? || clk_count == ??? || clk_count == ???) begin
+        if (clk_count == 300 || clk_count == 600 || clk_count == 900) begin
             
 			cnt_L1I_read_reg	<= cnt_L1I_read;
 			cnt_L1I_miss_reg	<= cnt_L1I_miss;
@@ -381,12 +381,11 @@ always @(posedge clk) begin
 						data_o	<= {4'b0011, cnt_L2_reg[3:0]};
 					end
 					j <= j+1;
-				end
-
-				else begin
 					signal <= 0;
 					wr_en  <= 0;
 				end
+
+				
 
 			end
 		end
