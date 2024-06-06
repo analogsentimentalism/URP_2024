@@ -14,9 +14,10 @@ reg [5:0] wr_pt;
 reg [5:0] rd_pt;
 reg [5:0] rd_pt_prev;
 
-reg [11:0] count;             // baud rate와 clk speed 맞춤용
+reg [31:0] count;             // baud rate와 clk speed 맞춤용
 wire fifo_empty;
 wire rd_en_reg;
+reg rd_en_reg_prev;
 reg wr_enable;
 
 
@@ -28,18 +29,9 @@ assign rd_en_reg = !fifo_empty;
 always @(posedge clk) begin
   rd_pt_prev <= rd_pt;
   wr_enable <= wr_en;
+  rd_en_reg_prev <= rd_en_reg;
 end
 
-
-// rd_en
-always @(posedge clk) begin
-  if((!fifo_empty && rd_pt==0) || (!fifo_empty && (rd_pt!= rd_pt_prev))) begin  //1번 조건: fifo에 첫 데이터가 들어왔을 떄
-    rd_en <= rd_en_reg;
-  end
-  else if (rd_en) begin    // 한사이클만 rd_en high 만들기
-    rd_en <= ~rd_en;
-  end
-end
 
 
 
@@ -56,18 +48,14 @@ always @(posedge clk)
 
 // count
 always @(posedge clk) begin
-  if(!rstn) begin
+  if(!rstn || count== 26100) begin
     count <= 'b0;
   end
   else if(rd_en_reg) begin
     count <= count +1;
   end
-  else if(count == 26100) begin
-    count <= 'b0;
-  end
-  else count <= count;
-end
 
+end
 
 
 
@@ -83,12 +71,27 @@ always @(posedge clk)
       end
   end
              
-              
+
+
+
+// rd_en
+always @(posedge clk) begin
+  if (!rstn) begin
+    rd_en <= 'b0;
+  end
+  else if((!fifo_empty && rd_pt==0) || (!fifo_empty && (rd_pt!= rd_pt_prev))) begin  //1번 조건: fifo에 첫 데이터가 들어왔을 떄
+    rd_en <= rd_en_reg;
+  end
+  else if (rd_en) begin    // 한사이클만 rd_en high 만들기
+    rd_en <= ~rd_en;
+  end
+end
+
 
 // read   
 always@(posedge clk)
   begin
-    if(rd_en_reg && count == 26100)
+    if((rd_en_reg && count == 26100) || ((rd_en_reg_prev ^ rd_en_reg) & rd_en_reg))
     begin
       data_out <= fifo_tx_mem[rd_pt];
       rd_pt <= rd_pt+1;
