@@ -63,8 +63,10 @@ end
 // write
 always @(posedge clk)
   begin
-    
-    if(wr_enable)
+    if(!rstn) begin
+      wr_pt <= 5'b00000;
+    end
+    else if(wr_enable)
       begin
         fifo_tx_mem[wr_pt] <= data_in;
         wr_pt <= wr_pt+1;
@@ -91,7 +93,10 @@ end
 // read   
 always@(posedge clk)
   begin
-    if((rd_en_reg && count == 26100) || ((rd_en_reg_prev ^ rd_en_reg) & rd_en_reg))
+    if(!rstn) begin
+      rd_pt <= 5'b00000;
+    end
+    else if((rd_en_reg && count == 26100) || ((rd_en_reg_prev ^ rd_en_reg) & rd_en_reg))
     begin
       data_out <= fifo_tx_mem[rd_pt];
       rd_pt <= rd_pt+1;
