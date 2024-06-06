@@ -82,14 +82,7 @@ always @(posedge clk) begin
 		cnt_L2_write	<= 'b0;
 		cnt_L2_miss		<= 'b0;
 
-		cnt_L1I_read_reg	<= 'b0;
-		cnt_L1I_miss_reg	<= 'b0;
-		cnt_L1D_read_reg	<= 'b0;
-		cnt_L1D_write_reg	<= 'b0;
-		cnt_L1D_miss_reg	<= 'b0;
-		cnt_L2_read_reg		<= 'b0;
-		cnt_L2_write_reg	<= 'b0;
-		cnt_L2_miss_reg		<= 'b0;
+		
 	end
 	else begin
 		if((read_C_L1I_prev ^ read_C_L1I) & read_C_L1I) begin            //  MISS RATE:   cnt_L1I_miss / cnt_L1I_read
@@ -166,6 +159,15 @@ always @(posedge clk) begin
 		read_L1_L2_prev		<= 'b0;
 		write_L1_L2_prev	<= 'b0;
 		miss_L2_L1_prev		<= 'b0;
+
+		cnt_L1I_read_reg	<= 'b0;
+		cnt_L1I_miss_reg	<= 'b0;
+		cnt_L1D_read_reg	<= 'b0;
+		cnt_L1D_write_reg	<= 'b0;
+		cnt_L1D_miss_reg	<= 'b0;
+		cnt_L2_read_reg		<= 'b0;
+		cnt_L2_write_reg	<= 'b0;
+		cnt_L2_miss_reg		<= 'b0;
 	end
 	else begin
 		read_C_L1I_prev		<= read_C_L1I;
