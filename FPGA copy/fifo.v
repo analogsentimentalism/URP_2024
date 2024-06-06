@@ -35,15 +35,6 @@ end
 
 
 
-// pointer
-always @(posedge clk)
-  begin
-    if(!rstn) begin
-      wr_pt <= 5'b00000;
-      rd_pt <= 5'b00000;
-    end
-  end
-
 
 
 // count
