@@ -39,8 +39,7 @@ reg	[11:0] cnt_L1D_miss;
 reg	[11:0] cnt_L2_read;
 reg	[11:0] cnt_L2_write;
 reg	[11:0] cnt_L2_miss;
-wire [11:0] cnt_L1D;
-wire [11:0] cnt_L2;
+
 
 reg	[11:0] cnt_L1I_read_reg;
 reg	[11:0] cnt_L1I_miss_reg;
@@ -53,9 +52,6 @@ reg	[11:0] cnt_L2_miss_reg;
 reg [11:0] cnt_L1D_reg;
 reg [11:0] cnt_L2_reg;
 
-
-assign cnt_L1D = (cnt_L1D_read + cnt_L1D_write);
-assign cnt_L2 = (cnt_L2_read + cnt_L2_write);
 
 
 integer j;
@@ -190,8 +186,8 @@ always @(posedge clk) begin
 			cnt_L2_read_reg		<= cnt_L2_read;
 			cnt_L2_write_reg	<= cnt_L2_write;
 			cnt_L2_miss_reg		<= cnt_L2_miss;
-			cnt_L1D_reg			<= cnt_L1D;
-			cnt_L2_reg 			<= cnt_L2;
+			cnt_L1D_reg			<= (cnt_L1D_read + cnt_L1_D_write);
+			cnt_L2_reg 			<= (cnt_L2_read + cnt_L2_write);
 			signal				<= 1;
 			wr_en				<= 1;
 			j 					<= 0;
