@@ -18,7 +18,7 @@ module counter_2 #(
 	output reg  wr_en
 );
 
-reg signal;							// clk count 값이 time 1,2,3 중 하나일 떄 high로 올라가고, 모든 데이터를 보내면 다시 Low
+reg signal;							// clk count ê°ì´ time 1,2,3 ì¤ íëì¼ ë highë¡ ì¬ë¼ê°ê³ , ëª¨ë  ë°ì´í°ë¥¼ ë³´ë´ë©´ ë¤ì Low
 reg [31:0] clk_count;                
 
 reg	read_C_L1I_prev	;
@@ -178,7 +178,7 @@ always @(posedge clk) begin
 		miss_L2_L1_prev		<= miss_L2_L1;
 
         	
-        if (clk_count == 1000 || clk_count == 1500 || clk_count == 2000) begin
+        if (clk_count == 120 || clk_count == 240 || clk_count == 360) begin
             
 			cnt_L1I_read_reg	<= cnt_L1I_read;
 			cnt_L1I_miss_reg	<= cnt_L1I_miss;
@@ -200,7 +200,7 @@ always @(posedge clk) begin
 
 				// L1 I count
             	if (j == 0) begin
-                	data_o	<= 8'b0110_0001; //a 출력
+                	data_o	<= 8'b0110_0001; //a ì¶ë ¥
 			    	j <= j + 1;
 		    	end
             	else if(j == 1) begin	
@@ -264,7 +264,7 @@ always @(posedge clk) begin
 
 				//L1 D count
 				else if (j == 7) begin
-					data_o	<= 8'b0110_0010;  //b 출력
+					data_o	<= 8'b0110_0010;  //b ì¶ë ¥
 					j <= j + 1;
 				end
 				else if(j == 8) begin	
@@ -325,7 +325,7 @@ always @(posedge clk) begin
 
 				//L2 count
 				else if (j == 14) begin
-					data_o	<= 8'b0110_0011;  //c 출력
+					data_o	<= 8'b0110_0011;  //c ì¶ë ¥
 					j <= j + 1;
 				end
 				else if(j == 15) begin	
@@ -381,12 +381,11 @@ always @(posedge clk) begin
 						data_o	<= {4'b0011, cnt_L2_reg[3:0]};
 					end
 					j <= j+1;
-				end
-
-				else begin
 					signal <= 0;
 					wr_en  <= 0;
 				end
+
+			
 
 			end
 		end
@@ -395,3 +394,6 @@ end
 	
 
 endmodule
+
+
+
