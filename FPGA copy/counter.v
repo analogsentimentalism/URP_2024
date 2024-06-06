@@ -186,7 +186,7 @@ always @(posedge clk) begin
 			cnt_L2_read_reg		<= cnt_L2_read;
 			cnt_L2_write_reg	<= cnt_L2_write;
 			cnt_L2_miss_reg		<= cnt_L2_miss;
-			cnt_L1D_reg			<= (cnt_L1D_read + cnt_L1_D_write);
+			cnt_L1D_reg			<= (cnt_L1D_read + cnt_L1D_write);
 			cnt_L2_reg 			<= (cnt_L2_read + cnt_L2_write);
 			signal				<= 1;
 			wr_en				<= 1;
