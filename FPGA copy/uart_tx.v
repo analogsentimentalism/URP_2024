@@ -13,12 +13,11 @@ module TX_2(
     reg [3:0] state;
     reg [31:0] clk_count; // 2604*10= 26040
     reg	tx_start_prev;
-    reg [7:0] din_prev;
+
 
     
 
     always @(posedge clk) begin
-        din_prev <= din;
         tx_start_prev <= tx_start;
     end
     
