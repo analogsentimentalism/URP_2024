@@ -4,13 +4,13 @@ module counter_2 #(
 ) (
 	input		clk,
 	input		rstn,
-	input		read_C_L1I,
+	input		read_C_L1I,//
 	input		miss_L1I_C,
-	input		read_C_L1D,
+	input		read_C_L1D,//
 	input		write_C_L1D,
 	input		miss_L1D_C,
-	input		read_L1_L2,
-	input		write_L1_L2,
+	input		read_L1_L2,//
+	input		write_L1_L2,//
 	input		miss_L2_L1,
     
 	
