@@ -43,11 +43,11 @@ reg	[11:0] cnt_L2_miss;
 
 reg	[11:0] cnt_L1I_read_reg;
 reg	[11:0] cnt_L1I_miss_reg;
-reg	[11:0] cnt_L1D_read_reg;
-reg	[11:0] cnt_L1D_write_reg;
+//reg	[11:0] cnt_L1D_read_reg;
+//reg	[11:0] cnt_L1D_write_reg;
 reg	[11:0] cnt_L1D_miss_reg;
-reg	[11:0] cnt_L2_read_reg;
-reg	[11:0] cnt_L2_write_reg;
+//reg	[11:0] cnt_L2_read_reg;
+//reg	[11:0] cnt_L2_write_reg;
 reg	[11:0] cnt_L2_miss_reg;
 reg [11:0] cnt_L1D_reg;
 reg [11:0] cnt_L2_reg;
@@ -158,11 +158,11 @@ always @(posedge clk) begin
 
 		cnt_L1I_read_reg	<= 'b0;
 		cnt_L1I_miss_reg	<= 'b0;
-		cnt_L1D_read_reg	<= 'b0;
-		cnt_L1D_write_reg	<= 'b0;
+		//cnt_L1D_read_reg	<= 'b0;
+		//cnt_L1D_write_reg	<= 'b0;
 		cnt_L1D_miss_reg	<= 'b0;
-		cnt_L2_read_reg		<= 'b0;
-		cnt_L2_write_reg	<= 'b0;
+		//cnt_L2_read_reg		<= 'b0;
+		//cnt_L2_write_reg	<= 'b0;
 		cnt_L2_miss_reg		<= 'b0;
 	end
 	else begin
@@ -180,11 +180,11 @@ always @(posedge clk) begin
             
 			cnt_L1I_read_reg	<= cnt_L1I_read;
 			cnt_L1I_miss_reg	<= cnt_L1I_miss;
-			cnt_L1D_read_reg	<= cnt_L1D_read;
-			cnt_L1D_write_reg	<= cnt_L1D_write;
+			//cnt_L1D_read_reg	<= cnt_L1D_read;
+			//cnt_L1D_write_reg	<= cnt_L1D_write;
 			cnt_L1D_miss_reg	<= cnt_L1D_miss;
-			cnt_L2_read_reg		<= cnt_L2_read;
-			cnt_L2_write_reg	<= cnt_L2_write;
+			//cnt_L2_read_reg		<= cnt_L2_read;
+			//cnt_L2_write_reg	<= cnt_L2_write;
 			cnt_L2_miss_reg		<= cnt_L2_miss;
 			cnt_L1D_reg			<= (cnt_L1D_read + cnt_L1D_write);
 			cnt_L2_reg 			<= (cnt_L2_read + cnt_L2_write);

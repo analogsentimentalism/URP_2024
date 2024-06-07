@@ -263,15 +263,6 @@ counter_2 u_counter(
 );
 
 
-TX_2 u_tx(
-    .clk(clk),
-    .rstn(rstn),
-    .din(data_out),
-    .tx_start(rd_en),
-    .tx_data(tx_data)
-);
-
-
 fifo u_fifo(
     .data_in(data_o),
     .clk(clk),
@@ -280,5 +271,16 @@ fifo u_fifo(
     .data_out(data_out),
     .rd_en(rd_en)
 );
+
+
+
+TX_2 u_tx(
+    .clk(clk),
+    .rstn(rstn),
+    .din(data_out),
+    .tx_start(rd_en),
+    .tx_data(tx_data)
+);
+
 
 endmodule
