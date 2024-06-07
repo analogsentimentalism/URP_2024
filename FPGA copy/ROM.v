@@ -16,7 +16,7 @@ module rom #(
 generate
 if (INIT_FILE != "") begin: use_init_file
 	initial
-	$readmemh(INIT_FILE, ROM);
+	$readmemh(INIT_FILE, ROM, 0, RAM_DEPTH-1);
 end else begin: init_bram_to_zero
 	integer ram_index;
 	initial

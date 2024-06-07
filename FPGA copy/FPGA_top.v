@@ -25,7 +25,8 @@ module FPGA_top #(
 	output	ddr2_cs_n,
 	output	[1:0]ddr2_dm,
 	output	ddr2_odt,
-	output [15:0] LED
+	output [15:0] LED,
+	output	[1:0] test_led
 );
 
 wire	[31:0]	rw_address;
@@ -80,6 +81,8 @@ wire			done;
 wire	[7:0]	data_o;
 wire	[7:0]	data_out;
 wire 			clk_cpu;
+
+assign	test_led = data_out[1:0];
 
 rvsteel_core #(
 	.BOOT_ADDRESS			(	PC_START		)
@@ -152,9 +155,12 @@ LED_module u_LED_module (
 	.clk(clk_cpu),
 	.rstn(~rst),
 	.LED(LED),
-	.ready_L1I_C(ready_L1I_C),
-	.read_data_L1I_C(read_data_L1I_C),
-	.read_C_L1I(read_C_L1I)
+	// .ready_L1I_C(ready_L1I_C),
+	// .read_data_L1I_C(read_data_L1I_C),
+	// .read_C_L1I(read_C_L1I)
+	.ready_L1I_C(ready_MEM_L2_dram),
+	.read_data_L1I_C(read_data_MEM_L2_bram),
+	.read_C_L1I(read_L2_MEM)
 );
 top u_top (
 	.clk				(	clk_cpu					),

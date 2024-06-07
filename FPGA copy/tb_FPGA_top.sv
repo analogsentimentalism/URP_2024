@@ -5,7 +5,7 @@ reg		clk				;
 reg		rst				;
 reg		enb				;
 wire	data_o			;
-wire	[3:0]	test_led;
+wire	[15:0]	test_led;
 
     //////  DDR2 Model  //////
     wire ddr2_ck_p, ddr2_ck_n, ddr2_cke, ddr2_cs_n, ddr2_ras_n, ddr2_cas_n, ddr2_we_n, ddr2_odt;
@@ -39,8 +39,7 @@ FPGA_top u_FPGA_top (
 	.rst(rst),
 	.enb(enb),
 	.tx_data(data_o),
-	.test_led(test_led),
-	   .ddr2_dq(ddr2_dq),
+	.ddr2_dq(ddr2_dq),
     .ddr2_dqs_n(ddr2_dqs_n),
     .ddr2_dqs_p(ddr2_dqs_p),
     .ddr2_addr(ddr2_addr),
@@ -53,7 +52,8 @@ FPGA_top u_FPGA_top (
     .ddr2_cke(ddr2_cke),
     .ddr2_cs_n(ddr2_cs_n),
     .ddr2_dm(ddr2_dm),
-    .ddr2_odt(ddr2_odt)
+    .ddr2_odt(ddr2_odt),
+	.LED(LED)
 );
 
 
