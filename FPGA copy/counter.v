@@ -1,7 +1,4 @@
-module counter_2 #(
-	parameter ICNT = 60000,	
-	parameter JCNT = 10000    
-) (
+module counter_2 (
 	input		clk,
 	input		rstn,
 	input		read_C_L1I,//
