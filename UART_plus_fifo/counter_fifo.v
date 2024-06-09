@@ -4,13 +4,13 @@ module counter_2 #(
 ) (
 	input		clk,
 	input		rstn,
-	input		read_C_L1I,
+	input		read_C_L1I,//
 	input		miss_L1I_C,
-	input		read_C_L1D,
+	input		read_C_L1D,//
 	input		write_C_L1D,
 	input		miss_L1D_C,
-	input		read_L1_L2,
-	input		write_L1_L2,
+	input		read_L1_L2,//
+	input		write_L1_L2,//
 	input		miss_L2_L1,
     
 	
@@ -43,11 +43,11 @@ reg	[11:0] cnt_L2_miss;
 
 reg	[11:0] cnt_L1I_read_reg;
 reg	[11:0] cnt_L1I_miss_reg;
-reg	[11:0] cnt_L1D_read_reg;
-reg	[11:0] cnt_L1D_write_reg;
+//reg	[11:0] cnt_L1D_read_reg;
+//reg	[11:0] cnt_L1D_write_reg;
 reg	[11:0] cnt_L1D_miss_reg;
-reg	[11:0] cnt_L2_read_reg;
-reg	[11:0] cnt_L2_write_reg;
+//reg	[11:0] cnt_L2_read_reg;
+//reg	[11:0] cnt_L2_write_reg;
 reg	[11:0] cnt_L2_miss_reg;
 reg [11:0] cnt_L1D_reg;
 reg [11:0] cnt_L2_reg;
@@ -158,11 +158,11 @@ always @(posedge clk) begin
 
 		cnt_L1I_read_reg	<= 'b0;
 		cnt_L1I_miss_reg	<= 'b0;
-		cnt_L1D_read_reg	<= 'b0;
-		cnt_L1D_write_reg	<= 'b0;
+		//cnt_L1D_read_reg	<= 'b0;
+		//cnt_L1D_write_reg	<= 'b0;
 		cnt_L1D_miss_reg	<= 'b0;
-		cnt_L2_read_reg		<= 'b0;
-		cnt_L2_write_reg	<= 'b0;
+		//cnt_L2_read_reg		<= 'b0;
+		//cnt_L2_write_reg	<= 'b0;
 		cnt_L2_miss_reg		<= 'b0;
 	end
 	else begin
@@ -180,13 +180,13 @@ always @(posedge clk) begin
             
 			cnt_L1I_read_reg	<= cnt_L1I_read;
 			cnt_L1I_miss_reg	<= cnt_L1I_miss;
-			cnt_L1D_read_reg	<= cnt_L1D_read;
-			cnt_L1D_write_reg	<= cnt_L1D_write;
+			//cnt_L1D_read_reg	<= cnt_L1D_read;
+			//cnt_L1D_write_reg	<= cnt_L1D_write;
 			cnt_L1D_miss_reg	<= cnt_L1D_miss;
-			cnt_L2_read_reg		<= cnt_L2_read;
-			cnt_L2_write_reg	<= cnt_L2_write;
+			//cnt_L2_read_reg		<= cnt_L2_read;
+			//cnt_L2_write_reg	<= cnt_L2_write;
 			cnt_L2_miss_reg		<= cnt_L2_miss;
-			cnt_L1D_reg			<= (cnt_L1D_read + cnt_L1_D_write);
+			cnt_L1D_reg			<= (cnt_L1D_read + cnt_L1D_write);
 			cnt_L2_reg 			<= (cnt_L2_read + cnt_L2_write);
 			signal				<= 1;
 			wr_en				<= 1;
