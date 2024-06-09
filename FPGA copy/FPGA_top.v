@@ -253,21 +253,29 @@ mig_example_top u_mig_example_top(
 );
 
 
-counter_2 u_counter(
-    .clk(clk_cpu),
-    .rstn(~rst),
-    .read_C_L1I(read_C_L1I),
-    .miss_L1I_C(L1I_miss_o),
-    .read_C_L1D(read_C_L1D),
-    .write_C_L1D(write_C_L1D),
-    .miss_L1D_C(L1D_miss_o),
-    .read_L1_L2(read_L1_L2),
-    .write_L1_L2(write_L1_L2),
-    .miss_L2_L1(L2_miss_o),
-    .data_o(data_o),
-    .wr_en(wr_en)
-);
+// counter_2 u_counter(
+//     .clk(clk_cpu),
+//     .rstn(~rst),
+//     .read_C_L1I(read_C_L1I),
+//     .miss_L1I_C(L1I_miss_o),
+//     .read_C_L1D(read_C_L1D),
+//     .write_C_L1D(write_C_L1D),
+//     .miss_L1D_C(L1D_miss_o),
+//     .read_L1_L2(read_L1_L2),
+//     .write_L1_L2(write_L1_L2),
+//     .miss_L2_L1(L2_miss_o),
+//     .data_o(data_o),
+//     .wr_en(wr_en)
+// );
 
+data_separator u_data_separator(
+	.clk			(	clk_cpu			),
+	.rstn			(	~rst			),
+	.data_i			(	read_data_L1I_C	),
+	.valid_pulse_i	(	ready_L1I_C		),
+	.data_o			(	data_o			),
+	.valid_o		(	wr_en			)
+);
 
 fifo u_fifo(
     .data_in(data_o),
