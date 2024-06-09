@@ -254,7 +254,7 @@ mig_example_top u_mig_example_top(
 
 
 counter_2 u_counter(
-    .clk(clk),
+    .clk(clk_cpu),
     .rstn(~rst),
     .read_C_L1I(read_C_L1I),
     .miss_L1I_C(L1I_miss_o),
@@ -271,7 +271,7 @@ counter_2 u_counter(
 
 fifo u_fifo(
     .data_in(data_o),
-    .clk(clk),
+    .clk(clk_cpu),
     .rstn(~rst),
     .wr_en(wr_en),        
     .data_out(data_out),
@@ -281,7 +281,7 @@ fifo u_fifo(
 
 
 TX_2 u_tx(
-    .clk(clk),
+    .clk(clk_cpu),
     .rstn(~rst),
     .din(data_out),
     .tx_start(rd_en),
