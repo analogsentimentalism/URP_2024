@@ -28,6 +28,15 @@ wire uart_ready;
 wire [7:0]data_out;
 wire rd_en;
 
+reg ready_state;
+always @(posedge clk) begin
+    if (rst) 
+        ready_state <= 1'b0;
+    else if (ready_MEM_L2_dram)
+        ready_state <= 1'b1;
+    else
+        ready_state <= ready_state;
+end
 mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
 	.CPU_RESETN(~rst),
@@ -60,7 +69,7 @@ data_separator u_data_separator(
 	.clk			(	clk_cpu			),
 	.rstn			(	~rst			),
 	.data_i			(	read_data_MEM_L2_dram	),
-	.valid_pulse_i	(	ready_MEM_L2_dram	),
+	.valid_pulse_i	(	ready_MEM_L2_dram & !ready_state	),
 
 	.ready			(	uart_ready		),
 	.data_o			(	data_out		),
