@@ -273,11 +273,11 @@ wire uart_ready;
 data_separator u_data_separator(
 	.clk			(	clk_cpu			),
 	.rstn			(	~rst			),
-	.data_i			(	read_data_L1I_C	),
-	.valid_pulse_i	(	ready_L1I_C		),
+	.data_i			(	read_data_MEM_L2_dram	),
+	.valid_pulse_i	(	ready_MEM_L2_dram	),
+	.ready			(	uart_ready		),
 	.data_o			(	data_out		),
-	.valid_o		(	rd_en			),
-	.ready			(	uart_ready		)
+	.valid_o		(	rd_en			)
 );
 
 // fifo u_fifo(

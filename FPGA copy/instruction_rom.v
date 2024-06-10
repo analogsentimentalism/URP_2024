@@ -54,6 +54,9 @@ always @(posedge clk) begin
 	else begin
 		if (~enb) begin
 			flag	<= 1'b1;
+			if(ready_MEM_L2) begin
+				ready_MEM_L2	<= 1'b0;
+			end
 			if(~flag | ready_MEM | |cnt | state) begin
 				if(state) begin
 					state	<= 1'b0;
@@ -72,20 +75,14 @@ always @(posedge clk) begin
 					end
 					else begin
 						cnt				<= cnt + 1;
-						ready_MEM_L2	<= 1'b0;
 					end
 				end
 				else begin
-					ready_MEM_L2	<= 1'b0;
 					state	<= 1'b1;
 				end
 			end
 			else begin
-				ready_MEM_L2	<= 1'b0;
 			end
-		end
-		else begin
-			ready_MEM_L2	<= 1'b0;
 		end
 	end
 end
