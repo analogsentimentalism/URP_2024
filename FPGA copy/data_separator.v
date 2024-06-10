@@ -1,16 +1,17 @@
 module data_separator (
-	clk, rstn, data_i, valid_pulse_i, data_o, valid_o
+	clk, rstn, data_i, valid_pulse_i, ready, data_o, valid_o
 );
 
 input					clk;
 input					rstn;
 input		[31:0	]	data_i;
 input					valid_pulse_i;
+input					ready;
 output	reg	[7:0	]	data_o;
 output	reg				valid_o;
 
 reg			[9:0	]	addra,	addrb;
-reg			[1:0	]	cnt;
+reg			[1:0	]	cnt,	cnt_n;
 
 wire		[31:0	]	doutb;
 wire					wen;
@@ -20,9 +21,9 @@ assign	empty		= (addra == addrb);
 assign	wen			= valid_pulse_i;
 
 xilinx_true_dual_port_no_change_2_clock_ram #(
-	.RAM_DEPTH			(	32'd1024		),
+	.RAM_DEPTH			(	32'd10		),
 	.RAM_PERFORMANCE	(	"LOW_LATENCY"	),
-	.INIT_FILE			(	""				)
+	.INIT_FILE			(	"uart_test.txt"	)
 ) buffer (
     .addra(addra),   // Port A address bus, width determined from RAM_DEPTH
     .addrb(addrb),   // Port B address bus, width determined from RAM_DEPTH
@@ -44,26 +45,29 @@ xilinx_true_dual_port_no_change_2_clock_ram #(
 
 always @(posedge clk) begin
 	if (~rstn) begin
-		addra	<= 10'b0;
-		addrb	<= 10'b0;
+		addra	<= 10'd5;
+		addrb	<= 10'd0;
 		cnt		<= 2'b0;
-		valid_o	<= 1'b0;
+		cnt_n	<= 2'b0;
 		data_o	<= 8'b0;
+		valid_o	<= 1'b0;
 	end
 	else begin
-		data_o		<= doutb[(3-cnt)*8+:8];
+		data_o		<= doutb[(3-cnt_n)*8+:8];
+		if(ready) begin
+			cnt_n		<= cnt;
+		end
 		if(wen) begin
 			addra	<= addra + 1'b1;
 		end
 		// for read
-		if (~empty | |cnt) begin
+		if ((~empty | |cnt) & ready) begin
 			cnt	<= cnt + 1'b1;
-			if(&cnt) begin
+			if(&cnt_n) begin
 				addrb	<= addrb + 1'b1;
 			end
 		end
-
-		valid_o	<= ~empty | |cnt;
+		valid_o	<= (~empty | |cnt) & ready;
 	end
 end
 

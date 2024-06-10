@@ -268,23 +268,26 @@ mig_example_top u_mig_example_top(
 //     .wr_en(wr_en)
 // );
 
+wire uart_ready;
+
 data_separator u_data_separator(
 	.clk			(	clk_cpu			),
 	.rstn			(	~rst			),
 	.data_i			(	read_data_L1I_C	),
 	.valid_pulse_i	(	ready_L1I_C		),
-	.data_o			(	data_o			),
-	.valid_o		(	wr_en			)
+	.data_o			(	data_out		),
+	.valid_o		(	rd_en			),
+	.ready			(	uart_ready		)
 );
 
-fifo u_fifo(
-    .data_in(data_o),
-    .clk(clk_cpu),
-    .rstn(~rst),
-    .wr_en(wr_en),        
-    .data_out(data_out),
-    .rd_en(rd_en)
-);
+// fifo u_fifo(
+//     .data_in(data_o),
+//     .clk(clk_cpu),
+//     .rstn(~rst),
+//     .wr_en(wr_en),        
+//     .data_out(data_out),
+//     .rd_en(rd_en)
+// );
 
 
 
@@ -293,7 +296,8 @@ TX_2 u_tx(
     .rstn(~rst),
     .din(data_out),
     .tx_start(rd_en),
-    .tx_data(tx_data)
+    .tx_data(tx_data),
+	.ready(uart_ready)
 );
 
 

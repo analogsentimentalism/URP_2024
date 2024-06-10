@@ -1,23 +1,37 @@
 `timescale 1ns/1ns
-module tb_dsnfifo ();
+module top_dsnfifo ();
 
-reg					clk;
-reg					rstn;
-reg		[31:0	]	data_i;
-reg					valid_pulse_i;
+input				clk;
+input				reset;
+input	[3:0	]	tx_data_i;
+input				ld_tx_data;
+
+
 wire	[7:0	]	data_o;
 wire				valid_o;
 wire				tx_data;
 wire				ready;
+wire				valid_pulse_i;
+
+wire				rstn;
+assign	rstn	= ~reset;
+
+
+reg					led_tx_data_reg;
+
+always @(posedge clk) begin
+	if()
+end
+
 
 data_separator u_ds (
-	.clk			(	clk				), 
-	.rstn			(	rstn			), 
-	.data_i			(	data_i			), 
-	.valid_pulse_i	(	valid_pulse_i	), 
-	.data_o			(	data_o			), 
-	.valid_o		(	valid_o			),
-	.ready			(	ready			)
+	.clk			(	clk					), 
+	.rstn			(	rstn				), 
+	.data_i			(	{28'b0, tx_data_i}	), 
+	.valid_pulse_i	(	valid_pulse_i		), 
+	.data_o			(	data_o				), 
+	.valid_o		(	valid_o				),
+	.ready			(	ready				)
 );
 
 TX_2 u_tx(

@@ -3,7 +3,7 @@ module TX_2(
     input rstn,
     input [7:0] din,                        
     input tx_start,                            // counter.v의 done과 연결
-    
+    output ready,
     output reg tx_data
     );
     
@@ -15,7 +15,7 @@ module TX_2(
     reg	tx_start_prev;
 
 
-    
+    assign ready = ~|state & ~tx_start;
 
     always @(posedge clk) begin
         tx_start_prev <= tx_start;
