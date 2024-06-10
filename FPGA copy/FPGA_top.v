@@ -83,7 +83,6 @@ wire	[7:0]	data_out;
 wire 			clk_cpu;
 
 wire			read_L2_MEM_w;
-wire			write_dram_w;
 
 assign	test_led = data_out[1:0];
 
@@ -249,7 +248,7 @@ mig_example_top u_mig_example_top(
 	.CPU_RESETN(~rst),
 	.LED(),
 	.read_L2_MEM(read_L2_MEM_w),
-	.write_L2_MEM(write_dram_w),
+	.write_L2_MEM(write_dram),
 	.tag_L2_MEM(tag_L2_MEM),
 	.index_L2_MEM(dram_index),
 	.write_tag_L2_MEM(write_dram_tag),
