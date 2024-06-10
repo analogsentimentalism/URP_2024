@@ -82,6 +82,9 @@ wire	[7:0]	data_o;
 wire	[7:0]	data_out;
 wire 			clk_cpu;
 
+wire			read_L2_MEM_w;
+wire			write_dram_w;
+
 assign	test_led = data_out[1:0];
 
 reg		read_request_reg;
@@ -236,16 +239,17 @@ instruction_rom #(
 assign	write_dram_tag		= enb ? write_tag_L2_MEM		:	init_address[25-:18	];
 assign	dram_index			= enb ? index_L2_MEM			:	init_address[0+:8	];
 assign	write_data_MEM		= enb ? write_data_L2_MEM		:	read_data_MEM_L2_bram;
-assign	write_dram			= enb ? write_L2_MEM			:	ready_MEM_L2_bram;
+assign	write_dram			= enb ? write_L2_MEM & 	 ~ready_MEM_L2_dram		:	ready_MEM_L2_bram;
 assign	read_data_MEM_L2	= enb ? read_data_MEM_L2_dram	:	512'h0;
 assign	ready_MEM_L2 		= enb & ready_MEM_L2_dram;
+assign	read_L2_MEM_w		= read_L2_MEM & ~ready_MEM_L2_dram;
 
 mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
 	.CPU_RESETN(~rst),
 	.LED(),
-	.read_L2_MEM(read_L2_MEM),
-	.write_L2_MEM(write_dram),
+	.read_L2_MEM(read_L2_MEM_w),
+	.write_L2_MEM(write_dram_w),
 	.tag_L2_MEM(tag_L2_MEM),
 	.index_L2_MEM(dram_index),
 	.write_tag_L2_MEM(write_dram_tag),
