@@ -69,7 +69,7 @@ initial begin
    enb   = 'b0;
 	repeat(10) @(posedge clk);
    rst = 'b0;
-	repeat(10000) @(posedge clk);
+	repeat(15000) @(posedge clk);
    enb = 'b1;
 end
 

@@ -195,187 +195,25 @@ always @(posedge clk) begin
 
 				// L1 I count
             	if (j == 0) begin
-                	data_o	<= 
+                	data_o	<= {8'b0110_0001, 8'b0110_0001, 4'b0000, cnt_L1I_miss_reg}; // aa~
 			    	j <= j + 1;
 		    	end
-            	else if(j == 1) begin	
-                	if(cnt_L1I_miss_reg[11:8] > 4'b1001) begin
-			        	data_o	<= {4'b0100, cnt_L1I_miss_reg[11:8]-4'b1001};
-                	end
-			   	 	else begin
-						data_o	<= {4'b0011, cnt_L1I_miss_reg[11:8]};
-					end
-                	j <= j + 1;
-		    	end
-		    	else if(j == 2) begin	
-			    	if(cnt_L1I_miss_reg[7:4] > 4'b1001) begin
-			        	data_o	<= {4'b0100, cnt_L1I_miss_reg[7:4]-4'b1001};
-                	end
-			    	else begin 
-						data_o	<= {4'b0011, cnt_L1I_miss_reg[7:4]};
-					end
-			    	j <= j + 1;
-		    	end
-            	else if(j == 3) begin	
-			    	if(cnt_L1I_miss_reg[3:0] > 4'b1001) begin
-			        	data_o	<= {4'b0100, cnt_L1I_miss_reg[3:0]-4'b1001};
-                	end
-			    	else begin 
-						data_o	<= {4'b0011, cnt_L1I_miss_reg[3:0]};
-					end
-			    	j <= j + 1;
-		    	end
-            
-            	else if(j == 4) begin	
-                	if(cnt_L1I_read_reg[11:8] > 4'b1001) begin
-			        	data_o	<= {4'b0100, cnt_L1I_read_reg[11:8]-4'b1001};
-                	end
-			    	else begin
-						data_o	<= {4'b0011, cnt_L1I_read_reg[11:8]};
-					end
-                	j <= j + 1;
-		    	end
-		    	else if(j == 5) begin	
-			    	if(cnt_L1I_read_reg[7:4] > 4'b1001) begin
-			        	data_o	<= {4'b0100, cnt_L1I_read_reg[7:4]-4'b1001};
-                	end
-			    	else begin 
-						data_o	<= {4'b0011, cnt_L1I_read_reg[7:4]};
-					end
-			    	j <= j + 1;
-		    	end
-            	else if(j == 6) begin	
-			    	if(cnt_L1I_read_reg[3:0] > 4'b1001) begin
-			        	data_o	<= {4'b0100, cnt_L1I_read_reg[3:0]-4'b1001};
-                	end
-			    	else begin
-						data_o	<= {4'b0011, cnt_L1I_read_reg[3:0]};
-					end
-			    	j <= j + 1;
-		    	end
-
+            	
 
 
 
 				//L1 D count
-				else if (j == 7) begin
-					data_o	<= 8'b0110_0010;  // 2nd.
+				else if (j == 1) begin
+					data_o	<= {8'b0110_0010, 8'b0110_0010, 4'b0000, cnt_L1D_miss_reg};  // bb~
 					j <= j + 1;
 				end
-				else if(j == 8) begin	
-					if(cnt_L1D_miss_reg[11:8] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L1D_miss_reg[11:8]-4'b1001};
-					end
-					else begin 	
-						data_o	<= {4'b0011, cnt_L1D_miss_reg[11:8]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 9) begin	
-					if(cnt_L1D_miss_reg[7:4] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L1D_miss_reg[7:4]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L1D_miss_reg[7:4]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 10) begin	
-					if(cnt_L1D_miss_reg[3:0] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L1D_miss_reg[3:0]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L1D_miss_reg[3:0]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 11) begin	
-					if(cnt_L1D_reg[11:8] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L1D_reg[11:8]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L1D_reg[11:8]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 12) begin	
-					if(cnt_L1D_reg[7:4] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L1D_reg[7:4]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L1D_reg[7:4]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 13) begin	
-					if(cnt_L1D_reg[3:0] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L1D_reg[3:0]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L1D_reg[3:0]};
-					end
-					j <= j + 1;
-				end
+				
 
 
 				//L2 count
-				else if (j == 14) begin
-					data_o	<= 8'b0110_0011;  //c ì¶ë ¥
+				else if (j == 2) begin
+					data_o	<= {8'b0110_0011, 8'b0110_0011, 4'b0000, cnt_L2_miss_reg};  // cc~
 					j <= j + 1;
-				end
-				else if(j == 15) begin	
-					if(cnt_L2_miss_reg[11:8] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L2_miss_reg[11:8]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L2_miss_reg[11:8]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 16) begin	
-					if(cnt_L2_miss_reg[7:4] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L2_miss_reg[7:4]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L2_miss_reg[7:4]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 17) begin	
-					if(cnt_L2_miss_reg[3:0] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L2_miss_reg[3:0]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L2_miss_reg[3:0]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 18) begin	
-					if(cnt_L2_reg[11:8] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L2_reg[11:8]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L2_reg[11:8]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 19) begin	
-					if(cnt_L2_reg[7:4] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L2_reg[7:4]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L2_reg[7:4]};
-					end
-					j <= j + 1;
-				end
-				else if(j == 20) begin	
-					if(cnt_L2_reg[3:0] > 4'b1001) begin
-						data_o	<= {4'b0100, cnt_L2_reg[3:0]-4'b1001};
-					end
-					else begin
-						data_o	<= {4'b0011, cnt_L2_reg[3:0]};
-					end
-					j <= j+1;
 					signal <= 0;
 					wr_en  <= 0;
 				end
