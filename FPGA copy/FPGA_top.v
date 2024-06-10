@@ -84,6 +84,22 @@ wire 			clk_cpu;
 
 assign	test_led = data_out[1:0];
 
+reg		read_request_reg;
+
+always @(posedge clk) begin
+	if(rst) begin
+		read_request_reg	<= 32'b0;
+	end
+	else begin
+		if(read_request_reg) begin
+			read_request_reg	<= 1'b0;
+		end
+		else begin
+			read_request_reg	<= read_C_L1I_n;
+		end
+	end
+end
+
 rvsteel_core #(
 	.BOOT_ADDRESS			(	PC_START		)
 ) u_cpu (
@@ -273,8 +289,9 @@ wire uart_ready;
 data_separator u_data_separator(
 	.clk			(	clk_cpu			),
 	.rstn			(	~rst			),
-	.data_i			(	read_data_MEM_L2_dram	),
-	.valid_pulse_i	(	ready_MEM_L2_dram	),
+	.data_i			(	read_data_L1I_C	),
+	.valid_pulse_i	(	ready_L1I_C	),
+	
 	.ready			(	uart_ready		),
 	.data_o			(	data_out		),
 	.valid_o		(	rd_en			)

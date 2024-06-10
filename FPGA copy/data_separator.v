@@ -21,7 +21,7 @@ assign	empty		= (addra == addrb);
 assign	wen			= valid_pulse_i;
 
 xilinx_true_dual_port_no_change_2_clock_ram #(
-	.RAM_DEPTH			(	32'd10		),
+	.RAM_DEPTH			(	32'd1024		),
 	.RAM_PERFORMANCE	(	"LOW_LATENCY"	),
 	.INIT_FILE			(	"uart_test.txt"	)
 ) buffer (
