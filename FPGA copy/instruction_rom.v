@@ -4,7 +4,8 @@ module instruction_rom #(
 	parameter	INIT_FILE   = "test.txt",
 	parameter	START_ADDR   = 32'h0,
 	parameter	TNUM      = 22,
-	parameter	INUM      = 26 - TNUM
+	parameter	INUM      = 26 - TNUM,
+	parameter	NUM_INST	= 667
 ) (
 	input					clk,
 	input					rstn,
@@ -20,8 +21,7 @@ reg		[3:0			]	cnt;
 reg		[25:0			]	addra_r;
 wire	[30:0			]	addra;
 wire						invalid;
-
-reg							ready_temp;
+reg		[31:0			]	cnt_inst;
 
 assign	addra			= {addra_r - START_ADDR[6+:26], cnt} - START_ADDR[5:2];
 assign	invalid			= ({addra_r - START_ADDR[6+:26], cnt} < START_ADDR[5:2]) | (addra >= RAM_DEPTH);
@@ -39,8 +39,6 @@ rom #(
 );
 
 reg		state;
-reg		ready_MEM_prev;
-reg		ready_MEM_temp;
 reg		flag;
 
 always @(posedge clk) begin
@@ -50,15 +48,17 @@ always @(posedge clk) begin
 		cnt					<= 4'b0;
 		state				<= 1'b0;
 		flag				<= 1'b0;
+		cnt_inst			<= 32'b0;
 	end
 	else begin
-		if (~enb) begin
+		if (~enb & (cnt_inst < NUM_INST)) begin
 			flag	<= 1'b1;
 			if(ready_MEM_L2) begin
 				ready_MEM_L2	<= 1'b0;
 			end
 			if(~flag | ready_MEM | |cnt | state) begin
 				if(state) begin
+					cnt_inst <= cnt_inst + 1;
 					state	<= 1'b0;
 					
 					if (invalid) begin
@@ -81,8 +81,9 @@ always @(posedge clk) begin
 					state	<= 1'b1;
 				end
 			end
-			else begin
-			end
+		end
+		else begin
+			ready_MEM_L2	<= 1'b0;
 		end
 	end
 end
