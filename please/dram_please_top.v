@@ -29,6 +29,10 @@ wire [7:0]data_out;
 wire rd_en;
 
 reg ready_state;
+
+assign LED[0] = write;
+assign  LED[1] = read;
+
 always @(posedge clk) begin
     if (rst) 
         ready_state <= 1'b0;
