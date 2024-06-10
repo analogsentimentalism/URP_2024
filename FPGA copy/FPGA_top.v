@@ -111,7 +111,7 @@ always @(posedge clk) begin
 		ready_DRAM_reg_n	<= 1'b0;
 	end
 	else begin
-		ready_DRAM_reg	<= ready_DRAM;
+		ready_DRAM_reg	<= ready_MEM_L2_dram;
 		ready_DRAM_reg_n	<= ready_DRAM_reg;
 	end
 end
