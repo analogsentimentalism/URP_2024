@@ -82,6 +82,8 @@ wire	[7:0]	data_o;
 wire	[7:0]	data_out;
 wire 			clk_cpu;
 
+wire			read_L2_MEM_w;
+
 assign	test_led = data_out[1:0];
 
 reg		read_request_reg;
@@ -236,15 +238,16 @@ instruction_rom #(
 assign	write_dram_tag		= enb ? write_tag_L2_MEM		:	init_address[25-:18	];
 assign	dram_index			= enb ? index_L2_MEM			:	init_address[0+:8	];
 assign	write_data_MEM		= enb ? write_data_L2_MEM		:	read_data_MEM_L2_bram;
-assign	write_dram			= enb ? write_L2_MEM			:	ready_MEM_L2_bram;
+assign	write_dram			= enb ? write_L2_MEM & 	 ~ready_MEM_L2_dram		:	ready_MEM_L2_bram;
 assign	read_data_MEM_L2	= enb ? read_data_MEM_L2_dram	:	512'h0;
 assign	ready_MEM_L2 		= enb & ready_MEM_L2_dram;
+assign	read_L2_MEM_w		= read_L2_MEM & ~ready_MEM_L2_dram;
 
 mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
 	.CPU_RESETN(~rst),
 	.LED(),
-	.read_L2_MEM(read_L2_MEM),
+	.read_L2_MEM(read_L2_MEM_w),
 	.write_L2_MEM(write_dram),
 	.tag_L2_MEM(tag_L2_MEM),
 	.index_L2_MEM(dram_index),
@@ -290,8 +293,8 @@ wire uart_ready;
 data_separator u_data_separator(
 	.clk			(	clk_cpu			),
 	.rstn			(	~rst			),
-	.data_i			(	read_data_MEM_L2	),
-	.valid_pulse_i	(	ready_MEM_L2		),
+	.data_i			(	read_data_L1I_C	),
+	.valid_pulse_i	(	ready_L1I_C		),
 
 	.ready			(	uart_ready		),
 	.data_o			(	data_out		),
