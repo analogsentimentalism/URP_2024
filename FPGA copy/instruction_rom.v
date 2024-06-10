@@ -17,7 +17,7 @@ module instruction_rom #(
 );
 
 wire	[RAM_WIDTH-1:0	]	douta;
-reg		[3:0			]	cnt;
+reg		[3:0			]	cnt,	cnt_n;
 reg		[25:0			]	addra_r;
 wire	[30:0			]	addra;
 wire						invalid;
@@ -47,20 +47,23 @@ always @(posedge clk) begin
 		ready_MEM_L2		<= 1'b0;
 		addra_r				<= START_ADDR[6+:26];
 		cnt					<= 4'b0;
+		cnt_n				<= 4'b0;
 		state				<= 1'b0;
 		flag				<= 1'b0;
 		cnt_inst			<= 32'b0;
 	end
 	else begin
 		flag	<= 1'b1;
-		if(cnt == 4'd15 & (~ready_MEM | ~flag)) begin
+		cnt_n	<= cnt;
+		if(cnt_n == 4'd15 & (~ready_MEM | ~flag)) begin
 			ready_MEM_L2	<= 1'b1;
 		end
 		else if (ready_MEM) begin
 			ready_MEM_L2	<= 1'b0;
 		end
+		
 		if (~enb & ((cnt_inst < NUM_INST) | ready_MEM | ~flag)) begin
-			if(ready_MEM | |cnt | state) begin
+			if(ready_MEM | |cnt | state | ~flag) begin
 				if(state) begin
 					cnt_inst <= cnt_inst + 1;
 					state	<= 1'b0;

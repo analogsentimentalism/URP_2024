@@ -67,9 +67,9 @@ initial begin
    clk   = 'b1;
    rst = 'b1;
    enb   = 'b0;
-#10;
+	repeat(10) @(posedge clk);
    rst = 'b0;
-#50000;
+	repeat(10000) @(posedge clk);
    enb = 'b1;
 end
 
