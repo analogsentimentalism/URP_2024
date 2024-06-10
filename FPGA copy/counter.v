@@ -173,7 +173,7 @@ always @(posedge clk) begin
 		miss_L2_L1_prev		<= miss_L2_L1;
 
         	
-        if (clk_count == 120 || clk_count == 240 || clk_count == 360) begin
+        if (clk_count == 500 || clk_count == 1500 || clk_count == 2500) begin
             
 			cnt_L1I_read_reg	<= cnt_L1I_read;
 			cnt_L1I_miss_reg	<= cnt_L1I_miss;
@@ -195,7 +195,7 @@ always @(posedge clk) begin
 
 				// L1 I count
             	if (j == 0) begin
-                	data_o	<= 8'b0110_0001; //a ì¶ë ¥
+                	data_o	<= 8'b0110_0001; //a 
 			    	j <= j + 1;
 		    	end
             	else if(j == 1) begin	
