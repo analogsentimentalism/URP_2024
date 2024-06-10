@@ -290,8 +290,8 @@ wire uart_ready;
 data_separator u_data_separator(
 	.clk			(	clk_cpu			),
 	.rstn			(	~rst			),
-	.data_i			(	read_data_MEM_L2	),
-	.valid_pulse_i	(	ready_MEM_L2		),
+	.data_i			(	read_data_MEM_L2_bram	),
+	.valid_pulse_i	(	ready_MEM_L2_bram		),
 
 	.ready			(	uart_ready		),
 	.data_o			(	data_out		),
