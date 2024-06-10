@@ -57,7 +57,7 @@ always @(posedge clk) begin
 		if(ready) begin
 			cnt_n		<= cnt;
 		end
-		if(wen) begin
+		if(wen & (addra < 32'd1000)) begin
 			addra	<= addra + 1'b1;
 		end
 		// for read

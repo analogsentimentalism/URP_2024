@@ -84,6 +84,9 @@ wire 			clk_cpu;
 
 wire			read_L2_MEM_w;
 
+reg		ready_DRAM_reg;
+reg		ready_DRAM_reg_n;
+
 assign	test_led = data_out[1:0];
 
 reg		read_request_reg;
@@ -99,6 +102,17 @@ always @(posedge clk) begin
 		else begin
 			read_request_reg	<= read_C_L1I_n;
 		end
+	end
+end
+
+always @(posedge clk) begin
+	if(rst) begin
+		ready_DRAM_reg	<= 1'b0;
+		ready_DRAM_reg_n	<= 1'b0;
+	end
+	else begin
+		ready_DRAM_reg	<= ready_DRAM;
+		ready_DRAM_reg_n	<= ready_DRAM_reg;
 	end
 end
 
@@ -238,10 +252,10 @@ instruction_rom #(
 assign	write_dram_tag		= enb ? write_tag_L2_MEM		:	init_address[25-:18	];
 assign	dram_index			= enb ? index_L2_MEM			:	init_address[0+:8	];
 assign	write_data_MEM		= enb ? write_data_L2_MEM		:	read_data_MEM_L2_bram;
-assign	write_dram			= enb ? write_L2_MEM & 	 ~ready_MEM_L2_dram		:	ready_MEM_L2_bram;
+assign	write_dram			= enb ? write_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n)		:	ready_MEM_L2_bram;
 assign	read_data_MEM_L2	= enb ? read_data_MEM_L2_dram	:	512'h0;
 assign	ready_MEM_L2 		= enb & ready_MEM_L2_dram;
-assign	read_L2_MEM_w		= read_L2_MEM & ~ready_MEM_L2_dram;
+assign	read_L2_MEM_w		= read_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n);
 
 mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
