@@ -42,10 +42,14 @@ integer i;
 always @(posedge clk)
   begin
     if(!rstn) begin
-      wr_pt <= 5'b00000;
-	  for(i=0;i<64;i=i+1) begin
+      wr_pt <= 5'd5;
+	  for(i=5;i<64;i=i+1) begin
 		fifo_tx_mem[i]	<= 8'b0;
 	  end
+	  fifo_tx_mem[0]	<= 8'ha;
+	  fifo_tx_mem[1]	<= 8'hb;
+	  fifo_tx_mem[2]	<= 8'hc;
+	  fifo_tx_mem[3]	<= 8'hd;
     end
     else if(wr_en)
       begin
