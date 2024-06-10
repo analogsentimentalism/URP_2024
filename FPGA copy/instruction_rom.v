@@ -51,12 +51,14 @@ always @(posedge clk) begin
 		cnt_inst			<= 32'b0;
 	end
 	else begin
-		if (~enb & (cnt_inst < NUM_INST)) begin
-			flag	<= 1'b1;
-			if(ready_MEM_L2) begin
-				ready_MEM_L2	<= 1'b0;
-			end
-			if(~flag | ready_MEM | |cnt | state) begin
+		if(cnt == 4'd15 & ~ready_MEM) begin
+			ready_MEM_L2	<= 1'b1;
+		end
+		else if (ready_MEM) begin
+			ready_MEM_L2	<= 1'b0;
+		end
+		if (~enb & ((cnt_inst < NUM_INST) | ready_MEM)) begin
+			if(ready_MEM | |cnt | state) begin
 				if(state) begin
 					cnt_inst <= cnt_inst + 1;
 					state	<= 1'b0;
@@ -71,7 +73,6 @@ always @(posedge clk) begin
 					if(cnt == 4'd15) begin
 						cnt				<= 4'd0;
 						addra_r			<= addra_r + 1'd1;
-						ready_MEM_L2	<= 1'b1;
 					end
 					else begin
 						cnt				<= cnt + 1;
@@ -81,9 +82,6 @@ always @(posedge clk) begin
 					state	<= 1'b1;
 				end
 			end
-		end
-		else begin
-			ready_MEM_L2	<= 1'b0;
 		end
 	end
 end
