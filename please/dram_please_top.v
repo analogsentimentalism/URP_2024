@@ -26,7 +26,7 @@ wire raedy_MEM_L2_dram;
 wire [511:0] read_data_MEM_L2_dram;
 wire clk_cpu;
 wire uart_ready;
-wire data_out;
+wire [7:0]data_out;
 wire rd_en;
 
 mig_example_top u_mig_example_top(
