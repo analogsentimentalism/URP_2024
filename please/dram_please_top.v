@@ -19,7 +19,7 @@ module dram_please_top(
     output ddr2_cke,
     output ddr2_cs_n,
     output[1:0] ddr2_dm,
-    output ddr2_odt,
+    output ddr2_odt
 );
 wire raedy_MEM_L2_dram;
 wire [511:0] read_data_MEM_L2_dram;
