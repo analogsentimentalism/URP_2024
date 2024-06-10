@@ -7,8 +7,12 @@ input					rstn;
 input		[31:0	]	data_i;
 input					valid_pulse_i;
 input					ready;
+
+
 output	reg	[7:0	]	data_o;
 output	reg				valid_o;
+
+
 
 reg			[9:0	]	addra,	addrb;
 reg			[1:0	]	cnt,	cnt_n;
@@ -19,6 +23,8 @@ wire					empty;
 
 assign	empty		= (addra == addrb);
 assign	wen			= valid_pulse_i;
+
+
 
 xilinx_true_dual_port_no_change_2_clock_ram #(
 	.RAM_DEPTH			(	32'd1024		),
@@ -45,7 +51,7 @@ xilinx_true_dual_port_no_change_2_clock_ram #(
 
 always @(posedge clk) begin
 	if (~rstn) begin
-		addra	<= 10'd5;
+		addra	<= 10'd0;
 		addrb	<= 10'd0;
 		cnt		<= 2'b0;
 		cnt_n	<= 2'b0;
@@ -67,7 +73,7 @@ always @(posedge clk) begin
 				addrb	<= addrb + 1'b1;
 			end
 		end
-		valid_o	<= (~empty | |cnt) & ready;
+		valid_o	<= (~empty | |cnt) & ready;          // rd_en
 	end
 end
 
