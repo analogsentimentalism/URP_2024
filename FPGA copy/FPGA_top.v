@@ -105,7 +105,7 @@ always @(posedge clk) begin
 	end
 end
 
-always @(posedge clk) begin
+always @(posedge clk_cpu) begin
 	if(rst) begin
 		ready_DRAM_reg	<= 1'b0;
 		ready_DRAM_reg_n	<= 1'b0;
@@ -255,7 +255,7 @@ assign	write_data_MEM		= enb ? write_data_L2_MEM		:	read_data_MEM_L2_bram;
 assign	write_dram			= enb ? write_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n)		:	ready_MEM_L2_bram;
 assign	read_data_MEM_L2	= enb ? read_data_MEM_L2_dram	:	512'h0;
 assign	ready_MEM_L2 		= enb & ready_MEM_L2_dram;
-assign	read_L2_MEM_w		= read_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n);
+assign	read_L2_MEM_w		= read_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n) & ~(ready_MEM_L2_dram);
 
 mig_example_top u_mig_example_top(
 	.CLK100MHZ(clk),
