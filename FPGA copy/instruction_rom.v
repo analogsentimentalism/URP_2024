@@ -22,10 +22,11 @@ reg		[25:0			]	addra_r;
 wire	[30:0			]	addra;
 wire						invalid;
 reg		[31:0			]	cnt_inst;
+reg		[25:0			]	addra_rn;
 
 assign	addra			= {addra_r - START_ADDR[6+:26], cnt} - START_ADDR[5:2];
 assign	invalid			= ({addra_r - START_ADDR[6+:26], cnt} < START_ADDR[5:2]) | (addra >= RAM_DEPTH);
-assign	init_address	= addra_r;
+assign	init_address	= addra_rn;
 
 rom #(
 	.RAM_WIDTH	(	RAM_WIDTH	),
@@ -51,6 +52,7 @@ always @(posedge clk) begin
 		state				<= 1'b0;
 		flag				<= 1'b0;
 		cnt_inst			<= 32'b0;
+		addra_rn			<= START_ADDR[6+:26];
 	end
 	else begin
 		flag	<= 1'b1;
@@ -78,6 +80,7 @@ always @(posedge clk) begin
 					if(cnt == 4'd15) begin
 						cnt				<= 4'd0;
 						addra_r			<= addra_r + 1'd1;
+						addra_rn		<= addra_r;
 					end
 					else begin
 						cnt				<= cnt + 1;
