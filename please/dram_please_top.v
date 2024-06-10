@@ -4,7 +4,6 @@ module dram_please_top{
     input read,
     input write,
     output tx_data,
-    input [3:0] sw,
     output [3:0] LED,
 
     inout[15:0] ddr2_dq,
