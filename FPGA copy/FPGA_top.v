@@ -105,7 +105,7 @@ always @(posedge clk) begin
 	end
 end
 
-always @(posedge clk) begin
+always @(posedge clk_cpu) begin
 	if(rst) begin
 		ready_DRAM_reg	<= 1'b0;
 		ready_DRAM_reg_n	<= 1'b0;
