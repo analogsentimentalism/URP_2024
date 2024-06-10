@@ -59,7 +59,7 @@ FPGA_top u_FPGA_top (
 
 
 initial begin
-   forever #1 clk <= ~clk;
+   forever #5 clk = ~clk;
 end
 
 initial begin
