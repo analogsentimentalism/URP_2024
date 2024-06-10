@@ -44,6 +44,7 @@ reg		flag;
 always @(posedge clk) begin
 	if (~rstn) begin
 		read_data_MEM_L2	<= {512{1'b0}};
+		ready_MEM_L2		<= 1'b0;
 		addra_r				<= START_ADDR[6+:26];
 		cnt					<= 4'b0;
 		state				<= 1'b0;
@@ -51,13 +52,14 @@ always @(posedge clk) begin
 		cnt_inst			<= 32'b0;
 	end
 	else begin
-		if(cnt == 4'd15 & ~ready_MEM) begin
+		flag	<= 1'b1;
+		if(cnt == 4'd15 & (~ready_MEM | ~flag)) begin
 			ready_MEM_L2	<= 1'b1;
 		end
 		else if (ready_MEM) begin
 			ready_MEM_L2	<= 1'b0;
 		end
-		if (~enb & ((cnt_inst < NUM_INST) | ready_MEM)) begin
+		if (~enb & ((cnt_inst < NUM_INST) | ready_MEM | ~flag)) begin
 			if(ready_MEM | |cnt | state) begin
 				if(state) begin
 					cnt_inst <= cnt_inst + 1;
