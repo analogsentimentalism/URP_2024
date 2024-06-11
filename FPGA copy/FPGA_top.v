@@ -252,7 +252,7 @@ instruction_rom #(
 assign	write_dram_tag		= enb ? write_tag_L2_MEM		:	init_address[25-:18	];
 assign	dram_index			= enb ? index_L2_MEM			:	init_address[0+:8	];
 assign	write_data_MEM		= enb ? write_data_L2_MEM		:	read_data_MEM_L2_bram;
-assign	write_dram			= enb ? write_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n)		:	ready_MEM_L2_bram;
+assign  write_dram         = enb ? write_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n) & ~(ready_MEM_L2_dram)      :   ready_MEM_L2_bram & ~(ready_MEM_L2_dram);
 assign	read_data_MEM_L2	= enb ? read_data_MEM_L2_dram	:	512'h0;
 assign	ready_MEM_L2 		= enb & ready_MEM_L2_dram;
 assign	read_L2_MEM_w		= read_L2_MEM & ~(ready_DRAM_reg & ~ready_DRAM_reg_n) & ~(ready_MEM_L2_dram);
