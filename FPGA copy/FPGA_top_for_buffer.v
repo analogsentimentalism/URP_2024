@@ -277,13 +277,13 @@ counter_2 u_counter(
      .clk(clk_cpu),
      .rstn(~rst),
      .read_C_L1I(read_C_L1I),
-     .miss_L1I_C(L1I_miss_o),
+     .miss_L1I_C(L1I_miss),
      .read_C_L1D(read_C_L1D),
      .write_C_L1D(write_C_L1D),
-     .miss_L1D_C(L1D_miss_o),
+     .miss_L1D_C(L1D_miss),
      .read_L1_L2(read_L1_L2),
      .write_L1_L2(write_L1_L2),
-     .miss_L2_L1(L2_miss_o),
+     .miss_L2_L1(L2_miss),
      .data_out1(data_out1),
      .wr_en(wr_en)
 );
