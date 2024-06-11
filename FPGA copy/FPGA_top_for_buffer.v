@@ -284,7 +284,7 @@ counter_2 u_counter(
      .read_L1_L2(read_L1_L2),
      .write_L1_L2(write_L1_L2),
      .miss_L2_L1(L2_miss_o),
-     .data_o(data_o),
+     .data_out1(data_out1),
      .wr_en(wr_en)
 );
 
@@ -297,7 +297,7 @@ data_separator u_data_separator(
 	.valid_pulse_i	(	wr_en		    ),
     .ready			(	uart_ready		),
 
-	.data_o			(	data_out		),
+	.data_out2			(	data_out2		),
 	.valid_o		(	rd_en			)
 );
 
@@ -306,7 +306,7 @@ data_separator u_data_separator(
 TX_2 u_tx(
     .clk(clk_cpu),
     .rstn(~rst),
-    .din(data_out),
+    .din(data_out2),
     .tx_start(rd_en),
 
     .tx_data(tx_data),

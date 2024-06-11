@@ -20,7 +20,7 @@ wire	[31:0	]	data_out1;
 wire                wr_en;
 wire    [7:0]         data_out2;
 wire				valid_o;
-wire				tx_data;
+
 wire				ready;
 
 

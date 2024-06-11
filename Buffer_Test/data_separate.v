@@ -44,7 +44,7 @@ xilinx_true_dual_port_no_change_2_clock_ram #(
     .rsta(),     // Port A output reset (does not affect memory contents)
     .rstb(),     // Port B output reset (does not affect memory contents)
     .regcea(), // Port A output register enable
-    .regceb(), // Port B output register enable
+    .regceb(), // Port B output register enable  
     .douta(),   // Port A RAM output data, width determined from RAM_WIDTH
     .doutb(doutb)    // Port B RAM output data, width determined from RAM_WIDTH
 );
